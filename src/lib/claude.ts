@@ -1,40 +1,39 @@
 /// <reference types="vite/client" />
 import type { ExtractedFilingData, CoverSheetData, ValidationResult } from '@/types/patent'
 
-const API_URL = 'https://api.anthropic.com/v1/messages'
-const MODEL   = 'claude-sonnet-4-20250514'
+// All Claude API calls go through /api/claude (Vercel serverless proxy).
+// This avoids CORS errors and keeps the API key server-side.
+// See api/claude.ts for the proxy implementation.
+const PROXY_URL = '/api/claude'
 
-async function callClaude(system: string, user: string): Promise<string> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  if (!apiKey) throw new Error('VITE_ANTHROPIC_API_KEY is not set')
-
-  const res = await fetch(API_URL, {
+async function callClaude(system: string, user: string, max_tokens = 1000): Promise<string> {
+  const res = await fetch(PROXY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 1000,
-      system,
-      messages: [{ role: 'user', content: user }],
-    }),
+    body: JSON.stringify({ system, user, max_tokens }),
   })
 
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+    throw new Error(err.error || `HTTP ${res.status}`)
+  }
+
   const data = await res.json()
-  if (data.error) throw new Error(data.error.message)
-  return data.content?.[0]?.text ?? ''
+  if (data.error) throw new Error(data.error)
+  return data.text ?? ''
 }
 
 function parseJSON<T>(raw: string): T {
   return JSON.parse(raw.replace(/```json|```/g, '').trim()) as T
 }
 
-// ── Prompts (named constants — never inline in components) ────────
+// ── System prompts (named constants — never inline in components) ──
 
 const EXTRACT_SYSTEM = `You are a USPTO patent filing specialist.
 Extract structured filing data from the provided specification.
 Respond ONLY with valid JSON. No markdown, no preamble, no explanation.
 If an inventor name contains "Batman MO", "Development Team", "KSU", or "Kennesaw State University",
-add a warning in the warnings array: "INVALID INVENTOR or ASSIGNEE detected — must be corrected before filing."`
+add a warning: "INVALID INVENTOR or ASSIGNEE detected — must be corrected before filing."`
 
 const COVER_SYSTEM = `You are a USPTO patent attorney generating a PTO/SB/16 provisional application cover sheet.
 Respond ONLY with valid JSON. No markdown, no preamble.`

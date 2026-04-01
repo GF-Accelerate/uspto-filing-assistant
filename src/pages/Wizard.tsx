@@ -52,6 +52,7 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
     >
       {wizard.step === 1 && (
         <Step1Input
+          patentId={patent.id}
           value={wizard.docInput}
           onChange={v => update({ docInput: v })}
           onAnalyze={api.extract}

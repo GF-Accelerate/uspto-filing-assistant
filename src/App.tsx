@@ -5,6 +5,7 @@ import { Dashboard }    from '@/pages/Dashboard'
 import { Wizard }       from '@/pages/Wizard'
 import { Deadlines }    from '@/pages/Deadlines'
 import { Guide }        from '@/pages/Guide'
+import { Drawings }     from '@/pages/Drawings'
 import { daysUntil }    from '@/lib/uspto'
 
 export default function App() {
@@ -18,6 +19,14 @@ export default function App() {
     navigate('/wizard')
   }
 
+  const navLinks = [
+    { to: '/',         label: 'Portfolio'       },
+    { to: '/wizard',   label: 'Filing Wizard'   },
+    { to: '/drawings', label: '📐 Drawings'     },
+    { to: '/deadlines',label: 'Deadlines'       },
+    { to: '/guide',    label: 'USPTO Guide'     },
+  ] as const
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
@@ -25,12 +34,7 @@ export default function App() {
           <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-sm flex-shrink-0">⚖</div>
           <span className="font-medium text-sm text-slate-800 flex-1">USPTO Patent Filing Assistant</span>
           <nav className="flex gap-0.5">
-            {([
-              { to:'/',          label:'Portfolio'     },
-              { to:'/wizard',    label:'Filing Wizard' },
-              { to:'/deadlines', label:'Deadlines'     },
-              { to:'/guide',     label:'USPTO Guide'   },
-            ] as const).map(({ to, label }) => (
+            {navLinks.map(({ to, label }) => (
               <NavLink key={to} to={to} end={to === '/'}
                 className={({ isActive }) =>
                   `px-3 py-1.5 rounded-lg text-sm transition-colors ${
@@ -64,6 +68,7 @@ export default function App() {
         <Routes>
           <Route path="/"          element={<Dashboard portfolio={portfolio} onOpen={handleOpen} />} />
           <Route path="/wizard"    element={<Wizard ctx={wizardCtx} portfolio={portfolio} onMarkFiled={markFiled} />} />
+          <Route path="/drawings"  element={<Drawings />} />
           <Route path="/deadlines" element={<Deadlines />} />
           <Route path="/guide"     element={<Guide />} />
         </Routes>

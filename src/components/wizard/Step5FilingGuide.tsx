@@ -3,7 +3,7 @@ import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { USPTO_URLS } from '@/lib/uspto'
 
-interface Props { aiData: ExtractedFilingData | null; onNext: () => void }
+interface Props { aiData: ExtractedFilingData | null; onBack: () => void; onNext: () => void }
 
 const STEPS = [
   { n:1, title:'Authenticate with ID.me + MFA', url:USPTO_URLS.patentCenter, manual:true, warn:'ID.me requires government photo ID + live video selfie — cannot be automated by any tool.', items:['Go to patentcenter.uspto.gov','Log into your USPTO.gov account','Complete ID.me verification (10-15 min)','Set up MFA with Okta Verify on your phone','Complete Patent Center self-enrollment as Independent Inventor'] },
@@ -14,7 +14,7 @@ const STEPS = [
   { n:6, title:'Final review + Submit — HITL gate', url:null, manual:true, warn:'Review EVERYTHING before clicking Submit. This cannot be undone. Only you can click Submit.', items:['Review all documents in preview','Confirm inventor names have no typos','Confirm Small Entity status selected','Click SUBMIT','Save filing receipt with Application Number'] },
 ]
 
-export function Step5FilingGuide({ aiData, onNext }: Props) {
+export function Step5FilingGuide({ aiData, onBack, onNext }: Props) {
   const inv = aiData?.inventors ?? []
   const steps = STEPS.map(s => s.n === 3 ? { ...s, items:[
     `Title: ${aiData?.title ?? '[your patent title]'}`,
@@ -39,7 +39,10 @@ export function Step5FilingGuide({ aiData, onNext }: Props) {
           </div>
         </div>
       ))}
-      <Button variant="primary" onClick={onNext}>Continue to receipt recording →</Button>
+      <div className="flex gap-2">
+        <Button onClick={onBack}>← Back</Button>
+        <Button variant="primary" onClick={onNext}>Continue to receipt recording →</Button>
+      </div>
     </div>
   )
 }

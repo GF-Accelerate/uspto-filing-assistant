@@ -8,12 +8,12 @@ interface Props {
   checks: ChecklistState
   validResult: ValidationResult | null
   onToggle: (id: string, v: boolean) => void
-  onValidate: () => void; onNext: () => void; loading: boolean
+  onBack: () => void; onValidate: () => void; onNext: () => void; loading: boolean
 }
 
 const SECTIONS = ['Inventors','Application','Documents','Authentication','Filing'] as const
 
-export function Step4Checklist({ checks, validResult, onToggle, onValidate, onNext, loading }: Props) {
+export function Step4Checklist({ checks, validResult, onToggle, onBack, onValidate, onNext, loading }: Props) {
   const total = CHECKLIST_ITEMS.length
   const checked = CHECKLIST_ITEMS.filter(c => checks[c.id]).length
   const allOk = checked === total
@@ -36,6 +36,7 @@ export function Step4Checklist({ checks, validResult, onToggle, onValidate, onNe
         {allOk ? '✓ All 14 items verified — ready to file' : `${total - checked} items remaining`}
       </div>
       <div className="flex gap-2 mt-4 flex-wrap">
+        <Button onClick={onBack}>← Back</Button>
         <Button variant="primary" onClick={onValidate} disabled={!allOk || loading}>Run AI compliance check ↗</Button>
         {allOk && <Button variant="primary" onClick={onNext}>Continue to filing guide →</Button>}
       </div>

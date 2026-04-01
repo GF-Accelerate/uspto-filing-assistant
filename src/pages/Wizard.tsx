@@ -73,6 +73,7 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
         <Step3CoverSheet
           data={wizard.coverData}
           onGenerate={api.generateCoverSheet}
+          onBack={() => setStep(2)}
           onNext={() => setStep(4)}
           loading={wizard.loading}
         />
@@ -83,6 +84,7 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
           checks={wizard.checks}
           validResult={wizard.validResult}
           onToggle={toggleCheck}
+          onBack={() => setStep(3)}
           onValidate={api.validate}
           onNext={() => setStep(5)}
           loading={wizard.loading}
@@ -92,6 +94,7 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
       {wizard.step === 5 && (
         <Step5FilingGuide
           aiData={wizard.aiData}
+          onBack={() => setStep(4)}
           onNext={() => setStep(6)}
         />
       )}
@@ -100,6 +103,7 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
         <Step6Receipt
           appNum={wizard.appNum}
           onChange={v => update({ appNum: v })}
+          onBack={() => setStep(5)}
           onSave={() => {
             if (wizard.appNum) {
               onMarkFiled(wizard.activePatentId!, wizard.appNum)

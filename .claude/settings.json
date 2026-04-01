@@ -1,0 +1,18 @@
+{
+  "model": "claude-sonnet-4-20250514",
+  "project": "uspto-filing-assistant",
+  "context_files": ["CLAUDE.md"],
+  "ignore_patterns": ["dist/**", "node_modules/**", ".env"],
+  "tools": {
+    "computer_use": false,
+    "file_read": true,
+    "file_write": true,
+    "bash": true
+  },
+  "preferences": {
+    "code_style": "typescript-strict",
+    "framework": "react-vite",
+    "test_framework": "vitest",
+    "package_manager": "npm"
+  }
+}

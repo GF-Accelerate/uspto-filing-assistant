@@ -15,108 +15,189 @@ const USPTO_FIGURES = [
     id: 'fig1', figNum: 'FIG. 1', title: 'System Architecture Overview',
     desc: 'Overall block diagram: Voice Input Layer (110) → NLP Engine (120) → SQL Query Generator (130) → Database Layer (140) → Agent Framework (150) → Multi-Modal Response (160)',
     mermaid: `graph TD
-    A["110\\nVoice Input Layer\\nWeb Speech API + Noise Cancellation"] --> B["120\\nNLP Engine\\nGPT-4o-mini · 94% Accuracy\\n200+ Intent Patterns"]
-    B --> C["130\\nSQL Query Generator\\nSemantic Mapping + Optimization\\nSub-200ms Latency"]
-    C --> D["140\\nDatabase Layer\\nSupabase PostgreSQL\\n170,529 Constituent Records"]
-    D --> E["150\\nAgent Framework\\n9 Specialized AI Agents\\nHITL Approval Gate"]
-    E --> F["160\\nMulti-Modal Response\\nVoice Synthesis + Dashboard\\nWebSocket Streaming"]
-    B -.->|"confidence < 0.75"| G["125\\nDisambiguation\\nModule"]
-    G --> C`,
+    A["<b>110</b> — Voice Input Layer<br/><i>Web Speech API · Noise Cancellation</i><br/><i>Athletic-Domain Vocabulary</i>"]
+    B["<b>120</b> — NLP Engine<br/><i>GPT-4o-mini · 94% Accuracy</i><br/><i>200+ Intent Patterns</i>"]
+    C["<b>130</b> — SQL Query Generator<br/><i>Semantic Schema Mapping</i><br/><i>Join-Path Optimization · &lt;200ms</i>"]
+    D["<b>140</b> — Database Layer<br/><i>PostgreSQL · 170,529 Records</i><br/><i>Row-Level Security · 10 Roles</i>"]
+    E["<b>150</b> — Agent Framework<br/><i>9 Specialized AI Agents</i><br/><i>HITL Approval Gate</i>"]
+    F["<b>160</b> — Multi-Modal Response<br/><i>Voice Synthesis · Dashboard</i><br/><i>WebSocket Streaming</i>"]
+    G["<b>125</b> — Disambiguation<br/><i>confidence &lt; 0.75 threshold</i>"]
+    A --> B
+    B --> C
+    B -.->|"low confidence"| G
+    G --> C
+    C --> D
+    D --> E
+    E --> F
+    style A fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style B fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style C fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style D fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style E fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style F fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style G fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b`,
   },
   {
     id: 'fig2', figNum: 'FIG. 2', title: 'Voice Processing & SQL Generation Flow',
-    desc: 'Flowchart from speech input through NLP, intent classification, disambiguation, SQL generation, execution, and result return',
+    desc: 'Flowchart from voice input through NLP intent classification, confidence check, disambiguation, SQL generation, database execution, and result return',
     mermaid: `flowchart TD
-    A(["START\\nVoice Command Received"]) --> B["210\\nAudio Preprocessing\\nNoise Cancellation + Domain Vocab"]
-    B --> C["220\\nIntent Classification\\nGPT-4o-mini LLM"]
-    C --> D{"230\\nConfidence\\nCheck"}
-    D -->|"≥ 0.75"| E["240\\nParameter Extraction\\nNamed Entity Recognition"]
-    D -->|"< 0.75"| F["235\\nDisambiguation Query\\nUser Prompt"]
-    F --> C
-    E --> G["250\\nSchema Mapping\\nSemantic Entity → Table"]
-    G --> H["260\\nJoin Path Optimization\\nCost-Based Query Planner"]
-    H --> I["270\\nSQL Generation\\n& Validation"]
-    I --> J["280\\nDatabase Execution\\nRow-Level Security Applied"]
-    J --> K{"290\\nResult Size Check"}
-    K -->|"> 1000 rows"| L["295\\nBatch Pagination"]
-    K -->|"≤ 1000 rows"| M(["END\\nReturn Results"])
-    L --> M`,
+    S(["<b>START</b> — Voice Command Received"])
+    A["<b>210</b> — Audio Preprocessing<br/><i>Noise Cancellation · Domain Vocab</i>"]
+    B["<b>220</b> — Intent Classification<br/><i>GPT-4o-mini LLM · NER Extraction</i>"]
+    C{"<b>230</b> — Confidence Check"}
+    D["<b>235</b> — Disambiguation Query<br/><i>Prompt User for Clarification</i>"]
+    E["<b>240</b> — Parameter Extraction<br/><i>Entity-to-Schema Mapping</i>"]
+    F["<b>250</b> — Join-Path Optimizer<br/><i>Cost-Based Query Planner</i>"]
+    G["<b>260</b> — SQL Generation<br/><i>Validation &amp; Index Selection</i>"]
+    H["<b>270</b> — Database Execution<br/><i>RLS Applied · Audit Logged</i>"]
+    K{"<b>280</b> — Result Size Check"}
+    L["<b>285</b> — Batch Pagination<br/><i>1,000 rows per cycle</i>"]
+    E2(["<b>END</b> — Results Returned"])
+    S --> A --> B --> C
+    C -->|"≥ 0.75"| E
+    C -->|"&lt; 0.75"| D
+    D --> B
+    E --> F --> G --> H --> K
+    K -->|"&gt; 1,000 rows"| L --> E2
+    K -->|"≤ 1,000 rows"| E2
+    style S fill:#1e40af,stroke:#1e40af,color:#ffffff
+    style E2 fill:#15803d,stroke:#15803d,color:#ffffff
+    style C fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style K fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style D fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    style A fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style B fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style E fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style F fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style G fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style H fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style L fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
   },
   {
     id: 'fig3', figNum: 'FIG. 3', title: 'Nine-Agent Autonomous Framework',
-    desc: 'All 9 specialized agents with HITL approval gate (300) and Multi-Agent Chain Orchestrator (305)',
+    desc: 'All 9 AI agents (310–390) coordinated by Multi-Agent Chain Orchestrator (305) under mandatory Human-in-the-Loop Approval Gate (300)',
     mermaid: `graph TD
-    HITL["300\\nHuman-in-the-Loop\\nApproval Gate\\n⚠ MANDATORY — Cannot be bypassed"] --> ORCH
-    ORCH["305\\nMulti-Agent Chain\\nOrchestrator"]
-    ORCH --> A1["310\\nDonor Cultivation\\nAgent"]
-    ORCH --> A2["320\\nProposal Generation\\nAgent"]
-    ORCH --> A3["330\\nCampaign Manager\\nAgent"]
-    ORCH --> A4["340\\nCompliance Monitor\\nAgent"]
-    ORCH --> A5["350\\nRevenue Analytics\\nAgent"]
-    ORCH --> A6["360\\nFan Engagement\\nAgent"]
-    ORCH --> A7["370\\nRecruiting Intelligence\\nAgent"]
-    ORCH --> A8["380\\nFacility Operations\\nAgent"]
-    ORCH --> A9["390\\nExecutive Briefing\\nAgent"]`,
+    HITL["<b>300</b> — HUMAN-IN-THE-LOOP APPROVAL GATE<br/><i>Mandatory · Cannot Be Bypassed · Explicit Staff Authorization</i>"]
+    ORCH["<b>305</b> — Multi-Agent Chain Orchestrator<br/><i>Task Routing · Dependency Resolution · State Management</i>"]
+    A1["<b>310</b><br/>Donor Cultivation"]
+    A2["<b>320</b><br/>Proposal Generation"]
+    A3["<b>330</b><br/>Campaign Manager"]
+    A4["<b>340</b><br/>Compliance Monitor"]
+    A5["<b>350</b><br/>Revenue Analytics"]
+    A6["<b>360</b><br/>Fan Engagement"]
+    A7["<b>370</b><br/>Recruiting Intelligence"]
+    A8["<b>380</b><br/>Facility Operations"]
+    A9["<b>390</b><br/>Executive Briefing"]
+    HITL --> ORCH
+    ORCH --> A1 & A2 & A3
+    ORCH --> A4 & A5 & A6
+    ORCH --> A7 & A8 & A9
+    style HITL fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
+    style ORCH fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style A1 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style A2 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style A3 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style A4 fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style A5 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style A6 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style A7 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style A8 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style A9 fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
   },
   {
     id: 'fig4', figNum: 'FIG. 4', title: 'Multi-Provider Communication Failover',
-    desc: 'Primary SendGrid (410) → Resend (420) → AgentMail (430) with HITL gate, webhook monitoring, and audit trail',
+    desc: 'Human Approval Gate (400) → SendGrid primary (410) → Resend secondary (420) → AgentMail tertiary (430) with Webhook Monitoring (440) and Cryptographic Audit Trail (450)',
     mermaid: `flowchart LR
-    HITL["400\\nHuman Approval Gate\\nRequired Before Dispatch"] --> SP
-    SP["410\\nSendGrid\\nPrimary Provider"] -->|"Delivery Success"| SUCCESS(["✓ Delivered"])
-    SP -->|"Failure / Timeout"| R["420\\nResend\\nSecondary Provider"]
-    R -->|"Delivery Success"| SUCCESS
-    R -->|"Failure / Timeout"| AM["430\\nAgentMail\\nTertiary Provider"]
-    AM -->|"Delivery Success"| SUCCESS
-    AM -->|"All Providers Failed"| FAIL(["⚠ Alert Staff"])
-    SUCCESS --> WH["440\\nWebhook Monitoring\\nOpen / Click / Bounce Tracking"]
-    SUCCESS --> AT["450\\nCryptographic\\nAudit Trail"]`,
+    HITL["<b>400</b><br/>Human Approval Gate<br/><i>Explicit Authorization</i>"]
+    SP["<b>410</b><br/>SendGrid<br/><i>Primary Provider</i>"]
+    R["<b>420</b><br/>Resend<br/><i>Secondary Provider</i>"]
+    AM["<b>430</b><br/>AgentMail<br/><i>Tertiary Provider</i>"]
+    OK(["✓ Delivered"])
+    FAIL(["⚠ Alert Staff"])
+    WH["<b>440</b><br/>Webhook Monitoring<br/><i>Open · Click · Bounce</i>"]
+    AT["<b>450</b><br/>Cryptographic<br/>Audit Trail"]
+    HITL --> SP
+    SP -->|"Success"| OK
+    SP -->|"Failure"| R
+    R -->|"Success"| OK
+    R -->|"Failure"| AM
+    AM -->|"Success"| OK
+    AM -->|"All fail"| FAIL
+    OK --> WH & AT
+    style HITL fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
+    style SP fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style R fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style AM fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style OK fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style FAIL fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    style WH fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
+    style AT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
   },
   {
     id: 'fig5', figNum: 'FIG. 5', title: 'Database Layer & RFE Lead Scoring',
-    desc: 'Core tables with record counts, RFE scoring engine (550), and external data cross-reference (560)',
+    desc: 'Core tables with record counts, RFE Scoring Engine (550), external cross-reference sources (560), and Row-Level Security enforcement (570)',
     mermaid: `graph TD
-    RFE["550\\nRFE Scoring Engine\\ncalculate_lead_scores()\\nRecency + Frequency + Engagement"] --> LS
-    EXT["560\\nExternal Data\\nSEC EDGAR · FEC · OpenCorporates\\nLinkedIn Evaboot API"] --> RFE
-    CM["510\\nconstituent_master\\n170,529 Records\\nName · Address · Contact · History"] --> RFE
-    PT["520\\npac_transactions\\n334,518 Records\\nGift Amount · Date · Campaign"] --> RFE
-    OPP["530\\nopportunities\\n8,113 Records\\nStage · Amount · Probability"] --> RFE
-    LS["540\\nlead_scores\\n167,740 Scored Records\\nRenewal Risk · Gift Readiness\\nUpgrade Potential · Churn Risk"]
-    RLS["570\\nRow-Level Security\\n10 Enterprise Roles\\nData Isolation Per User"] -.-> CM & PT & OPP & LS`,
+    EXT["<b>560</b> — External Data Sources<br/><i>SEC EDGAR · FEC Records</i><br/><i>OpenCorporates · LinkedIn Evaboot</i>"]
+    RFE["<b>550</b> — RFE Scoring Engine<br/><i>calculate_lead_scores()</i><br/><i>Configurable Weights · Continuous Updates</i>"]
+    CM["<b>510</b> — constituent_master<br/><i>170,529 Records</i>"]
+    PT["<b>520</b> — pac_transactions<br/><i>334,518 Records</i>"]
+    OPP["<b>530</b> — opportunities<br/><i>8,113 Records</i>"]
+    LS["<b>540</b> — lead_scores<br/><i>167,740 Scored Records</i><br/><i>Renewal · Gift · Churn Risk</i>"]
+    RLS["<b>570</b> — Row-Level Security<br/><i>10 Enterprise Roles · JWT Auth</i>"]
+    EXT --> RFE
+    CM --> RFE
+    PT --> RFE
+    OPP --> RFE
+    RFE --> LS
+    RLS -.->|"enforces on"| CM & PT & OPP & LS
+    style EXT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
+    style RFE fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style CM fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style PT fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style OPP fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style LS fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style RLS fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b`,
   },
 ]
 
 type DrawingStatus = 'pending' | 'generating' | 'done' | 'error'
 interface Drawing { id: string; figNum: string; title: string; desc: string; mermaid: string; svg: string; status: DrawingStatus }
 
+// Mermaid init directive — embedded in each diagram so theme always applies
+const MERMAID_INIT = `%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#f0f4ff",
+    "primaryBorderColor": "#1e3a5f",
+    "primaryTextColor": "#1e293b",
+    "lineColor": "#334155",
+    "secondaryColor": "#e8f4fd",
+    "tertiaryColor": "#f8fafc",
+    "background": "#ffffff",
+    "mainBkg": "#f0f4ff",
+    "nodeBorder": "#1e3a5f",
+    "clusterBkg": "#f0f4ff",
+    "titleColor": "#1e293b",
+    "edgeLabelBackground": "#ffffff",
+    "fontFamily": "Arial, sans-serif",
+    "fontSize": "13px"
+  }
+}}%%`
+
 async function renderMermaidToSVG(mermaidCode: string): Promise<string> {
   const mermaid = (await import('mermaid')).default
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'base',
-    themeVariables: {
-      primaryColor: '#ffffff',
-      primaryBorderColor: '#000000',
-      primaryTextColor: '#000000',
-      lineColor: '#000000',
-      secondaryColor: '#f8fafc',
-      tertiaryColor: '#f1f5f9',
-      background: '#ffffff',
-      mainBkg: '#ffffff',
-      nodeBorder: '#000000',
-      clusterBkg: '#f8fafc',
-      titleColor: '#000000',
-      edgeLabelBackground: '#ffffff',
-      fontFamily: 'Arial, sans-serif',
-      fontSize: '13px',
-    },
-  })
+  mermaid.initialize({ startOnLoad: false })
+
+  // Prepend init directive so theme variables are always respected
+  const fullCode = MERMAID_INIT + '\n' + mermaidCode
+
   const id = `diagram-${Date.now()}-${Math.random().toString(36).slice(2)}`
-  const { svg } = await mermaid.render(id, mermaidCode)
-  // Ensure white background + black strokes
+  const { svg } = await mermaid.render(id, fullCode)
+
+  // Post-process: ensure white page background, clean up any stray fills
   return svg
-    .replace(/fill="none"/g, 'fill="white"')
-    .replace(/background[^"]*"/g, 'background:white"')
+    .replace(/fill="rgb\(0, 0, 0\)"/g, 'fill="#1e3a5f"')
+    .replace(/fill="black"/g, 'fill="#1e3a5f"')
 }
 
 async function downloadPDF(svg: string, figNum: string, title: string) {

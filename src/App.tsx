@@ -9,6 +9,8 @@ import { Drawings }      from '@/pages/Drawings'
 import { Deadlines }     from '@/pages/Deadlines'
 import { Guide }         from '@/pages/Guide'
 import { Downloads }      from '@/pages/Downloads'
+import { Legal }          from '@/pages/Legal'
+import { Trademark }      from '@/pages/Trademark'
 import { AuthModal }     from '@/components/auth/AuthModal'
 import { UserMenu }      from '@/components/auth/UserMenu'
 import { daysUntil }     from '@/lib/uspto'
@@ -32,6 +34,8 @@ export default function App() {
     { to: '/drawings',  label: '📐 Drawings'    },
     { to: '/deadlines', label: 'Deadlines'      },
     { to: '/downloads', label: '📥 Downloads'   },
+    { to: '/legal',     label: '📄 Legal Docs'  },
+    { to: '/trademark', label: '™ Trademarks'   },
     { to: '/guide',     label: 'USPTO Guide'    },
   ] as const
 
@@ -85,6 +89,8 @@ export default function App() {
           <Route path="/drawings"  element={<Drawings />} />
           <Route path="/deadlines" element={<Deadlines />} />
           <Route path="/downloads" element={<Downloads />} />
+          <Route path="/legal"     element={<Legal />} />
+          <Route path="/trademark" element={<Trademark />} />
           <Route path="/guide"     element={<Guide />} />
         </Routes>
       </main>

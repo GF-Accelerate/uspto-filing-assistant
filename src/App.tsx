@@ -8,6 +8,7 @@ import { Wizard }        from '@/pages/Wizard'
 import { Drawings }      from '@/pages/Drawings'
 import { Deadlines }     from '@/pages/Deadlines'
 import { Guide }         from '@/pages/Guide'
+import { Downloads }      from '@/pages/Downloads'
 import { AuthModal }     from '@/components/auth/AuthModal'
 import { UserMenu }      from '@/components/auth/UserMenu'
 import { daysUntil }     from '@/lib/uspto'
@@ -30,6 +31,7 @@ export default function App() {
     { to: '/wizard',    label: 'Filing Wizard'  },
     { to: '/drawings',  label: '📐 Drawings'    },
     { to: '/deadlines', label: 'Deadlines'      },
+    { to: '/downloads', label: '📥 Downloads'   },
     { to: '/guide',     label: 'USPTO Guide'    },
   ] as const
 
@@ -82,6 +84,7 @@ export default function App() {
           <Route path="/wizard"    element={<Wizard ctx={wizardCtx} portfolio={portfolio} onMarkFiled={markFiled} />} />
           <Route path="/drawings"  element={<Drawings />} />
           <Route path="/deadlines" element={<Deadlines />} />
+          <Route path="/downloads" element={<Downloads />} />
           <Route path="/guide"     element={<Guide />} />
         </Routes>
       </main>

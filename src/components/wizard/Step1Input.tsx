@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
-import { PA1_SPEC_SUMMARY } from '@/lib/uspto'
+import { PATENT_SPECS } from '@/lib/uspto'
 
 interface Props {
   patentId: string
@@ -66,7 +66,7 @@ export function Step1Input({ patentId, value, onChange, onAnalyze, loading }: Pr
   }, [handleFile])
 
   // Pre-fill text from the built patent spec
-  const specText = patentId === 'PA-1' ? PA1_SPEC_SUMMARY : null
+  const specText = PATENT_SPECS[patentId] ?? null
 
   return (
     <div>
@@ -80,7 +80,7 @@ export function Step1Input({ patentId, value, onChange, onAnalyze, loading }: Pr
         <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3 flex items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-green-800">
-              {patentId} patent specification is ready
+              {patentId} patent specification is ready to load
             </p>
             <p className="text-xs text-green-600 mt-0.5">
               Click to pre-load the complete prepared specification for analysis

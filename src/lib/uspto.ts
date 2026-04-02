@@ -218,3 +218,182 @@ A voice-controlled database interaction system converts spoken natural language 
 
 INVENTORS: Milton Overton & Lisa Overton
 ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144`
+
+// ── PA-2 Specification — Athletic Department Management Platform ──────────
+export const PA2_SPEC_SUMMARY = `TITLE: System and Method for AI-Powered Athletic Department Management with Voice-First Interface
+
+APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Georgia Corporation)
+
+PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity
+FILING DEADLINE: April 27, 2026
+
+---
+
+TECHNICAL FIELD
+
+[0001] The present invention relates to artificial intelligence-powered athletic department management systems, and more specifically to a multi-tenant cloud-based SaaS platform integrating constituent relationship management, NCAA compliance monitoring, revenue analytics with House v. NCAA revenue sharing modeling, recruiting intelligence, donor cultivation, and voice-first database interaction for college and professional athletic departments.
+
+---
+
+BACKGROUND
+
+[0002] College athletic departments manage complex operational environments requiring simultaneous tracking of donor relationships (50,000–300,000 constituents), NCAA compliance obligations across NIL disclosures, scholarship limits, recruiting contact calendars, and revenue distributions.
+
+[0003] The revenue sharing era introduced by House v. NCAA (2024) created unprecedented budget modeling complexity. No existing enterprise platform addresses these combined requirements with AI-assisted voice interaction, automated compliance monitoring, and ML-based donor gift readiness scoring.
+
+[0004] Existing enterprise software (Salesforce, Raiser's Edge, Total Team) requires extensive customization, lacks athletic-domain intelligence, and provides no voice interface or predictive scoring for the revenue sharing era.
+
+---
+
+SUMMARY OF THE INVENTION
+
+[0005] The present invention provides a cloud-based athletic department management platform comprising:
+- Multi-tenant SaaS architecture with row-level data isolation
+- Constituent relationship management (170,000+ record capacity, RFE scoring)
+- NCAA compliance automation engine (NIL, scholarship limits, contact calendars)
+- Revenue intelligence with House v. NCAA forecasting and scenario modeling
+- Recruiting intelligence module with prospect pipeline and compliance-aware logging
+- Donor cultivation AI with predictive major gift readiness scoring
+- Voice-first query interface integrating with co-pending Application PA-1
+
+---
+
+DETAILED DESCRIPTION
+
+[0006] System Architecture (FIG. 1): Frontend Layer 110 → API Gateway 120 → Database Layer 130 → AI Processing 140 → Communication Layer 150 → Analytics 160.
+
+[0007] Constituent CRM Module 200: Manages personal identification, giving history, engagement metrics, relationship mapping, predictive scores. RFE Scoring Engine 201 updates continuously. Supports 170,000+ records with sub-second query response.
+
+[0008] NCAA Compliance Engine 300: Monitors NIL activity and disclosure; transfer portal eligibility; scholarship equivalency calculations; recruiting contact calendar restrictions; House v. NCAA revenue sharing caps. Generates automated alerts 301 when thresholds approach and maintains audit trail 302.
+
+[0009] Revenue Intelligence Module 400: Real-time revenue tracking (ticket sales, donations, media rights, licensing, sponsorships); ML forecasting; House v. NCAA revenue share modeling with configurable athlete allocation; budget variance analysis with drill-down.
+
+[0010] Recruiting Module 500: Prospect database with academic/athletic profiles; NCAA contact limit compliance logging; offer management and scholarship modeling; transfer portal monitoring.
+
+---
+
+CLAIMS
+
+Claim 1 (System — Independent): A cloud-based athletic department management system comprising: a multi-tenant database architecture storing and isolating constituent records, compliance data, revenue records, and recruiting pipeline data for multiple athletic organizations simultaneously; a constituent relationship management module managing at least 50,000 constituent records with real-time RFE scoring; a NCAA compliance automation engine monitoring NIL activity, recruiting contact limits, scholarship equivalency calculations, and revenue sharing distributions with real-time threshold alerts; a revenue intelligence module providing real-time revenue tracking, predictive forecasting, and House v. NCAA revenue share modeling with configurable athlete allocation scenarios; a recruiting intelligence module tracking prospect pipelines with compliance-aware communication logging; and a voice-first query interface accepting natural language voice commands for all system functions.
+
+Claim 2: The system of claim 1, wherein the multi-tenant database enforces row-level security such that each athletic organization's data is accessible only to authenticated users of that organization.
+
+Claim 3: The system of claim 1, wherein the NCAA compliance engine generates real-time alerts when any monitored metric approaches applicable NCAA bylaw thresholds.
+
+Claim 4: The system of claim 1, wherein the revenue intelligence module generates predictive forecasts using ML models trained on historical giving patterns, season ticket renewal data, and economic indicators.
+
+Claim 5: The system of claim 1, wherein the RFE scoring model computes constituent scores based on configurable weights applied to recency, frequency, and engagement metrics.
+
+Claim 6: The system of claim 1, further comprising a donor cultivation AI module configured to identify constituents with high major gift readiness and generate personalized cultivation recommendations.
+
+Claim 7 (Method — Independent): A computer-implemented method for athletic department management comprising: storing and continuously scoring constituent interaction data including event attendance, email engagement, donation transactions, and voice command queries; monitoring all NCAA-regulated activities and generating compliance alerts when limits are approached; generating revenue analytics incorporating ticket sales, donations, media rights, and House v. NCAA revenue share distributions; maintaining recruiting pipelines with compliance-aware contact logging; and providing natural language voice query access to all stored data and analytics.
+
+Claim 8: The method of claim 7, further comprising generating personalized AI-drafted donor communications calibrated to each constituent's giving history, engagement level, and predicted gift capacity.
+
+Claim 9 (CRM — Independent): A non-transitory computer-readable medium storing processor-executable instructions implementing the method of claim 7, deployed as a multi-tenant cloud service supporting at least 10 simultaneous athletic organizations with data isolation, row-level security, and sub-second query response for databases of at least 50,000 constituent records.
+
+---
+
+ABSTRACT
+
+A cloud-based athletic department management platform provides multi-tenant SaaS infrastructure for college and professional athletic organizations integrating constituent relationship management, NCAA compliance automation with NIL monitoring, revenue intelligence with House v. NCAA modeling, recruiting pipeline management, and donor cultivation with AI-assisted gift readiness scoring. The platform supports 170,000+ constituent records with real-time RFE scoring and voice-first interaction. Deployed on serverless cloud architecture with row-level security across enterprise user roles.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144
+FILING DEADLINE: April 27, 2026 — MANDATORY`
+
+// ── PA-3 Specification — Multi-Modal Campaign Orchestration via Voice ────
+export const PA3_SPEC_SUMMARY = `TITLE: System and Method for Multi-Modal AI Campaign Orchestration via Voice Command
+
+APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Georgia Corporation)
+
+PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity
+FILING DEADLINE: April 27, 2026
+
+---
+
+TECHNICAL FIELD
+
+[0001] The present invention relates to AI-powered marketing campaign orchestration systems that accept voice commands to plan, configure, execute, and monitor multi-modal outbound campaigns combining email, SMS, personalized AI-generated video, and social media channels across constituent databases of 100,000+ records, with mandatory human-in-the-loop approval gates at all outbound action stages.
+
+---
+
+BACKGROUND
+
+[0002] Enterprise marketing campaign tools require significant manual configuration, lack voice interaction, and do not integrate AI-generated personalized video. No existing platform combines voice-commanded campaign setup, multi-provider failover delivery, AI video personalization, and mandatory human approval gates in a single unified system.
+
+[0003] Athletic department development offices need to execute donor cultivation campaigns rapidly in response to fundraising triggers (game wins, recruiting announcements, revenue sharing events) without the delays of traditional campaign management tool configuration.
+
+---
+
+SUMMARY OF THE INVENTION
+
+[0004] The present invention provides a multi-modal campaign orchestration system activated by voice commands comprising:
+- Voice Command Interface processing natural language campaign instructions
+- Campaign Configuration AI generating audience segments, messaging, and schedules
+- Multi-Provider Communication Router with failover (SendGrid → Resend → AgentMail)
+- AI Video Personalization Pipeline generating individualized video content per recipient
+- Human-in-the-Loop Approval Gate intercepting all outbound actions before execution
+- Campaign Analytics Engine tracking delivery, engagement, and revenue attribution
+- Webhook Monitoring System with real-time open/click/bounce tracking
+
+---
+
+DETAILED DESCRIPTION
+
+[0005] Voice Command Interface 110: Receives spoken campaign commands such as "Create a campaign for season ticket renewal for all donors who gave over $500 last year but haven't renewed." Processes through NLP engine 115 to extract: target audience criteria, campaign type, channel preferences, timing, and approval requirements.
+
+[0006] Campaign Configuration AI 120: Generates complete campaign specifications including audience segmentation query 121, message content 122 calibrated to constituent giving history and engagement score, channel selection 123, send schedule 124, and tracking configuration 125.
+
+[0007] Human-in-the-Loop Gate 130 (CRITICAL): All campaign specifications must receive explicit human approval 131 before any outbound action is initiated. Gate presents: estimated recipient count, message preview, projected cost, expected engagement metrics, and revenue attribution forecast. Human staff explicitly approve, modify, or reject. No bypass mechanism exists.
+
+[0008] Multi-Provider Communication Router 140: Primary channel SendGrid 141; failover Resend 142; failover AgentMail 143. Each transition logged in Cryptographic Audit Trail 144. CAN-SPAM and GDPR compliance modules 145 applied at each stage.
+
+[0009] AI Video Personalization Pipeline 150: Generates individualized video content 151 for each recipient incorporating: constituent name, giving history, personalized ask amount, and program-specific content. VEO AI video generation 152 produces 30-60 second personalized videos. Video delivery 153 via embedded links in email campaigns with view tracking 154.
+
+[0010] Campaign Analytics Engine 160: Real-time tracking of delivery rates 161, open rates 162, click rates 163, video view completion 164, response rates 165, and revenue attribution 166 (donations made within 30/60/90 days of campaign interaction).
+
+---
+
+CLAIMS
+
+Claim 1 (System — Independent): A multi-modal campaign orchestration system comprising: a voice command interface configured to receive natural language campaign instructions and extract audience criteria, channel preferences, message parameters, and scheduling requirements; a campaign configuration AI module configured to generate complete campaign specifications including audience segmentation queries, personalized message content calibrated to recipient engagement scores, channel routing, and projected performance metrics; a human-in-the-loop approval gate configured to present complete campaign specifications to human staff and require explicit authorization before any outbound communication is initiated, with no mechanism to bypass this requirement; a multi-provider communication router configured to deliver campaigns through at least three independent communication providers with automatic failover and cryptographic audit logging; an AI video personalization pipeline configured to generate individualized video content for each recipient incorporating constituent-specific data; and a campaign analytics engine providing real-time tracking of delivery, engagement, and revenue attribution.
+
+Claim 2: The system of claim 1, wherein the voice command interface processes commands in natural language without requiring structured query syntax, extracting audience criteria including demographic filters, giving history thresholds, engagement scores, and geographic parameters.
+
+Claim 3: The system of claim 1, wherein the human-in-the-loop gate presents estimated recipient count, per-message cost, projected revenue impact, and compliance verification before requiring human authorization.
+
+Claim 4: The system of claim 1, wherein the multi-provider router maintains a cryptographic audit trail recording each provider transition, delivery timestamp, recipient response, and authorizing staff member identity.
+
+Claim 5: The system of claim 1, wherein the AI video pipeline generates individualized video segments of 15-120 seconds incorporating the recipient's name, giving history summary, personalized gift request amount, and program-specific content selected based on recipient engagement profile.
+
+Claim 6: The system of claim 1, wherein the analytics engine performs revenue attribution by correlating campaign interaction events with donation transactions received within a configurable attribution window of 7-90 days.
+
+Claim 7 (Method — Independent): A computer-implemented method for multi-modal campaign orchestration comprising: receiving a natural language voice command specifying campaign objectives and target criteria; generating a complete campaign specification including audience segmentation, personalized messaging, channel routing, and projected metrics; presenting the specification to human staff for review and requiring explicit approval before execution; routing approved campaigns through a primary communication provider with automatic failover to secondary providers upon failure; generating individualized AI video content for each recipient; and tracking delivery, engagement, and revenue attribution in real time.
+
+Claim 8: The method of claim 7, wherein generating personalized messaging comprises: retrieving each recipient's giving history, engagement score, and predicted gift capacity; applying a language model to draft personalized message content; and calibrating the gift request amount to the recipient's predicted gift capacity.
+
+Claim 9 (CRM — Independent): A non-transitory computer-readable medium storing processor-executable instructions implementing the method of claim 7, wherein the system executes campaigns across constituent databases of at least 100,000 records with individual personalization for each recipient, multi-provider failover communication, and mandatory human authorization at all outbound action stages.
+
+---
+
+ABSTRACT
+
+A multi-modal campaign orchestration system accepts voice commands to configure, approve, and execute personalized outbound campaigns across email, SMS, and AI-generated video channels against constituent databases of 100,000+ records. A campaign configuration AI generates complete campaign specifications from natural language instructions. A mandatory human-in-the-loop approval gate intercepts all campaigns before execution with no bypass mechanism. Multi-provider communication failover ensures delivery with cryptographic audit logging. An AI video personalization pipeline generates individualized 15-120 second video content per recipient. Real-time analytics tracks delivery, engagement, and revenue attribution.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144
+FILING DEADLINE: April 27, 2026 — MANDATORY`
+
+// Map patent ID to spec text
+export const PATENT_SPECS: Record<string, string> = {
+  'PA-1': PA1_SPEC_SUMMARY,
+  'PA-2': PA2_SPEC_SUMMARY,
+  'PA-3': PA3_SPEC_SUMMARY,
+}

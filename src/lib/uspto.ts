@@ -397,3 +397,164 @@ export const PATENT_SPECS: Record<string, string> = {
   'PA-2': PA2_SPEC_SUMMARY,
   'PA-3': PA3_SPEC_SUMMARY,
 }
+
+// ── PA-5 Specification — Voice-First Agentic Database Infrastructure ────
+export const PA5_SPEC_SUMMARY = `TITLE: Voice-First Agentic Database Infrastructure: A Platform Architecture for Natural Language Database Interaction with Autonomous Agent Execution and Human-in-the-Loop Authorization
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+
+PRIMARY INVENTOR: Milton Overton, Kennesaw, Georgia 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, Kennesaw, Georgia 30144, United States Citizen
+
+ENTITY STATUS: Small Entity (50% Fee Reduction Applies)
+
+CROSS-REFERENCE: This application is related to co-pending applications PA-1, PA-2, PA-3, and PA-4 filed by the same inventors and assignee.
+
+FIELD OF THE INVENTION
+
+[0001] The present invention relates to a general-purpose software infrastructure platform that enables developers, enterprises, and independent software vendors to build voice-controlled database applications with autonomous AI agent execution on top of a shared architectural foundation. The platform provides: (1) a voice-to-database query pipeline as a reusable infrastructure component; (2) an autonomous agent execution framework with standardized interfaces; (3) a mandatory human-in-the-loop authorization layer as a platform primitive; (4) multi-provider communication infrastructure with failover; and (5) a developer SDK and API surface enabling third-party applications to integrate voice-first agentic database capabilities into any vertical domain without reimplementing the core architecture.
+
+BACKGROUND
+
+[0002] Modern enterprise software development requires significant infrastructure investment to implement voice interaction, natural language database querying, and autonomous agent execution. Each development team must independently solve: (a) converting voice input to semantically correct database queries; (b) routing query results to appropriate AI agents; (c) implementing authorization gates for AI-initiated actions; (d) managing multi-provider communication reliability; and (e) enforcing row-level database security at the voice interface layer. This duplication of infrastructure represents billions of dollars of redundant engineering effort across the software industry.
+
+[0003] No existing infrastructure platform provides a reusable, domain-agnostic foundation specifically designed for voice-first agentic database applications. Existing AI platforms (Amazon Bedrock, Azure AI, Google Vertex AI) provide model inference but not the specific pipeline architecture connecting voice input through database execution to agent action with mandatory human authorization. Existing database platforms (Supabase, Firebase, PlanetScale) provide storage but not the voice interface, agent framework, or authorization primitives. Existing agent frameworks (LangChain, AutoGen, CrewAI) provide orchestration but not the voice-to-database pipeline or communication infrastructure.
+
+[0004] The result is that each organization building voice-first agentic database applications must independently implement the same architectural components, creating significant engineering overhead and producing inconsistent implementations with varying security and reliability characteristics.
+
+SUMMARY OF THE INVENTION
+
+[0005] The present invention provides a Voice-First Agentic Database Infrastructure (VADI) platform comprising:
+
+(a) A Voice-to-Query Engine (VQE) as a reusable infrastructure service accepting speech input from any application, converting natural language to domain-specific database queries through a configurable semantic mapping layer, and returning structured query results through a standardized API;
+
+(b) An Agentic Execution Framework (AEF) providing a standardized interface for registering domain-specific AI agents, routing query results to agents based on configurable classification logic, and coordinating multi-agent workflows through a chain orchestrator;
+
+(c) A Human-Authorization Layer (HAL) as a platform primitive that intercepts all agent-initiated actions across any registered application, presents authorization requests through configurable interfaces, maintains immutable authorization audit logs, and enforces authorization requirements that cannot be overridden by application-layer code;
+
+(d) A Multi-Provider Communication Bus (MPCB) providing failover-enabled message delivery through multiple registered communication providers with webhook monitoring, compliance enforcement, and cryptographic delivery logging available to all platform applications through a single API;
+
+(e) A Developer SDK enabling third-party developers to register domain-specific semantic mappings, agent implementations, authorization templates, and communication handlers, extending the platform for any vertical application domain without modifying platform infrastructure; and
+
+(f) A Platform API surface providing authenticated access to all platform primitives through versioned REST and WebSocket interfaces.
+
+DETAILED DESCRIPTION
+
+SECTION I: VOICE-TO-QUERY ENGINE (VQE)
+
+[0006] The Voice-to-Query Engine 100 is a domain-agnostic infrastructure service accepting voice input through a standardized audio capture interface 110. The VQE comprises: a multi-provider speech-to-text module 111 supporting multiple transcription backends with automatic failover; a domain-aware NLP pipeline 120 using a large language model for intent classification and parameter extraction; a configurable semantic mapping layer 130 translating natural language entities to schema elements through developer-registered mappings; a query generation engine 140 producing optimized database queries from extracted parameters; and a disambiguation protocol 150 requesting clarification when intent confidence falls below a platform-configurable threshold.
+
+[0007] The semantic mapping layer 130 is extensible through the Developer SDK. Third-party developers register domain-specific mappings defining natural language entity patterns and their corresponding database schema elements for any domain (healthcare, legal, financial, educational, retail, sports, government, or other). The platform maintains registered mappings in a versioned configuration store and applies them during query generation without requiring platform code modification.
+
+[0008] The VQE exposes the following SDK interfaces:
+- VQE.registerDomain(config: DomainConfig) — registers a semantic mapping set for a specific application domain
+- VQE.processVoiceInput(audio: AudioBuffer, domainId: string) — accepts voice input and returns structured query intent
+- VQE.executeQuery(intent: QueryIntent, connection: DatabaseConnection) — generates and executes an optimized query
+- VQE.setConfidenceThreshold(threshold: float, domainId: string) — configures disambiguation trigger level
+
+SECTION II: AGENTIC EXECUTION FRAMEWORK (AEF)
+
+[0009] The Agentic Execution Framework 200 is a platform primitive providing standardized interfaces for agent registration, result routing, and multi-agent coordination. The AEF comprises: an Agent Registry 210 storing registered agent metadata, routing rules, and capability declarations; a Result Router 220 matching query results to registered agents based on configurable routing logic; a Chain Orchestrator 230 managing sequential and parallel agent workflow execution with dependency resolution; and an Agent Communication Bus 240 providing inter-agent messaging for multi-step workflows.
+
+[0010] Third-party developers register custom agents through the Developer SDK by declaring: the agent's domain (any vertical application area); the result patterns that should trigger the agent; the actions the agent is authorized to propose; and the data schema the agent consumes and produces. The platform routes query results to registered agents without requiring platform modification.
+
+[0011] The AEF exposes the following SDK interfaces:
+- AEF.registerAgent(agentSpec: AgentSpecification) — registers a domain-specific agent
+- AEF.defineRoutingRule(rule: RoutingRule) — configures result-to-agent routing logic
+- AEF.createWorkflow(steps: WorkflowStep[]) — defines a multi-agent execution chain
+- AEF.triggerAgent(agentId: string, payload: QueryResult) — manually triggers an agent
+
+SECTION III: HUMAN AUTHORIZATION LAYER (HAL) — PLATFORM PRIMITIVE
+
+[0012] The Human Authorization Layer 300 is an architectural primitive enforced at the platform layer that intercepts all actions proposed by registered agents regardless of application domain. The HAL cannot be disabled, bypassed, or overridden by application-layer code, developer SDK usage, or agent execution logic. The HAL is a mandatory component of the VADI platform that applies to every registered application.
+
+[0013] The HAL comprises: an Action Interceptor 310 receiving all proposed actions from any registered agent before execution; a Preview Generator 320 producing human-readable summaries of proposed actions including estimated scope, recipients, financial impact where applicable, and compliance verification; an Authorization Interface 330 presenting previews through application-configurable UI components and collecting explicit human authorization decisions; an Authorization Store 340 maintaining an immutable cryptographically-signed record of all authorization decisions with timestamp and authorizing user identity; and an Enforcement Engine 350 executing authorized actions and blocking unauthorized actions from proceeding at the platform layer.
+
+[0014] The HAL exposes the following SDK interfaces:
+- HAL.registerActionType(actionSpec: ActionTypeSpec) — declares a new category of interceptable action
+- HAL.configureInterface(config: InterfaceConfig) — customizes the authorization presentation UI
+- HAL.getAuditLog(appId: string, filters: AuditFilters) — retrieves authorization history
+- HAL.setAuthorizationPolicy(policy: AuthorizationPolicy) — defines authorization requirements per action type
+
+SECTION IV: MULTI-PROVIDER COMMUNICATION BUS (MPCB)
+
+[0015] The Multi-Provider Communication Bus 400 provides registered applications with access to multi-provider message delivery through a single platform API. The MPCB manages provider registration, failover sequencing, delivery monitoring, compliance enforcement, and cryptographic logging on behalf of all registered applications. Individual applications do not interact directly with communication providers; all delivery is mediated through the MPCB.
+
+[0016] The MPCB supports registration of any number of providers in configurable failover priority sequences. Upon delivery failure detected through webhook monitoring 410, the MPCB automatically advances to the next registered provider without application intervention. Compliance modules 420 enforce configurable regulatory frameworks (CAN-SPAM, GDPR, CCPA, HIPAA, or custom) as platform-level middleware applied to all deliveries regardless of application domain.
+
+SECTION V: DEVELOPER SDK AND API SURFACE
+
+[0017] The Developer SDK enables third-party developers to build domain-specific voice-first agentic database applications on the VADI platform without reimplementing the core infrastructure. The SDK provides: domain configuration interfaces for VQE semantic mapping registration; agent specification interfaces for AEF registration; HAL policy configuration interfaces; MPCB provider registration and compliance configuration; platform-level authentication and authorization integration; and diagnostic and monitoring interfaces.
+
+[0018] The Platform API exposes all VADI primitives through versioned REST and WebSocket interfaces, enabling integration with any programming language, framework, or deployment architecture. API versioning ensures backward compatibility as the platform evolves.
+
+SECTION VI: MULTI-TENANT PLATFORM ARCHITECTURE
+
+[0019] The VADI platform operates as a multi-tenant infrastructure supporting multiple registered applications with complete data isolation. Application data, agent configurations, semantic mappings, and authorization logs are isolated at the tenant level through row-level security enforced at the platform database layer. Platform infrastructure resources (VQE processing, AEF orchestration, HAL enforcement, MPCB delivery) are shared across tenants with configurable resource allocation policies.
+
+[0020] The platform deploys on a serverless edge-function architecture with geographic distribution for latency optimization. The serverless architecture enables automatic scaling to accommodate variable load across registered applications without manual infrastructure management.
+
+CLAIMS
+
+1. (Independent — Platform System) A voice-first agentic database infrastructure platform comprising:
+a Voice-to-Query Engine (VQE) configured to accept voice input from any registered application through a standardized audio capture interface, convert natural language voice commands to optimized database queries through a configurable semantic mapping layer that is extensible by third-party developers for any application domain, and return structured query results through a versioned API;
+an Agentic Execution Framework (AEF) configured to maintain a registry of domain-specific AI agents registered by third-party developers, route query results to registered agents based on configurable routing rules, and coordinate multi-agent workflow execution through a chain orchestrator supporting sequential and parallel execution modes;
+a Human Authorization Layer (HAL) enforced as an architectural primitive at the platform layer, configured to intercept all actions proposed by any registered agent regardless of application domain before execution, generate human-readable previews of proposed actions, collect explicit human authorization decisions through configurable interface components, maintain an immutable cryptographically-signed authorization audit log, and block execution of any action that has not received explicit human authorization, wherein said HAL cannot be disabled, bypassed, or overridden by application-layer code, agent execution logic, or developer SDK configuration;
+a Multi-Provider Communication Bus (MPCB) configured to provide all registered applications with access to multi-provider message delivery through a single platform API, manage failover sequencing across registered providers upon delivery failure detected through webhook monitoring, enforce configurable regulatory compliance frameworks as platform-level middleware, and maintain cryptographic delivery logs; and
+a Developer SDK providing third-party developers with interfaces to register domain-specific semantic mappings with the VQE, register domain-specific agents with the AEF, configure HAL authorization policies and interfaces, and register communication providers and compliance policies with the MPCB for any application domain without modifying platform infrastructure code.
+
+2. The platform of claim 1, wherein the VQE semantic mapping layer accepts developer-registered domain configurations defining natural language entity patterns and their corresponding database schema elements for any application domain, and applies registered configurations during query generation without platform code modification.
+
+3. The platform of claim 1, wherein the AEF agent registry stores agent specifications comprising: the application domain served by the agent; the query result patterns that trigger the agent; the action categories the agent is authorized to propose to the HAL; and the data schema consumed and produced by the agent.
+
+4. The platform of claim 1, wherein the HAL authorization audit log is cryptographically signed and immutable, and wherein each audit record includes: a unique action identifier; the complete specification of the proposed action; the identity of the agent that proposed the action; the identity and authentication credentials of the human who authorized or rejected the action; a cryptographic timestamp; and the cryptographic signature of all preceding audit records in the log.
+
+5. The platform of claim 1, wherein the MPCB enforces regulatory compliance frameworks as platform-level middleware applied to all message deliveries regardless of application domain, comprising: automatic suppression list management; configurable frequency cap enforcement; consent verification; and jurisdiction-specific data residency routing.
+
+6. The platform of claim 1, further comprising a Platform API surface exposing all platform primitives through versioned REST and WebSocket interfaces, enabling integration with any programming language, framework, or deployment architecture, wherein API versioning ensures backward compatibility across platform versions.
+
+7. The platform of claim 1, wherein the platform operates as a multi-tenant infrastructure supporting multiple registered applications with complete data isolation enforced through row-level security at the platform database layer, and wherein platform infrastructure resources are shared across tenants with configurable resource allocation policies.
+
+8. The platform of claim 1, wherein the VQE generates a disambiguation request to the human user when intent classification confidence falls below a platform-configurable threshold, and wherein the disambiguation threshold is configurable per registered application domain without platform code modification.
+
+9. (Independent — Method) A computer-implemented method for providing voice-first agentic database infrastructure to third-party applications comprising:
+accepting registration of domain-specific semantic mappings from third-party developers that define natural language entity patterns and corresponding database schema elements for any application domain;
+accepting registration of domain-specific AI agents from third-party developers that declare routing trigger conditions, authorized action categories, and consumed data schemas;
+accepting voice input from a registered application, converting the voice input to an optimized database query using the domain's registered semantic mapping, and executing the query against the application's database;
+routing query results to registered agents based on configured routing rules;
+intercepting all actions proposed by any registered agent before execution at a platform-enforced Human Authorization Layer that cannot be disabled by application-layer code;
+collecting explicit human authorization for each intercepted action through configurable interface components and maintaining an immutable authorization audit record; and
+executing authorized actions through a registered Multi-Provider Communication Bus with automatic failover, compliance enforcement, and cryptographic delivery logging.
+
+10. The method of claim 9, further comprising registering multiple communication providers in configurable failover priority sequences and automatically advancing to the next registered provider upon delivery failure detected through webhook monitoring, without requiring application-layer intervention.
+
+11. The method of claim 9, further comprising enforcing configurable regulatory compliance frameworks as platform-level middleware applied to all message deliveries through the MPCB, wherein compliance enforcement occurs regardless of the application domain of the registered application initiating the delivery.
+
+12. The method of claim 9, wherein registering domain-specific semantic mappings comprises versioning each registered mapping configuration and applying version-specific configurations during query generation, enabling multiple versions of a domain mapping to coexist on the platform simultaneously.
+
+13. (Independent — SDK) A non-transitory computer-readable medium storing a Developer SDK providing program instructions that, when executed, enable a third-party developer to:
+register a domain-specific semantic mapping with a Voice-to-Query Engine infrastructure service for any application domain by specifying natural language entity patterns and corresponding database schema element identifiers, without modifying Voice-to-Query Engine infrastructure code;
+register a domain-specific AI agent with an Agentic Execution Framework infrastructure service by specifying routing trigger conditions, authorized action categories, and consumed data schemas, without modifying Agentic Execution Framework infrastructure code;
+configure Human Authorization Layer policies defining authorization requirements per action category, wherein the Human Authorization Layer is enforced at the platform infrastructure layer and cannot be disabled by application-layer code;
+register communication providers with a Multi-Provider Communication Bus in configurable failover priority sequences; and
+access all registered platform primitives through a versioned API surface enabling integration with any programming language or framework.
+
+14. (Independent — Licensing) A computer-implemented system for licensing voice-first agentic database infrastructure capabilities to third-party software applications comprising:
+a platform infrastructure layer providing: voice-to-database query conversion with extensible semantic mapping; autonomous agent execution with registerable domain-specific agents; mandatory human authorization enforcement; and multi-provider communication delivery with failover;
+a Developer SDK exposing platform infrastructure primitives through standardized interfaces for third-party integration;
+a licensing management system tracking registered applications, usage metrics per application including query volume, agent execution counts, and communication delivery volume; and
+a billing engine computing license fees based on registered application usage metrics.
+
+ABSTRACT
+
+A Voice-First Agentic Database Infrastructure (VADI) platform provides general-purpose infrastructure enabling third-party developers to build voice-controlled database applications with autonomous AI agent execution for any application domain. The platform comprises four infrastructure primitives available to all registered applications through a Developer SDK: a Voice-to-Query Engine converting natural language voice commands to optimized database queries through developer-extensible semantic mappings; an Agentic Execution Framework providing standardized agent registration, result routing, and multi-agent orchestration; a Human Authorization Layer enforced as an architectural primitive that intercepts all agent-initiated actions before execution and cannot be disabled by application-layer code; and a Multi-Provider Communication Bus providing failover-enabled delivery with compliance enforcement. Third-party developers extend the platform for any vertical domain (healthcare, legal, financial, retail, government, sports, or other) by registering domain-specific semantic mappings and agents through the SDK without modifying platform infrastructure code. The platform operates as a multi-tenant infrastructure with complete data isolation, serverless edge-function deployment, and versioned API access.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems, Inc. (Delaware)
+PRIORITY: This application claims priority benefit of PA-1 filed March 28, 2026
+STRATEGIC NOTE: This patent covers the infrastructure platform. Others building
+voice-first agentic database applications for any domain may require a license.`
+
+// Update PATENT_SPECS map to include PA-5
+PATENT_SPECS['PA-5'] = PA5_SPEC_SUMMARY

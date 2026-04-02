@@ -207,59 +207,89 @@ async function downloadPDF(
 ) {
   if (!el) { alert('Drawing not rendered yet — click Render first'); return }
 
-  const { default: jsPDF }     = await import('jspdf')
+  const { default: jsPDF }       = await import('jspdf')
   const { default: html2canvas } = await import('html2canvas')
 
-  // USPTO 8.5x11" letter — 300 DPI
-  // Usable area: 1" left/top margin, 5/8" right, 3/8" bottom
+  // USPTO 8.5×11" — 1" margins top/left, 5/8" right, 3/8" bottom
   const pageW = 8.5, pageH = 11
   const marginLeft = 1, marginTop = 1
   const usableW = 6.875, usableH = 9.0
 
-  // Capture the live DOM element with html2canvas
-  // This works even with foreignObject/HTML labels since it renders via DOM, not SVG blob
+  // ── Temporarily remove scroll constraints so FULL diagram is captured ──
+  // The preview div has maxHeight: 420px and overflow: auto which truncates
+  // the diagram when html2canvas screenshots it. We expand it to full height,
+  // capture, then restore original styles.
+  const origMaxH   = el.style.maxHeight
+  const origOverflow = el.style.overflow
+  const origHeight = el.style.height
+
+  el.style.maxHeight  = 'none'
+  el.style.overflow   = 'visible'
+  el.style.height     = 'auto'
+
+  // Also expand the SVG itself to its natural size
+  const svgEl = el.querySelector('svg')
+  const origSvgH = svgEl ? svgEl.style.height : ''
+  if (svgEl) svgEl.style.height = 'auto'
+
+  // Short delay to let the browser relayout
+  await new Promise(r => setTimeout(r, 80))
+
+  // Measure the full expanded size
+  const fullH = el.scrollHeight || el.offsetHeight || 800
+  const fullW = el.scrollWidth  || el.offsetWidth  || 1200
+
   const canvas = await html2canvas(el, {
     backgroundColor: '#ffffff',
-    scale: 2,          // 2× for crisp output (will resample to 300 DPI in PDF)
+    scale: 2,
     useCORS: true,
     logging: false,
-    removeContainer: true,
+    width:  fullW,
+    height: fullH,
+    windowWidth:  fullW,
+    windowHeight: fullH,
   })
 
-  // Build USPTO-format PDF
+  // Restore original styles
+  el.style.maxHeight = origMaxH
+  el.style.overflow  = origOverflow
+  el.style.height    = origHeight
+  if (svgEl) svgEl.style.height = origSvgH
+
+  // ── Build USPTO PDF ────────────────────────────────────────────────────
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' })
 
-  // Sheet number centred at top (37 C.F.R. §1.84 requirement)
+  // Figure number centred at top — 37 C.F.R. §1.84
   pdf.setFont('helvetica', 'bold')
-  pdf.setFontSize(10)
-  pdf.text(figNum, pageW / 2, marginTop - 0.35, { align: 'center' })
+  pdf.setFontSize(11)
+  pdf.text(figNum, pageW / 2, marginTop - 0.3, { align: 'center' })
 
-  // Add captured image, scaled to fit usable area while preserving aspect ratio
-  const aspectRatio = canvas.width / canvas.height
+  // Scale image to fit usable area, preserving aspect ratio, centred
+  const ar = canvas.width / canvas.height
   let drawW = usableW
-  let drawH = drawW / aspectRatio
-  if (drawH > usableH) { drawH = usableH; drawW = drawH * aspectRatio }
-  const offsetX = marginLeft + (usableW - drawW) / 2
-  const offsetY = marginTop + (usableH - drawH) / 2
+  let drawH = drawW / ar
+  if (drawH > usableH) { drawH = usableH; drawW = drawH * ar }
+  const ox = marginLeft + (usableW - drawW) / 2
+  const oy = marginTop  + (usableH - drawH) / 2
 
-  const imgData = canvas.toDataURL('image/png', 1.0)
-  pdf.addImage(imgData, 'PNG', offsetX, offsetY, drawW, drawH)
+  pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', ox, oy, drawW, drawH)
 
   // Caption
   pdf.setFont('helvetica', 'normal')
   pdf.setFontSize(9)
+  pdf.setTextColor(40, 40, 40)
   pdf.text(`${figNum} — ${title}`, pageW / 2, marginTop + usableH + 0.22, { align: 'center' })
 
-  // Applicant footer
+  // Footer
   pdf.setFontSize(7)
-  pdf.setTextColor(120, 120, 120)
+  pdf.setTextColor(130, 130, 130)
   pdf.text(
     'Visionary AI Systems, Inc. (Delaware) | Milton & Lisa Overton, Inventors | Filed: March 28, 2026',
-    pageW / 2, pageH - 0.4, { align: 'center' }
+    pageW / 2, pageH - 0.35, { align: 'center' }
   )
 
-  const safeName = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 30)}`
-  pdf.save(`PA1-${safeName}.pdf`)
+  const safe = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0, 30)}`
+  pdf.save(`PA1-${safe}.pdf`)
 }
 
 function downloadSVG(svg: string, figNum: string) {

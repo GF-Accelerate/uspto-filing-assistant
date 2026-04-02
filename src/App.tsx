@@ -1,18 +1,24 @@
+import { useState } from 'react'
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom'
-import { usePortfolio } from '@/hooks/usePortfolio'
-import { useWizard }    from '@/hooks/useWizard'
-import { Dashboard }    from '@/pages/Dashboard'
-import { Wizard }       from '@/pages/Wizard'
-import { Deadlines }    from '@/pages/Deadlines'
-import { Guide }        from '@/pages/Guide'
-import { Drawings }     from '@/pages/Drawings'
-import { daysUntil }    from '@/lib/uspto'
+import { usePortfolio }  from '@/hooks/usePortfolio'
+import { useWizard }     from '@/hooks/useWizard'
+import { useAuth }       from '@/hooks/useAuth'
+import { Dashboard }     from '@/pages/Dashboard'
+import { Wizard }        from '@/pages/Wizard'
+import { Drawings }      from '@/pages/Drawings'
+import { Deadlines }     from '@/pages/Deadlines'
+import { Guide }         from '@/pages/Guide'
+import { AuthModal }     from '@/components/auth/AuthModal'
+import { UserMenu }      from '@/components/auth/UserMenu'
+import { daysUntil }     from '@/lib/uspto'
 
 export default function App() {
   const { portfolio, markFiled } = usePortfolio()
-  const wizardCtx = useWizard()
-  const navigate  = useNavigate()
-  const pa1Days   = daysUntil('2027-03-28')
+  const wizardCtx  = useWizard()
+  const auth       = useAuth()
+  const navigate   = useNavigate()
+  const pa1Days    = daysUntil('2027-03-28')
+  const [showAuth, setShowAuth] = useState(false)
 
   const handleOpen = (id: string) => {
     wizardCtx.open(id)
@@ -20,17 +26,17 @@ export default function App() {
   }
 
   const navLinks = [
-    { to: '/',         label: 'Portfolio'       },
-    { to: '/wizard',   label: 'Filing Wizard'   },
-    { to: '/drawings', label: '📐 Drawings'     },
-    { to: '/deadlines',label: 'Deadlines'       },
-    { to: '/guide',    label: 'USPTO Guide'     },
+    { to: '/',          label: 'Portfolio'      },
+    { to: '/wizard',    label: 'Filing Wizard'  },
+    { to: '/drawings',  label: '📐 Drawings'    },
+    { to: '/deadlines', label: 'Deadlines'      },
+    { to: '/guide',     label: 'USPTO Guide'    },
   ] as const
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-5 flex items-center gap-4 h-12">
+        <div className="max-w-5xl mx-auto px-5 flex items-center gap-3 h-12">
           <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-sm flex-shrink-0">⚖</div>
           <span className="font-medium text-sm text-slate-800 flex-1">USPTO Patent Filing Assistant</span>
           <nav className="flex gap-0.5">
@@ -48,7 +54,8 @@ export default function App() {
               </NavLink>
             ))}
           </nav>
-          <span className="text-xs bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-medium">
+          <UserMenu auth={auth} onShowLogin={() => setShowAuth(true)} />
+          <span className="text-xs bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full font-medium flex-shrink-0">
             PATENT PENDING
           </span>
         </div>
@@ -62,6 +69,11 @@ export default function App() {
             ⚠ PA-1 nonprovisional deadline: {pa1Days} days remaining
           </span>
         )}
+        {auth.isAuthenticated && (
+          <span className="ml-3 text-green-700 font-medium">
+            ✓ Signed in — portfolio synced to cloud
+          </span>
+        )}
       </div>
 
       <main className="max-w-5xl mx-auto px-5 py-5">
@@ -73,6 +85,8 @@ export default function App() {
           <Route path="/guide"     element={<Guide />} />
         </Routes>
       </main>
+
+      {showAuth && <AuthModal auth={auth} onClose={() => setShowAuth(false)} />}
     </div>
   )
 }

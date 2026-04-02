@@ -203,53 +203,105 @@ async function renderMermaidToSVG(mermaidCode: string): Promise<string> {
 async function downloadPDF(svg: string, figNum: string, title: string) {
   const { default: jsPDF } = await import('jspdf')
 
-  // Create 8.5x11" PDF
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' })
-
-  // USPTO margins: 1" top, 1" left, 5/8" right, 3/8" bottom
-  // Usable: 6.875" wide x 9.625" tall
+  // USPTO 8.5x11" letter — margins: 1" top/left, 5/8" right, 3/8" bottom
+  // Usable drawing area: 6.875" wide x 9.0" tall
+  const PX_PER_IN = 300  // 300 DPI for USPTO
+  const pageW = 8.5, pageH = 11
   const marginLeft = 1, marginTop = 1
   const usableW = 6.875, usableH = 9.0
 
-  // Figure number centered at top (USPTO requirement)
-  pdf.setFontSize(10)
-  pdf.setFont('helvetica', 'bold')
-  pdf.text(figNum, 8.5 / 2, marginTop - 0.3, { align: 'center' })
+  // ── Step 1: Fix SVG dimensions ─────────────────────────────────────────
+  // Mermaid outputs width="100%" which causes img.width=0 when loaded as blob.
+  // Parse the SVG, extract viewBox, and set explicit pixel dimensions.
+  const parser = new DOMParser()
+  const svgDoc = parser.parseFromString(svg, 'image/svg+xml')
+  const svgEl = svgDoc.documentElement
 
-  // Render SVG into canvas via img element
-  const blob = new Blob([svg], { type: 'image/svg+xml' })
+  // Get natural dimensions from viewBox or existing width/height
+  let natW = 0, natH = 0
+  const vb = svgEl.getAttribute('viewBox')
+  if (vb) {
+    const parts = vb.trim().split(/[\s,]+/).map(Number)
+    if (parts.length === 4) { natW = parts[2]; natH = parts[3] }
+  }
+  if (!natW) {
+    const w = parseFloat(svgEl.getAttribute('width') || '0')
+    const h = parseFloat(svgEl.getAttribute('height') || '0')
+    if (w > 10) { natW = w; natH = h }
+  }
+  // Fallback: render to DOM briefly to measure
+  if (!natW) {
+    const tmp = document.createElement('div')
+    tmp.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1200px;height:900px;visibility:hidden'
+    tmp.innerHTML = svg
+    document.body.appendChild(tmp)
+    const rect = tmp.querySelector('svg')?.getBoundingClientRect()
+    if (rect && rect.width > 10) { natW = rect.width; natH = rect.height }
+    document.body.removeChild(tmp)
+  }
+  // Last resort defaults
+  if (!natW) { natW = 1200; natH = 900 }
+
+  // Set explicit px dimensions on the SVG so Image() can load it
+  svgEl.setAttribute('width', String(Math.round(natW)))
+  svgEl.setAttribute('height', String(Math.round(natH)))
+  if (!vb) svgEl.setAttribute('viewBox', `0 0 ${natW} ${natH}`)
+
+  const fixedSvg = new XMLSerializer().serializeToString(svgDoc)
+
+  // ── Step 2: Render SVG → Canvas at 300 DPI ────────────────────────────
+  const canvasW = Math.round(usableW * PX_PER_IN)
+  const canvasH = Math.round(usableH * PX_PER_IN)
+
+  const blob = new Blob([fixedSvg], { type: 'image/svg+xml;charset=utf-8' })
   const url = URL.createObjectURL(blob)
 
-  await new Promise<void>((resolve, reject) => {
+  const imgData: string = await new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => {
       const canvas = document.createElement('canvas')
-      canvas.width = Math.round(usableW * 300)   // 300 DPI
-      canvas.height = Math.round(usableH * 300)
+      canvas.width = canvasW
+      canvas.height = canvasH
       const ctx = canvas.getContext('2d')!
       ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      // Scale to fit
-      const scale = Math.min(canvas.width / img.width, canvas.height / img.height)
-      const drawW = img.width * scale
-      const drawH = img.height * scale
-      const dx = (canvas.width - drawW) / 2
-      const dy = (canvas.height - drawH) / 2
-      ctx.drawImage(img, dx, dy, drawW, drawH)
-      const imgData = canvas.toDataURL('image/png', 1.0)
-      pdf.addImage(imgData, 'PNG', marginLeft, marginTop, usableW, usableH)
-      // Caption at bottom
-      pdf.setFontSize(9)
-      pdf.setFont('helvetica', 'normal')
-      pdf.text(`${figNum} — ${title}`, 8.5 / 2, marginTop + usableH + 0.2, { align: 'center' })
-      resolve()
+      ctx.fillRect(0, 0, canvasW, canvasH)
+      // Scale SVG to fit usable area, centred
+      const scale = Math.min(canvasW / img.naturalWidth, canvasH / img.naturalHeight)
+      const drawW = img.naturalWidth * scale
+      const drawH = img.naturalHeight * scale
+      const dx = Math.round((canvasW - drawW) / 2)
+      const dy = Math.round((canvasH - drawH) / 2)
+      ctx.drawImage(img, dx, dy, Math.round(drawW), Math.round(drawH))
+      resolve(canvas.toDataURL('image/png', 1.0))
     }
-    img.onerror = reject
+    img.onerror = (e) => reject(new Error('SVG image load failed: ' + String(e)))
     img.src = url
   })
-
   URL.revokeObjectURL(url)
-  pdf.save(`PA1-${figNum.replace('. ', '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.pdf`)
+
+  // ── Step 3: Build USPTO-format PDF ────────────────────────────────────
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' })
+
+  // Sheet number centred at top (37 C.F.R. §1.84 requirement)
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(10)
+  pdf.text(figNum, pageW / 2, marginTop - 0.35, { align: 'center' })
+
+  // Drawing image in usable area
+  pdf.addImage(imgData, 'PNG', marginLeft, marginTop, usableW, usableH)
+
+  // Caption at bottom
+  pdf.setFont('helvetica', 'normal')
+  pdf.setFontSize(9)
+  pdf.text(`${figNum} — ${title}`, pageW / 2, marginTop + usableH + 0.22, { align: 'center' })
+
+  // Footer: applicant info (optional — USPTO doesn't require but helps with filing)
+  pdf.setFontSize(7)
+  pdf.setTextColor(120, 120, 120)
+  pdf.text('Visionary AI Systems, Inc. (Delaware) | Milton & Lisa Overton, Inventors | Filed: March 28, 2026', pageW / 2, pageH - 0.4, { align: 'center' })
+
+  const safeName = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 30)}`
+  pdf.save(`PA1-${safeName}.pdf`)
 }
 
 function downloadSVG(svg: string, figNum: string) {

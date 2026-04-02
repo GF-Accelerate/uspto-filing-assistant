@@ -11,6 +11,7 @@ import { Guide }         from '@/pages/Guide'
 import { Downloads }      from '@/pages/Downloads'
 import { Legal }          from '@/pages/Legal'
 import { Trademark }      from '@/pages/Trademark'
+import { PriorArt }       from '@/pages/PriorArt'
 import { AuthModal }     from '@/components/auth/AuthModal'
 import { UserMenu }      from '@/components/auth/UserMenu'
 import { daysUntil }     from '@/lib/uspto'
@@ -36,6 +37,7 @@ export default function App() {
     { to: '/downloads', label: '📥 Downloads'   },
     { to: '/legal',     label: '📄 Legal Docs'  },
     { to: '/trademark', label: '™ Trademarks'   },
+    { to: '/prior-art',  label: '🔬 Prior Art'    },
     { to: '/guide',     label: 'USPTO Guide'    },
   ] as const
 
@@ -91,6 +93,7 @@ export default function App() {
           <Route path="/downloads" element={<Downloads />} />
           <Route path="/legal"     element={<Legal />} />
           <Route path="/trademark" element={<Trademark />} />
+          <Route path="/prior-art"  element={<PriorArt />} />
           <Route path="/guide"     element={<Guide />} />
         </Routes>
       </main>

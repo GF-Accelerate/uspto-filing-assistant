@@ -21,7 +21,7 @@ const ASSIGNMENT_TEXT = `PATENT AND INVENTION ASSIGNMENT AGREEMENT
 This Agreement is entered into as of _____________, 2026.
 
 ASSIGNORS: Milton Overton and Lisa Overton (collectively "Inventors")
-ASSIGNEE: Visionary AI Systems Inc, a Georgia Corporation ("Company")
+ASSIGNEE: Visionary AI Systems Inc, a Delaware Corporation ("Company")
 
 The Inventors hereby assign to the Company all right, title, and interest in:
 

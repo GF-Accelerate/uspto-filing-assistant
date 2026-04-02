@@ -82,7 +82,7 @@ export const CHECKLIST_ITEMS = [
   { id:'c1',  label:'All inventor legal names listed (human persons only)',              section:'Inventors' },
   { id:'c2',  label:'All inventor mailing addresses and citizenship included',           section:'Inventors' },
   { id:'c3',  label:'Title is technically accurate and descriptive',                     section:'Application' },
-  { id:'c4',  label:'Assignee is Visionary AI Systems Inc (Georgia Corporation)',        section:'Application' },
+  { id:'c4',  label:'Assignee is Visionary AI Systems Inc (Delaware Corporation)',        section:'Application' },
   { id:'c5',  label:'Small Entity status claimed (50% fee reduction)',                   section:'Application' },
   { id:'c6',  label:'Specification complies with 35 U.S.C. §112(a) enablement',         section:'Documents' },
   { id:'c7',  label:'Drawings or FIG. diagrams included',                               section:'Documents' },
@@ -114,7 +114,7 @@ export function isInvalidInventor(name: string): boolean {
 // Patent PA-1 specification text — use this to pre-fill the wizard
 export const PA1_SPEC_SUMMARY = `TITLE: System and Method for Voice-Controlled Database Query Processing with Autonomous Agent Execution
 
-APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Georgia Corporation)
+APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Delaware Corporation)
 
 PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
 CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen
@@ -222,7 +222,7 @@ ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144`
 // ── PA-2 Specification — Athletic Department Management Platform ──────────
 export const PA2_SPEC_SUMMARY = `TITLE: System and Method for AI-Powered Athletic Department Management with Voice-First Interface
 
-APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Georgia Corporation)
+APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Delaware Corporation)
 
 PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
 CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen
@@ -308,7 +308,7 @@ FILING DEADLINE: April 27, 2026 — MANDATORY`
 // ── PA-3 Specification — Multi-Modal Campaign Orchestration via Voice ────
 export const PA3_SPEC_SUMMARY = `TITLE: System and Method for Multi-Modal AI Campaign Orchestration via Voice Command
 
-APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Georgia Corporation)
+APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Delaware Corporation)
 
 PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
 CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen

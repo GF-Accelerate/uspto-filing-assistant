@@ -200,86 +200,33 @@ async function renderMermaidToSVG(mermaidCode: string): Promise<string> {
     .replace(/fill="black"/g, 'fill="#1e3a5f"')
 }
 
-async function downloadPDF(svg: string, figNum: string, title: string) {
-  const { default: jsPDF } = await import('jspdf')
+async function downloadPDF(
+  el: HTMLDivElement | null,
+  figNum: string,
+  title: string
+) {
+  if (!el) { alert('Drawing not rendered yet — click Render first'); return }
 
-  // USPTO 8.5x11" letter — margins: 1" top/left, 5/8" right, 3/8" bottom
-  // Usable drawing area: 6.875" wide x 9.0" tall
-  const PX_PER_IN = 300  // 300 DPI for USPTO
+  const { default: jsPDF }     = await import('jspdf')
+  const { default: html2canvas } = await import('html2canvas')
+
+  // USPTO 8.5x11" letter — 300 DPI
+  // Usable area: 1" left/top margin, 5/8" right, 3/8" bottom
   const pageW = 8.5, pageH = 11
   const marginLeft = 1, marginTop = 1
   const usableW = 6.875, usableH = 9.0
 
-  // ── Step 1: Fix SVG dimensions ─────────────────────────────────────────
-  // Mermaid outputs width="100%" which causes img.width=0 when loaded as blob.
-  // Parse the SVG, extract viewBox, and set explicit pixel dimensions.
-  const parser = new DOMParser()
-  const svgDoc = parser.parseFromString(svg, 'image/svg+xml')
-  const svgEl = svgDoc.documentElement
-
-  // Get natural dimensions from viewBox or existing width/height
-  let natW = 0, natH = 0
-  const vb = svgEl.getAttribute('viewBox')
-  if (vb) {
-    const parts = vb.trim().split(/[\s,]+/).map(Number)
-    if (parts.length === 4) { natW = parts[2]; natH = parts[3] }
-  }
-  if (!natW) {
-    const w = parseFloat(svgEl.getAttribute('width') || '0')
-    const h = parseFloat(svgEl.getAttribute('height') || '0')
-    if (w > 10) { natW = w; natH = h }
-  }
-  // Fallback: render to DOM briefly to measure
-  if (!natW) {
-    const tmp = document.createElement('div')
-    tmp.style.cssText = 'position:fixed;left:-9999px;top:-9999px;width:1200px;height:900px;visibility:hidden'
-    tmp.innerHTML = svg
-    document.body.appendChild(tmp)
-    const rect = tmp.querySelector('svg')?.getBoundingClientRect()
-    if (rect && rect.width > 10) { natW = rect.width; natH = rect.height }
-    document.body.removeChild(tmp)
-  }
-  // Last resort defaults
-  if (!natW) { natW = 1200; natH = 900 }
-
-  // Set explicit px dimensions on the SVG so Image() can load it
-  svgEl.setAttribute('width', String(Math.round(natW)))
-  svgEl.setAttribute('height', String(Math.round(natH)))
-  if (!vb) svgEl.setAttribute('viewBox', `0 0 ${natW} ${natH}`)
-
-  const fixedSvg = new XMLSerializer().serializeToString(svgDoc)
-
-  // ── Step 2: Render SVG → Canvas at 300 DPI ────────────────────────────
-  const canvasW = Math.round(usableW * PX_PER_IN)
-  const canvasH = Math.round(usableH * PX_PER_IN)
-
-  const blob = new Blob([fixedSvg], { type: 'image/svg+xml;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-
-  const imgData: string = await new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = canvasW
-      canvas.height = canvasH
-      const ctx = canvas.getContext('2d')!
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, canvasW, canvasH)
-      // Scale SVG to fit usable area, centred
-      const scale = Math.min(canvasW / img.naturalWidth, canvasH / img.naturalHeight)
-      const drawW = img.naturalWidth * scale
-      const drawH = img.naturalHeight * scale
-      const dx = Math.round((canvasW - drawW) / 2)
-      const dy = Math.round((canvasH - drawH) / 2)
-      ctx.drawImage(img, dx, dy, Math.round(drawW), Math.round(drawH))
-      resolve(canvas.toDataURL('image/png', 1.0))
-    }
-    img.onerror = (e) => reject(new Error('SVG image load failed: ' + String(e)))
-    img.src = url
+  // Capture the live DOM element with html2canvas
+  // This works even with foreignObject/HTML labels since it renders via DOM, not SVG blob
+  const canvas = await html2canvas(el, {
+    backgroundColor: '#ffffff',
+    scale: 2,          // 2× for crisp output (will resample to 300 DPI in PDF)
+    useCORS: true,
+    logging: false,
+    removeContainer: true,
   })
-  URL.revokeObjectURL(url)
 
-  // ── Step 3: Build USPTO-format PDF ────────────────────────────────────
+  // Build USPTO-format PDF
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' })
 
   // Sheet number centred at top (37 C.F.R. §1.84 requirement)
@@ -287,18 +234,29 @@ async function downloadPDF(svg: string, figNum: string, title: string) {
   pdf.setFontSize(10)
   pdf.text(figNum, pageW / 2, marginTop - 0.35, { align: 'center' })
 
-  // Drawing image in usable area
-  pdf.addImage(imgData, 'PNG', marginLeft, marginTop, usableW, usableH)
+  // Add captured image, scaled to fit usable area while preserving aspect ratio
+  const aspectRatio = canvas.width / canvas.height
+  let drawW = usableW
+  let drawH = drawW / aspectRatio
+  if (drawH > usableH) { drawH = usableH; drawW = drawH * aspectRatio }
+  const offsetX = marginLeft + (usableW - drawW) / 2
+  const offsetY = marginTop + (usableH - drawH) / 2
 
-  // Caption at bottom
+  const imgData = canvas.toDataURL('image/png', 1.0)
+  pdf.addImage(imgData, 'PNG', offsetX, offsetY, drawW, drawH)
+
+  // Caption
   pdf.setFont('helvetica', 'normal')
   pdf.setFontSize(9)
   pdf.text(`${figNum} — ${title}`, pageW / 2, marginTop + usableH + 0.22, { align: 'center' })
 
-  // Footer: applicant info (optional — USPTO doesn't require but helps with filing)
+  // Applicant footer
   pdf.setFontSize(7)
   pdf.setTextColor(120, 120, 120)
-  pdf.text('Visionary AI Systems, Inc. (Delaware) | Milton & Lisa Overton, Inventors | Filed: March 28, 2026', pageW / 2, pageH - 0.4, { align: 'center' })
+  pdf.text(
+    'Visionary AI Systems, Inc. (Delaware) | Milton & Lisa Overton, Inventors | Filed: March 28, 2026',
+    pageW / 2, pageH - 0.4, { align: 'center' }
+  )
 
   const safeName = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().substring(0, 30)}`
   pdf.save(`PA1-${safeName}.pdf`)
@@ -412,7 +370,7 @@ export function Drawings() {
                 {drawing.status === 'done' && (
                   <>
                     <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum)}>SVG</Button>
-                    <Button size="sm" variant="primary" onClick={() => downloadPDF(drawing.svg, drawing.figNum, drawing.title)}>PDF ↓</Button>
+                    <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title)}>PDF ↓</Button>
                   </>
                 )}
                 {drawing.status !== 'done' && drawing.status !== 'generating' && (
@@ -449,7 +407,7 @@ export function Drawings() {
                   <span className="text-xs text-slate-400 font-mono">{drawing.figNum} — {drawing.title}</span>
                   <div className="flex gap-2">
                     <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum)}>⬇ SVG</Button>
-                    <Button size="sm" variant="primary" onClick={() => downloadPDF(drawing.svg, drawing.figNum, drawing.title)}>⬇ PDF (300 DPI)</Button>
+                    <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title)}>⬇ PDF (300 DPI)</Button>
                   </div>
                 </div>
               </div>

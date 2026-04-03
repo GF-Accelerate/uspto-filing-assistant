@@ -12,8 +12,9 @@ import { Downloads }      from '@/pages/Downloads'
 import { Legal }          from '@/pages/Legal'
 import { Trademark }      from '@/pages/Trademark'
 import { PriorArt }       from '@/pages/PriorArt'
-import { AuthModal }     from '@/components/auth/AuthModal'
-import { UserMenu }      from '@/components/auth/UserMenu'
+import { AuthModal }      from '@/components/auth/AuthModal'
+import { UserMenu }       from '@/components/auth/UserMenu'
+import { VoiceAssistant } from '@/components/voice/VoiceAssistant'
 import { daysUntil }     from '@/lib/uspto'
 
 export default function App() {
@@ -146,6 +147,9 @@ export default function App() {
       </main>
 
       {showAuth && <AuthModal auth={auth} onClose={() => setShowAuth(false)} />}
+
+      {/* Voice AI Assistant — floating panel, always available */}
+      <VoiceAssistant />
     </div>
   )
 }

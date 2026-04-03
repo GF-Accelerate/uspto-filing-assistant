@@ -1,0 +1,324 @@
+// VoiceAssistant — floating voice AI panel
+// Pattern copied from CSOS voice interface — no CSOS code modified
+// Agents: deadline | document | filing | portfolio | claims | general
+
+import { useState, useRef, useEffect } from 'react'
+import { useVoiceAssistant, type AgentRole } from '@/hooks/useVoiceAssistant'
+
+const AGENT_LABELS: Record<AgentRole, { label: string; color: string; bg: string }> = {
+  deadline:  { label: '⏰ Deadline', color: 'text-red-700',    bg: 'bg-red-50'    },
+  document:  { label: '📄 Document', color: 'text-blue-700',   bg: 'bg-blue-50'   },
+  filing:    { label: '📋 Filing',   color: 'text-indigo-700', bg: 'bg-indigo-50' },
+  portfolio: { label: '🗂 Portfolio', color: 'text-violet-700', bg: 'bg-violet-50' },
+  claims:    { label: '⚖️ Claims',   color: 'text-amber-700',  bg: 'bg-amber-50'  },
+  general:   { label: '🏛 USPTO',    color: 'text-slate-700',  bg: 'bg-slate-50'  },
+}
+
+export function VoiceAssistant() {
+  const [open, setOpen] = useState(false)
+  const [input, setInput] = useState('')
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const {
+    messages, isListening, isThinking, transcript,
+    currentAgent, sendMessage, startListening, stopListening, stopSpeaking,
+  } = useVoiceAssistant()
+
+  // Auto-scroll to bottom on new messages
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, isThinking])
+
+  const handleSend = () => {
+    if (!input.trim()) return
+    sendMessage(input)
+    setInput('')
+  }
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
+  const agentMeta = AGENT_LABELS[currentAgent]
+
+  return (
+    <>
+      {/* ── Floating trigger button ──────────────────────────────── */}
+      <button
+        onClick={() => { setOpen(!open); stopSpeaking() }}
+        title="Patent AI Assistant"
+        style={{
+          position: 'fixed',
+          bottom: 20,
+          right: 20,
+          zIndex: 200,
+          width: 52,
+          height: 52,
+          borderRadius: '50%',
+          background: isListening
+            ? 'linear-gradient(135deg, #dc2626, #b91c1c)'
+            : 'linear-gradient(135deg, #1e3a5f, #2563eb)',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 22,
+          boxShadow: isListening
+            ? '0 0 0 4px rgba(220,38,38,0.3), 0 4px 16px rgba(0,0,0,0.25)'
+            : '0 4px 16px rgba(0,0,0,0.2)',
+          transition: 'all 0.2s',
+        }}
+      >
+        {isListening ? '🔴' : open ? '✕' : '🎙️'}
+      </button>
+
+      {/* ── Assistant panel ──────────────────────────────────────── */}
+      {open && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 82,
+            right: 16,
+            width: 380,
+            maxWidth: 'calc(100vw - 32px)',
+            height: 520,
+            zIndex: 199,
+            display: 'flex',
+            flexDirection: 'column',
+            background: '#fff',
+            borderRadius: 16,
+            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+            border: '1px solid rgba(0,0,0,0.08)',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header */}
+          <div style={{
+            background: 'linear-gradient(135deg, #1e3a5f, #2563eb)',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            flexShrink: 0,
+          }}>
+            <span style={{ fontSize: 20 }}>⚖️</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>Patent Filing Assistant</div>
+              <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>
+                Visionary AI Systems, Inc. — 5 patents
+              </div>
+            </div>
+            {/* Active agent badge */}
+            <span style={{
+              background: 'rgba(255,255,255,0.15)',
+              color: '#fff',
+              fontSize: 10,
+              padding: '2px 8px',
+              borderRadius: 99,
+              fontWeight: 500,
+            }}>
+              {agentMeta.label}
+            </span>
+          </div>
+
+          {/* Quick action pills */}
+          <div style={{
+            display: 'flex',
+            gap: 6,
+            padding: '8px 12px',
+            overflowX: 'auto',
+            borderBottom: '1px solid #f1f5f9',
+            flexShrink: 0,
+          }}>
+            {[
+              { label: '⏰ Deadlines', q: 'What are my most urgent patent deadlines?' },
+              { label: '📋 Next step', q: 'What is my next step to file PA-1 tonight?' },
+              { label: '📄 Documents', q: 'Which documents do I need to upload to Patent Center?' },
+              { label: '⚖️ PA-5 moat', q: 'How does PA-5 create a licensing moat?' },
+            ].map(({ label, q }) => (
+              <button
+                key={label}
+                onClick={() => sendMessage(q)}
+                style={{
+                  flexShrink: 0,
+                  background: '#f1f5f9',
+                  border: 'none',
+                  borderRadius: 99,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: '#475569',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Messages */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '12px 14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
+          }}>
+            {messages.map(msg => (
+              <div key={msg.id} style={{
+                display: 'flex',
+                flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+                gap: 8,
+                alignItems: 'flex-end',
+              }}>
+                {msg.role === 'assistant' && (
+                  <div style={{
+                    width: 28, height: 28, borderRadius: '50%',
+                    background: '#1e3a5f', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', fontSize: 13, flexShrink: 0,
+                  }}>⚖️</div>
+                )}
+                <div style={{
+                  maxWidth: '80%',
+                  background: msg.role === 'user' ? '#2563eb' : '#f8fafc',
+                  color: msg.role === 'user' ? '#fff' : '#1e293b',
+                  borderRadius: msg.role === 'user' ? '14px 14px 4px 14px' : '4px 14px 14px 14px',
+                  padding: '8px 12px',
+                  fontSize: 13,
+                  lineHeight: 1.5,
+                  border: msg.role === 'assistant' ? '1px solid #e2e8f0' : 'none',
+                }}>
+                  {msg.role === 'assistant' && msg.agent && msg.agent !== 'general' && (
+                    <div style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      marginBottom: 4,
+                      color: AGENT_LABELS[msg.agent].color,
+                    }}>
+                      {AGENT_LABELS[msg.agent].label}
+                    </div>
+                  )}
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+
+            {/* Thinking indicator */}
+            {isThinking && (
+              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  background: '#1e3a5f', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', fontSize: 13,
+                }}>⚖️</div>
+                <div style={{
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '4px 14px 14px 14px',
+                  padding: '10px 14px',
+                  display: 'flex',
+                  gap: 4,
+                  alignItems: 'center',
+                }}>
+                  {[0,1,2].map(i => (
+                    <span key={i} style={{
+                      width: 6, height: 6, borderRadius: '50%',
+                      background: '#94a3b8',
+                      animation: 'pulse 1.2s ease-in-out infinite',
+                      animationDelay: `${i * 0.2}s`,
+                      display: 'inline-block',
+                    }} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Interim transcript */}
+            {transcript && (
+              <div style={{
+                fontSize: 12, color: '#94a3b8', fontStyle: 'italic',
+                padding: '0 4px',
+              }}>
+                🎙️ {transcript}
+              </div>
+            )}
+
+            <div ref={bottomRef} />
+          </div>
+
+          {/* Input bar */}
+          <div style={{
+            borderTop: '1px solid #f1f5f9',
+            padding: '10px 12px',
+            display: 'flex',
+            gap: 8,
+            alignItems: 'center',
+            flexShrink: 0,
+            background: '#fff',
+          }}>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Ask about your patents..."
+              style={{
+                flex: 1,
+                border: '1px solid #e2e8f0',
+                borderRadius: 99,
+                padding: '7px 14px',
+                fontSize: 13,
+                outline: 'none',
+                background: '#f8fafc',
+                color: '#1e293b',
+              }}
+            />
+
+            {/* Send */}
+            <button
+              onClick={handleSend}
+              disabled={!input.trim() || isThinking}
+              style={{
+                width: 34, height: 34, borderRadius: '50%',
+                background: input.trim() && !isThinking ? '#2563eb' : '#e2e8f0',
+                border: 'none', cursor: input.trim() && !isThinking ? 'pointer' : 'default',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 14, color: '#fff', flexShrink: 0, transition: 'all 0.15s',
+              }}
+            >
+              ➤
+            </button>
+
+            {/* Voice */}
+            <button
+              onClick={isListening ? stopListening : startListening}
+              disabled={isThinking}
+              title={isListening ? 'Stop listening' : 'Speak your question'}
+              style={{
+                width: 34, height: 34, borderRadius: '50%',
+                background: isListening ? '#dc2626' : '#1e3a5f',
+                border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 14, flexShrink: 0, transition: 'all 0.15s',
+                boxShadow: isListening ? '0 0 0 3px rgba(220,38,38,0.3)' : 'none',
+              }}
+            >
+              {isListening ? '⏹' : '🎙️'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes pulse {
+          0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
+          30% { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </>
+  )
+}

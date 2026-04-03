@@ -212,17 +212,23 @@ export function useVoiceAssistant() {
   }, [messages, speak])
 
   const startListening = useCallback(() => {
-    const SpeechRecognition = (window as unknown as Record<string, unknown>)["SpeechRecognition"] as (new () => SpeechRecognitionInstance) | undefined || (window as unknown as Record<string, unknown>)["webkitSpeechRecognition"] as (new () => SpeechRecognitionInstance) | undefined
-    if (!SpeechRecognition) {
+    // Web Speech API — same pattern as CSOS voice pipeline
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const win = window as any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const RecognitionClass: (new () => any) | undefined = win.SpeechRecognition ?? win.webkitSpeechRecognition
+    if (!RecognitionClass) {
       alert('Voice input requires Chrome or Edge. Please type your question.')
       return
     }
 
     if (recognitionRef.current) {
-      recognitionRef.current.abort()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (recognitionRef.current as any).abort()
     }
 
-    const rec = new SpeechRecognition()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rec: any = new RecognitionClass()
     rec.continuous = false
     rec.interimResults = true
     rec.lang = 'en-US'

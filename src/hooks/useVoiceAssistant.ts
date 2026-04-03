@@ -145,6 +145,7 @@ export function useVoiceAssistant() {
   const [isThinking, setIsThinking] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [currentAgent, setCurrentAgent] = useState<AgentRole>('general')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null)
   const synthRef = useRef<SpeechSynthesis | null>(null)
 
@@ -196,7 +197,7 @@ export function useVoiceAssistant() {
       }
       setMessages(prev => [...prev, assistantMsg])
       speak(response)
-    } catch (err) {
+    } catch {
       const errMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -211,7 +212,7 @@ export function useVoiceAssistant() {
   }, [messages, speak])
 
   const startListening = useCallback(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    const SpeechRecognition = (window as unknown as Record<string, unknown>)["SpeechRecognition"] as (new () => SpeechRecognitionInstance) | undefined || (window as unknown as Record<string, unknown>)["webkitSpeechRecognition"] as (new () => SpeechRecognitionInstance) | undefined
     if (!SpeechRecognition) {
       alert('Voice input requires Chrome or Edge. Please type your question.')
       return
@@ -229,8 +230,11 @@ export function useVoiceAssistant() {
     rec.onstart = () => setIsListening(true)
     rec.onend = () => setIsListening(false)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rec.onresult = (e: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const results = Array.from(e.results as any[])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const text = results.map((r: any) => r[0].transcript).join('')
       setTranscript(text)
       if (e.results[e.results.length - 1].isFinal) {

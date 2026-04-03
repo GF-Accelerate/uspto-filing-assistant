@@ -112,112 +112,168 @@ export function isInvalidInventor(name: string): boolean {
 }
 
 // Patent PA-1 specification text — use this to pre-fill the wizard
+// UPDATED: April 2026 — trade-secret-safe language, Delaware correct, strengthened claims
 export const PA1_SPEC_SUMMARY = `TITLE: System and Method for Voice-Controlled Database Query Processing with Autonomous Agent Execution
 
-APPLICANT / ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144 (Delaware Corporation)
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+DE REGISTERED AGENT: United States Corporation Agents, Inc., Newark, DE 19713
+EIN: 41-3757112
 
-PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
-CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen
+PRIMARY INVENTOR: Milton Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
 
-ENTITY STATUS: Small Entity (50% fee reduction)
+ENTITY STATUS: Small Entity (50% fee reduction — $320 filing fee)
 
-FILING DATE: March 28, 2026
-
----
-
-TECHNICAL FIELD
-
-[0001] The present invention relates to computer-implemented artificial intelligence systems for enterprise database interaction through voice commands. More specifically, to a voice-controlled system that converts spoken natural language into optimized SQL queries, executes those queries against large enterprise databases containing 170,000+ constituent records, and delegates intelligent follow-up actions to a framework of autonomous specialized AI agents — all with sub-200 millisecond voice-to-response latency and enterprise-grade row-level security.
+NOTE: Provisional application — filing date to be entered after USPTO submission at patentcenter.uspto.gov
 
 ---
 
-BACKGROUND
+I. TECHNICAL FIELD
 
-[0002] Enterprise database management systems require complex GUI navigation or SQL expertise, blocking non-technical executives and mobile professionals from real-time data access. Current voice-AI products (Salesforce Einstein Voice, Microsoft Cortana for Business, Amazon Alexa for Business) fail to provide: complex multi-table SQL query generation from natural language; intelligent query optimization; autonomous agent execution triggered by query results; context-aware multi-turn conversation state; row-level security enforced at the voice interface layer; or multi-provider communication failover with human-in-the-loop gates.
-
----
-
-SUMMARY OF THE INVENTION
-
-[0003] The present invention provides a computer-implemented voice-controlled database interaction system comprising:
-
-- Advanced NLP Engine: OpenAI GPT-4o-mini achieving 94%+ intent recognition across 200+ command patterns
-- SQL Query Generation: Semantic table mapping, join-path optimization, index utilization, sub-200ms latency
-- Nine-Agent Autonomous Framework: Donor Cultivation, Proposal Generation, Campaign Manager, Compliance Monitor, Revenue Analytics, Fan Engagement, Recruiting Intelligence, Facility Operations, Executive Briefing
-- Multi-Provider Failover: SendGrid → Resend → AgentMail with webhook tracking + mandatory human approval gates
-- Configurable RFE Lead Scoring: Recency/Frequency/Engagement with SEC/FEC/OpenCorporates cross-reference
-- VEO Video Pipeline: Voice-initiated AI-generated personalized video campaigns
-- Multi-Modal Response: Voice synthesis, WebSocket dashboard streaming, interactive confirmation flows
+[0001] The present invention relates to computer-implemented artificial intelligence systems for enterprise database interaction through voice commands. More specifically, to a voice-controlled system that converts spoken natural language into optimized SQL queries, executes those queries against large enterprise databases containing at least 100,000 records, and delegates intelligent follow-up actions to a framework of autonomous specialized AI agents — all with voice-to-response latency below a configurable performance threshold and enterprise-grade row-level security.
 
 ---
 
-DETAILED DESCRIPTION
+II. BACKGROUND
 
-[0004] System Architecture (FIG. 1):
-Voice Input Layer 110 → NLP Engine 120 → Query Generator 130 → Database Layer 140
-                                                                        ↓
-Response System 160 ← Agent Framework 150 ← Results Analysis
+[0002] Enterprise database management systems require complex graphical interface navigation or direct SQL expertise to access business intelligence, creating prohibitive barriers for non-technical executives and mobile professionals who need real-time data access outside of desktop environments.
 
-Component 110 — Voice Input: Web Speech API with noise cancellation and athletic-domain vocabulary adaptation.
+[0003] Current voice-AI products (Salesforce Einstein Voice, Microsoft Cortana for Business, Amazon Alexa for Business) provide only basic navigation commands and fail to provide: comprehensive natural language to SQL translation for complex multi-table queries with joins, aggregations, and conditional logic; intelligent query optimization based on live database schema analysis; autonomous agent execution that automatically performs appropriate business actions based on query results; context-aware conversation management maintaining state across multiple related queries; enterprise-grade row-level security enforced at the voice interface layer; multi-provider communication failover with mandatory human-in-the-loop approval gates; or external wealth data cross-referencing integrated with internal scoring models.
 
-Component 120 — NLP Engine: GPT-4o-mini intent classification (94% accuracy), NER parameter extraction, multi-turn context preservation module 125.
-
-Component 130 — SQL Query Generation: Semantic schema mapping, cost-based join optimization, disambiguation engine (confidence < 0.75 threshold), batch coordinator for 1,000-row partial executions.
-
-Component 140 — Database Layer: Supabase PostgreSQL, 90 migrations, 71 Edge Functions.
-  - constituent_master: 170,529 records
-  - pac_transactions: 334,518 records
-  - opportunities: 8,113 records
-  - lead_scores: 167,740 scored records
-
-Component 150 — Agent Framework: Nine agents with multi-agent chain orchestrator 153 and immutable human-in-the-loop approval gate 154 (cannot be bypassed by voice).
-
-Multi-Provider Failover: SendGrid → Resend → AgentMail; webhook-based monitoring; CAN-SPAM/GDPR automation; mandatory dry_run verification.
-
-RFE Scoring: calculate_lead_scores() with configurable weights in lead_score_config table; external cross-reference: SEC EDGAR + FEC + OpenCorporates + LinkedIn (2,500 alumni, 61 columns via Evaboot).
-
-Security: Row-Level Security at PostgreSQL layer, 10 enterprise roles, cryptographic audit trail, FERPA compliance, JWT/SSO authentication.
+[0004] Prior art analysis confirms no existing system combines: (a) voice as primary modality with domain-specific vocabulary adaptation; (b) autonomous agent delegation triggered by database query results; (c) immutable human-in-the-loop authorization enforcement; and (d) domain-specific constituent intelligence at scale. See: US 7,725,307 (voice query, 2010 — pre-LLM, no agents); US 12,321,343 (Morgan Stanley NL-to-SQL, June 2025 — text-only, no agents, no HITL); US 12,346,664 (OpenAI multi-agent workspace, July 2025 — no voice-to-SQL pipeline, no immutable HITL gate).
 
 ---
 
-CLAIMS
+III. SUMMARY OF THE INVENTION
 
-Claim 1 (System — Independent): A voice-controlled database interaction system comprising: a speech recognition module configured to receive natural language voice commands with noise cancellation and athletic-domain vocabulary adaptation; a natural language processing engine using a large language model to classify intent and extract query parameters with at least 90% accuracy across at least 200 command patterns; a SQL query generation engine configured to translate extracted parameters into optimized database queries using semantic schema mapping, join-path optimization, and index utilization, executing against databases of at least 100,000 records with sub-300 millisecond response latency; an autonomous agent framework comprising at least nine specialized AI agents including a donor cultivation agent, campaign manager agent, compliance monitor agent, and revenue analytics agent; a human-in-the-loop approval gate configured to intercept all outbound communications and financial operations prior to execution and require explicit human staff authorization; and a multi-modal response system configured to deliver voice synthesis, visual dashboard updates, and WebSocket-streamed real-time data.
+[0005] The present invention provides a computer-implemented voice-controlled database interaction system comprising:
 
-Claim 2 (System — Dependent): The system of Claim 1, wherein the natural language processing engine maintains multi-turn conversation context across sequential queries within a session window of at least 30 minutes.
+- Advanced NLP Engine: Multi-stage pipeline using a large language model achieving at least 80% accuracy across a plurality of domain-specific intent classification patterns
+- SQL Query Generation Engine: Semantic table mapping, join-path optimization, index utilization executing against large-scale relational databases with latency below a configurable performance threshold
+- Autonomous Agent Framework: At least nine specialized AI agents (donor cultivation, proposal generation, campaign management, compliance monitoring, revenue analytics, fan engagement, recruiting intelligence, facility operations, executive briefing) coordinated by a multi-agent chain orchestrator
+- Human-in-the-Loop Approval Gate: Platform-enforced authorization layer intercepting all outbound communications and financial operations — cannot be bypassed, disabled, or overridden by voice commands, application code, or agent execution logic
+- Multi-Provider Communication Failover: Primary provider with automatic failover to at least one secondary and one tertiary provider upon webhook-detected delivery failure, with cryptographic audit logging
+- Configurable RFE Lead Scoring: Recency/Frequency/Engagement algorithm with weights stored in database configuration table modifiable without code redeployment; external data cross-referencing from at least three independent data sources
+- AI Video Personalization Pipeline: Voice-initiated individualized video campaign generation with per-recipient script generation, delivery, and engagement analytics
+- Multi-Modal Response System: Voice synthesis, WebSocket real-time dashboard streaming, interactive confirmation flows
 
-Claim 3 (System — Dependent): The system of Claim 1, wherein the SQL query generation engine implements a confidence threshold module configured to generate disambiguation queries to the user when query intent confidence falls below 0.75.
+---
 
-Claim 4 (System — Dependent): The system of Claim 1, wherein the autonomous agent framework includes a multi-provider communication failover system configured to sequentially attempt delivery through at least three independent email service providers.
+IV. DETAILED DESCRIPTION
 
-Claim 5 (System — Dependent): The system of Claim 4, wherein each communication provider transition is logged with a cryptographic audit trail and the human-in-the-loop gate requires re-authorization upon provider failover.
+4.1 System Architecture (FIG. 1)
 
-Claim 6 (System — Dependent): The system of Claim 1, wherein the system further comprises a machine learning lead scoring engine configured to compute recency, frequency, and engagement scores for each constituent record and update scores continuously as new interaction data is received.
+[0006] The system 100 comprises: Voice Input Layer 110; NLP Engine 120 with Disambiguation Module 125; SQL Query Generation Engine 130; Database Execution Layer 140; Agent Coordination Framework 150; and Multi-Modal Response System 160.
 
-Claim 7 (System — Dependent): The system of Claim 6, wherein the lead scoring engine cross-references constituent records with at least three external data sources including SEC EDGAR, Federal Election Commission records, and corporate registry data.
+Voice Input Layer 110 → NLP Engine 120 → Query Generation Engine 130 → Database Layer 140
+                              ↓ (low confidence)                                    ↓
+                       Disambiguation 125                              Agent Framework 150
+                              ↑ (resolved)                                          ↓
+                                                          Response System 160 ← Results Analysis
 
-Claim 8 (System — Dependent): The system of Claim 1, wherein the system further comprises a video generation pipeline configured to produce personalized AI-generated video content for individual constituent outreach, triggered by voice command and gated by the human-in-the-loop approval gate.
+4.2 NLP Engine — Component 120
 
-Claim 9 (Method — Independent): A computer-implemented method for voice-controlled database interaction comprising: receiving a natural language voice command at a speech recognition module; parsing the command through a large language model to extract primary action intent, target entities, filter parameters, and required action types; generating an optimized database query through semantic entity-to-schema mapping and join-path optimization; executing the query against a relational database comprising constituent records, transaction history, opportunity tracking, and ML-derived scoring data; analyzing query results using predictive models for renewal risk, gift readiness, upgrade potential, and churn probability; routing actionable results to at least one specialized AI agent for autonomous business action execution; intercepting all agent-initiated outbound communications at a human-in-the-loop approval gate requiring explicit human staff authorization; and delivering a synchronized multi-modal response comprising voice synthesis and real-time dashboard update.
+[0007] Speech-to-text module 121 uses a multi-provider audio capture interface with domain-specific vocabulary adaptation. Intent classification module 123 employs a large language model achieving at least 80% accuracy across a plurality of domain-specific intent classification patterns. Parameter extraction module 124 uses named entity recognition trained on the application domain. Context preservation module 125 maintains multi-turn conversational state. Disambiguation engine intercepts intent mappings below a 0.75 confidence threshold and generates targeted clarification requests before query execution.
+
+interface VoiceQueryIntent {
+  primary_action: 'query' | 'create' | 'update' | 'campaign' | 'analyze',
+  target_entities: DatabaseEntity[],
+  filter_parameters: FilterParameter[],
+  domain_context: { category?: string, program?: string, season?: string },
+  confidence_score: number,
+  disambiguation_needed: boolean
+}
+
+4.3 SQL Query Generation Engine — Component 130
+
+[0008] Semantic table mapping 131 resolves natural language entities to schema elements. Join optimization 132 implements cost-based planning using index statistics. Batch coordinator 134 decomposes bulk operations into sequenced partial executions of at most 1,000 records per cycle with progress tracking and resumability.
+
+Example translation (FIG. 2):
+Voice: "Show ask-ready prospects with high wealth scores"
+→ SELECT c.*, s.lead_score, w.wealth_indicator
+   FROM constituent_master c
+   JOIN lead_scores s ON c.id = s.constituent_id
+   JOIN wealth_assessments w ON c.id = w.constituent_id
+   WHERE s.lead_score > 0.8 AND w.wealth_indicator = 'high'
+   AND c.last_contact_date < NOW() - INTERVAL '30 days'
+   ORDER BY s.lead_score DESC LIMIT 50;
+
+4.4 Nine-Agent Autonomous Framework — Component 150 (FIG. 3)
+
+[0009] Agent orchestrator 151 routes results to agents based on intent, data content, and user role. The nine agents:
+- 152a — Donor Cultivation Agent: follow-up scheduling, personalized outreach, CRM updates
+- 152b — Proposal Generation Agent: AI-written funding requests with multi-level approval workflow
+- 152c — Campaign Manager Agent: audience segmentation, A/B testing, send-time optimization, real-time analytics
+- 152d — Compliance Monitor Agent: regulatory rule enforcement, violation detection, audit trail generation
+- 152e — Recruiting Intelligence Agent: talent scoring, compliance-aware communications
+- 152f — Revenue Analytics Agent: predictive ML forecasting for renewal, upgrade, churn, and major gift
+- 152g — Fan Engagement Agent: social media monitoring with sentiment analysis
+- 152h — Facility Operations Agent: scheduling, resource allocation, maintenance coordination
+- 152i — Executive Briefing Agent: intelligence synthesis via voice briefings and dashboards
+
+[0010] Human-in-the-loop approval gate 154 is an immutable policy enforced at the platform infrastructure layer that intercepts ALL outbound communications and financial operations before execution. The gate CANNOT be bypassed, disabled, or overridden by voice commands, application-layer code, agent execution logic, developer configuration, or any instruction originating from a layer above the platform infrastructure layer. Absence of a valid authorization record results in non-execution regardless of any other instruction. This is a distinguishing innovation over prior art (LangGraph, HumanLayer, CrewAI) which provide optional application-layer HITL that developers can disable.
+
+4.5 Multi-Provider Communication Failover System (FIG. 4)
+
+[0011] Hierarchical failover: primary provider → secondary provider → tertiary provider. Real-time webhook delivery monitoring detects failures and automatically promotes to next provider without application intervention. Compliance modules enforce CAN-SPAM/GDPR requirements as platform-level middleware. Mandatory dry-run verification mode pre-validates deliverability and compliance before live dispatch.
+
+4.6 Configurable RFE Lead Scoring Engine (FIG. 5)
+
+[0012] The calculate_lead_scores() function processes constituent records using weights stored in a database configuration table modifiable without code redeployment. Scoring components: Recency (days since last transaction, normalized against peer cohort); Frequency (giving and attendance counts within configurable rolling windows); Engagement (social media, event participation, communication response); plus external data signals from at least three independent external data sources including executive compensation databases, political donation capacity indicators, and corporate registry data.
+
+4.7 Security and Compliance Architecture
+
+[0013] Row-level security enforced at database layer. Enterprise role architecture with sport-scoped and department-scoped data isolation. Cryptographic audit trail for all voice commands, generated SQL, agent actions, authorization decisions, and data modifications. Student-athlete data compliance controls. JWT-based authentication with SSO integration.
+
+4.8 Real-Time Architecture
+
+[0014] Serverless edge-function architecture achieves voice-to-response latency below a configurable performance threshold for databases of at least 100,000 records. WebSocket connections provide live dashboard streaming. Multi-tenant isolation architecture supports SaaS licensing. Database schema comprises: constituent records, transaction records, opportunity records, and scored constituent records.
+
+---
+
+V. CLAIMS
+
+NOTE: 14 claims follow. Claims 1, 9, and 14 are independent. Claims 2-8 depend from Claim 1. Claims 10-13 depend from Claim 9.
+
+Claim 1 (System — Independent): A voice-controlled database interaction system comprising: a speech recognition module configured to receive natural language voice commands with noise cancellation and domain-specific vocabulary adaptation; a natural language processing engine using a large language model to classify intent and extract query parameters with at least 80% accuracy across a plurality of domain-specific intent classification patterns; a SQL query generation engine configured to translate extracted parameters into optimized database queries using semantic schema mapping, join-path optimization, and index utilization, executing against large-scale relational databases comprising at least 100,000 records with latency below a configurable performance threshold; an autonomous agent framework comprising at least one specialized AI agent, including in certain embodiments a donor cultivation agent, campaign manager agent, compliance monitor agent, and revenue analytics agent, configured to receive query results and execute appropriate business actions based on intent classification and data content; a human-in-the-loop approval gate enforced at the platform infrastructure layer configured to intercept all outbound communications and financial operations prior to execution and requiring explicit human staff authorization, wherein said gate cannot be disabled, bypassed, or overridden by application-layer code, agent execution logic, or any instruction originating from a layer above the platform infrastructure layer, and wherein absence of authorization results in non-execution; and a multi-modal response system configured to deliver voice synthesis, visual dashboard updates, and real-time streamed data.
+
+Claim 2 (System — Dependent): The system of Claim 1, wherein the natural language processing engine further comprises: a context preservation module maintaining conversational state across sequential commands so subsequent commands may reference prior query results; and a disambiguation engine detecting entity mappings below a confidence threshold and generating targeted clarification questions before query execution.
+
+Claim 3 (System — Dependent): The system of Claim 1, wherein the SQL query generation engine further comprises a batch execution coordinator decomposing bulk operations exceeding a server timeout threshold into sequenced partial operations with progress tracking and resumability.
+
+Claim 4 (System — Dependent): The system of Claim 1, wherein the autonomous agent framework comprises at least nine specialized AI agents in certain embodiments, coordinated by a multi-agent chain orchestrator supporting sequential and parallel execution modes with dependency management.
+
+Claim 5 (System — Dependent): The system of Claim 1, further comprising a multi-provider communication failover system configured to sequentially attempt delivery through at least three independent communication providers upon webhook-detected delivery failure, with mandatory pre-flight dry-run verification and cryptographic delivery logging.
+
+Claim 6 (System — Dependent): The system of Claim 1, further comprising a configurable RFE lead scoring engine with weights stored in a database configuration table modifiable without code redeployment, incorporating recency, frequency, engagement metrics, and cross-referenced external data signals from at least three independent external data sources.
+
+Claim 7 (System — Dependent): The system of Claim 6, wherein the external data cross-referencing further comprises a constituent enrichment pipeline importing professional network data including employment, title, and income indicators for alumni constituent records through an automated API pipeline.
+
+Claim 8 (System — Dependent): The system of Claim 1, further comprising a predictive machine learning module generating: renewal probability scores; upgrade potential scores; major gift readiness scores correlated with domain calendar cycles; and churn risk indicators triggering proactive intervention workflows.
+
+Claim 9 (Method — Independent): A computer-implemented method for voice-controlled database interaction comprising: receiving a natural language voice command through a speech recognition interface; parsing the command using a large language model to extract primary action intent, target entities, filter parameters, and action requirements; generating an optimized database query through semantic entity-to-schema mapping and join-path cost analysis; executing the query against a large-scale relational database comprising constituent records, transaction history, and machine-learning-derived scoring data; analyzing results using predictive models to identify renewal risk, gift readiness, upgrade potential, and churn probability; routing results and detected intent to one or more specialized AI agents for autonomous business action execution; requiring explicit human staff approval for all agent-initiated outbound actions at a human-in-the-loop approval gate that cannot be disabled by application-layer code; and delivering a multi-modal response comprising a synthesized voice reply and an updated visual dashboard.
 
 Claim 10 (Method — Dependent): The method of Claim 9, further comprising maintaining a multi-turn conversation context store that preserves prior query parameters, results, and action history for the duration of a user session.
 
 Claim 11 (Method — Dependent): The method of Claim 9, wherein generating the optimized database query further comprises: estimating query cost using index statistics; selecting an optimal join order; and partitioning large result sets into paginated batches of at most 1,000 records per execution cycle.
 
-Claim 12 (Method — Dependent): The method of Claim 9, further comprising applying row-level security policies at the database layer to restrict query results to records accessible by the authenticated user's assigned security role.
+Claim 12 (Method — Dependent): The method of Claim 9, further comprising applying row-level security policies at the database layer to restrict query results to records accessible by the authenticated user's assigned role, wherein security is enforced at the database layer independently of application-layer access controls.
 
-Claim 13 (Method — Dependent): The method of Claim 9, further comprising triggering a video personalization pipeline upon agent recommendation, wherein the pipeline generates individualized video content incorporating constituent-specific data fields extracted from the database query results.
+Claim 13 (Method — Dependent): The method of Claim 9, further comprising triggering a video personalization pipeline upon agent recommendation, wherein the pipeline generates individualized video content with per-recipient AI-generated scripts incorporating constituent-specific data fields, delivers content through a multi-provider failover system, and tracks per-recipient engagement analytics.
 
-Claim 14 (CRM — Independent): A non-transitory computer-readable medium storing processor-executable instructions that, when executed, implement the method of Claim 9, wherein the system is deployed on a serverless edge-function architecture comprising at least 60 independently deployable functions, accessible via an encrypted internet domain, enforcing row-level security across at least 10 enterprise user roles, and supporting at least 10 concurrent authenticated user sessions.
+Claim 14 (Platform — Independent): A non-transitory computer-readable medium storing processor-executable instructions that, when executed, implement the method of Claim 9, wherein the system is deployed on a serverless edge-function distributed computing architecture, accessible via an encrypted internet domain, supporting at least 10 concurrent authenticated sessions, maintaining real-time synchronization with external systems, and enforcing the human-in-the-loop approval gate for 100% of agent-initiated outbound actions.
 
 ---
 
-ABSTRACT
+VI. ABSTRACT
 
-A voice-controlled database interaction system converts spoken natural language commands into optimized SQL queries executed against enterprise databases containing 170,000+ constituent records. Commands trigger multi-table queries, ML-based result analysis, and delegation to nine specialized AI agents covering donor cultivation, campaign management, NCAA compliance, revenue analytics, and executive briefing. A multi-provider failover communication system dispatches personalized campaigns including AI-generated personalized videos with mandatory human staff approval. The system deploys on a 71-function serverless architecture with sub-200ms voice response latency, row-level security across ten enterprise roles, and multi-tenant SaaS architecture.
+A voice-controlled database interaction system converts spoken natural language commands into optimized SQL queries executed against large-scale relational databases. Commands trigger multi-table queries, machine-learning-based result analysis, and delegation to specialized autonomous AI agents covering donor cultivation, campaign management, regulatory compliance, revenue analytics, and executive briefing. A platform-enforced human-in-the-loop approval gate intercepts all agent-initiated outbound communications and financial operations before execution and cannot be disabled by application-layer code, agent logic, or developer configuration — distinguishing this invention from prior application-layer HITL frameworks. A multi-provider failover communication system dispatches personalized campaigns including AI-generated personalized videos. The system deploys on a serverless distributed computing architecture with row-level security across enterprise roles and multi-tenant SaaS architecture.
 
 INVENTORS: Milton Overton & Lisa Overton
-ASSIGNEE: Visionary AI Systems Inc, Kennesaw, GA 30144`
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+KSU RELATIONSHIP: KSU is a customer/user only. KSU has no ownership interest, co-inventorship rights, or assignment rights in this invention.`
 
 // ── PA-2 Specification — Athletic Department Management Platform ──────────
 export const PA2_SPEC_SUMMARY = `TITLE: System and Method for AI-Powered Athletic Department Management with Voice-First Interface

@@ -68,12 +68,30 @@ export const PORTFOLIO_INIT: Patent[] = [
   },
   {
     id: 'PA-5',
-    title: 'Voice-First Agentic Database Infrastructure',
-    status: 'planned',
+    title: 'Voice-First Agentic Database Infrastructure (VADI)',
+    status: 'ready',
     filedDate: null,
     appNumber: '',
     deadline: null,
-    priority: 3,
+    priority: 1,
+  },
+  {
+    id: 'PA-6',
+    title: 'Conversational AI-Guided IP Development Platform',
+    status: 'ready',
+    filedDate: null,
+    appNumber: '',
+    deadline: null,
+    priority: 1,
+  },
+  {
+    id: 'PA-7',
+    title: 'Federated Multi-Vertical Industry Learning System',
+    status: 'ready',
+    filedDate: null,
+    appNumber: '',
+    deadline: null,
+    priority: 2,
   },
 ]
 
@@ -614,3 +632,150 @@ voice-first agentic database applications for any domain may require a license.`
 
 // Update PATENT_SPECS map to include PA-5
 PATENT_SPECS['PA-5'] = PA5_SPEC_SUMMARY
+
+// ── PA-6 Specification — Conversational IP Development Platform ───────
+export const PA6_SPEC_SUMMARY = `TITLE: System and Method for Conversational Artificial Intelligence-Guided Intellectual Property Development with Autonomous Agentic Execution, Integrated Regulatory Filing, and Human Authorization Enforcement
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+
+PRIMARY INVENTOR: Milton Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity — $320 filing fee
+RELATED APPLICATIONS: Related to co-pending PA-1 through PA-5
+
+---
+
+I. TECHNICAL FIELD
+
+[0001] The present invention relates to conversational AI systems for intellectual property development, business formation guidance, and regulatory filing automation. A user describes an invention through natural language dialogue; the system guides them through prior art assessment, patentable element identification, trade secret segregation, business structure recommendation, patent specification drafting, USPTO submission, and attorney handoff — all through multi-turn conversational AI backed by specialized autonomous agents with a non-bypassable human authorization gate.
+
+---
+
+II. BACKGROUND
+
+[0002] No existing system combines: natural language conversational reasoning about invention concepts; automatic identification of patentable versus trade-secret-eligible elements; prior art search with semantic relevance assessment; complete patent specification drafting; business entity formation recommendations; direct USPTO Patent Center filing automation; and attorney handoff package generation — all within a single conversational session. LegalZoom and similar services provide questionnaire-based forms with no reasoning. Patent attorneys provide reasoning at $300-500/hour. The present invention fills this gap.
+
+---
+
+III. SIX SPECIALIZED AGENTS
+
+Agent 140a — Invention Elicitation Agent: Socratic dialogue to extract technical elements, identify novel features, generate structured technical disclosure. Does NOT ask about specific implementation values reserved for trade secret analysis.
+
+Agent 140b — Trade Secret Segregation Agent: Identifies elements providing competitive advantage that should NOT be in the patent. Generates Trade Secret Registry. Flags elements for exclusion from specification.
+
+Agent 140c — Prior Art Agent: Multi-source USPTO and Google Patents search, semantic similarity, citation graph traversal. Generates patentability assessment with distinguishing arguments.
+
+Agent 140d — Specification Drafting Agent: Complete provisional specification — title, technical field, background, summary, detailed description, at least 3 independent claims, dependent claims, abstract. Applies numerical lock-in avoidance (ranges instead of specific values).
+
+Agent 140e — Business Structure Agent: Recommends optimal entity type, IP assignment structure, equity allocation based on inventor goals through conversational dialogue.
+
+Agent 140f — Filing and Handoff Agent: Completes USPTO ADS, uploads documents, guides payment, captures application number, generates attorney prosecution briefing package.
+
+---
+
+IV. HUMAN AUTHORIZATION GATE (CRITICAL)
+
+[0007] The Human Authorization Layer intercepts ALL patent office submission actions before execution. The inventor must explicitly review and authorize the complete filing package. This gate CANNOT be bypassed by any agent, application code, or configuration. Absence of authorization results in non-submission.
+
+---
+
+CLAIMS (14 total — Claims 1, 9, 14 independent)
+
+Claim 1 (System): A conversational artificial intelligence system comprising: an invention elicitation agent for Socratic dialogue and technical disclosure generation; a trade secret segregation agent identifying elements for exclusion from the patent specification; a prior art agent searching patent databases and generating patentability assessment; a business structure agent generating entity formation recommendations; a specification drafting agent generating a complete patent specification excluding trade secret elements; a filing and handoff agent completing USPTO submission and generating attorney briefing; and a human authorization layer enforced at the platform infrastructure layer that intercepts all patent office submissions, requires explicit authorization, and cannot be disabled by any agent, application code, or configuration.
+
+Claim 9 (Method): A method comprising: eliciting invention description through Socratic dialogue; segregating patent-disclosable from trade-secret-eligible elements; searching patent databases and generating patentability assessment; generating business entity recommendations through dialogue; generating complete patent specification excluding trade secret elements; presenting complete filing package for explicit human authorization; upon authorization, completing patent office submission; generating attorney prosecution briefing package.
+
+Claim 14 (Platform): A non-transitory computer-readable medium implementing the method of Claim 9, enforcing human authorization for 100% of patent office submissions, which cannot be disabled by any agent execution logic, application code, or developer configuration.
+
+---
+
+ABSTRACT
+
+A conversational AI platform guides inventors through end-to-end IP development via natural language dialogue. Six specialized agents conduct invention elicitation, trade secret segregation, prior art search, business structure recommendation, patent specification drafting, and USPTO filing automation. A Human Authorization Layer enforced at platform infrastructure level intercepts all USPTO submission actions and cannot be disabled by agent logic or application code. The system enables progression from invention description through prior art clearance, business structure advice, provisional patent filing, and attorney handoff in a single conversational session.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)`
+
+// ── PA-7 Specification — Federated Multi-Vertical Industry Learning ───
+export const PA7_SPEC_SUMMARY = `TITLE: System and Method for Federated Multi-Vertical Industry Learning with Configurable Data Governance, Adaptive Model Routing, and Continuous Ecosystem Intelligence Aggregation
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+
+PRIMARY INVENTOR: Milton Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity — $320 filing fee
+RELATED APPLICATIONS: Related to co-pending PA-1 through PA-6
+
+---
+
+I. TECHNICAL FIELD
+
+[0001] The present invention relates to federated machine learning systems for multi-vertical AI applications. User interactions across multiple domain-specific AI products (sports operations, legal services, revenue intelligence, marketing automation, and additional verticals) contribute to a shared federated knowledge repository through a configurable three-tier data governance framework. An adaptive model routing engine selects the optimal AI model for each query based on domain, complexity, and cost — routing simpler queries to fine-tuned domain models and complex reasoning to general-purpose LLMs — while continuous fine-tuning pipelines improve domain models from accumulated interaction data automatically.
+
+---
+
+II. THREE-TIER DATA GOVERNANCE
+
+Tier 1 — Opt-In Full Contribution: Anonymized interaction logs shared to central repository. Client earns subscription discount. Data improves both shared and private models.
+
+Tier 2 — Industry Pool: Data shared only within same vertical (e.g., all sports management clients share a sports pool). No cross-vertical sharing. Client benefits from pooled vertical dataset.
+
+Tier 3 — Federated Weight-Only: Raw data never leaves client environment. Only model gradient updates transmitted. Satisfies attorney-client privilege, FERPA, HIPAA, strict data residency requirements.
+
+---
+
+III. ADAPTIVE MODEL ROUTER
+
+[0008] Classifies each query by domain and complexity (1-10 scale). Routes to optimal model from registry balancing quality and cost. Automatic re-routing to next higher capability model if confidence below threshold. Example routing:
+- Simple intent classification: fine-tuned 8B model ($0.00005/1K tokens)
+- Domain Q&A: fine-tuned 7B vertical model ($0.00025/1K tokens)
+- Complex reasoning: 70B model ($0.00090/1K tokens)
+- Patent claim drafting, legal analysis: Claude Sonnet ($0.003/1K tokens)
+
+---
+
+IV. VERTICAL MODEL FAMILY
+
+VisAI-Sports-7B: Fine-tuned on CSOS interaction data — donor queries, athletic terminology, NCAA compliance, renewal predictions
+VisAI-Legal-7B: Fine-tuned on patent platform conversations — claim language, prior art, USPTO procedures
+VisAI-Revenue-7B: Fine-tuned on Revenue Shield data — revenue forecasting, churn prediction, upgrade scoring
+VisAI-Marketing-7B: Fine-tuned on campaign outcome data — optimization, segmentation, conversion patterns
+VisAI-Base-70B: Fine-tuned on cross-product data — complex multi-step reasoning, executive briefings
+
+---
+
+V. CROSS-VERTICAL KNOWLEDGE TRANSFER
+
+[0009] Identifies patterns applicable across domains and propagates via knowledge distillation:
+- Donor retention patterns (sports) → customer churn prediction (revenue intelligence)
+- Campaign optimization (marketing) → outreach sequencing (sports cultivation)
+- Patent claim language (legal) → contract clause generation (legal services)
+
+---
+
+CLAIMS (14 total — Claims 1, 9, 14 independent)
+
+Claim 1 (System): A federated multi-vertical industry learning system comprising: interaction logging infrastructure across vertical AI applications capturing standardized records; a three-tier governance controller enforcing opt-in, vertical-pool, or gradient-only sharing per client; a vertical fine-tuning pipeline processing interaction logs for automated model improvement; an adaptive routing engine selecting optimal models from a registry by domain and complexity; a federated weight aggregation system applying federated averaging without raw data exchange; and a cross-vertical knowledge transfer mechanism propagating patterns across domains via distillation.
+
+Claim 9 (Method): A method comprising: capturing standardized interaction records across vertical AI applications; applying configurable per-client governance tier; processing logs through quality filter for training pair generation; executing automated parameter-efficient fine-tuning on schedule; routing queries to optimal models by domain and complexity; collecting gradient updates and applying federated averaging; identifying cross-domain patterns and propagating via knowledge distillation.
+
+Claim 14 (Platform): A non-transitory computer-readable medium implementing the method of Claim 9, deployed as multi-tenant federated learning infrastructure supporting plurality of vertical AI applications across multiple industry domains with complete data isolation between clients.
+
+---
+
+ABSTRACT
+
+A federated multi-vertical industry learning system enables multiple domain-specific AI applications to improve shared domain models through configurable three-tier data governance: full anonymized contribution, vertical-pool-only contribution, or gradient-update-only federated contribution satisfying strict data residency requirements. An adaptive model routing engine minimizes inference cost while maintaining quality thresholds. Automated vertical fine-tuning pipelines improve domain models continuously. Cross-vertical knowledge transfer propagates applicable patterns across domains through knowledge distillation. The system achieves progressive AI independence from third-party API providers as domain models mature.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)`
+
+// Update PATENT_SPECS map
+if (typeof PATENT_SPECS !== 'undefined') {
+  PATENT_SPECS['PA-6'] = PA6_SPEC_SUMMARY
+  PATENT_SPECS['PA-7'] = PA7_SPEC_SUMMARY
+}

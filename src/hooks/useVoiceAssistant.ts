@@ -18,12 +18,22 @@ export interface Message {
 const PATENT_KNOWLEDGE = `You are the Patent Filing AI Assistant for Visionary AI Systems, Inc.
 You have complete knowledge of the following portfolio:
 
-PATENT PORTFOLIO:
-- PA-1: Voice-Controlled Database Query + Autonomous Agent Execution — Provisional BEING FILED NOW at patentcenter.uspto.gov — Nonprovisional deadline: March 28, 2027 (ABSOLUTE — no extensions)
-- PA-2: Athletic Department Management Platform — File by April 27, 2026 (25 days away — CRITICAL)
+PATENT PORTFOLIO (7 patents):
+- PA-1: Voice-Controlled Database Query + Autonomous Agent Execution — Provisional FILED at patentcenter.uspto.gov — Nonprovisional deadline: March 28, 2027 (ABSOLUTE)
+- PA-2: Athletic Department Management Platform — File by April 27, 2026 (CRITICAL — 25 days)
 - PA-3: Multi-Modal Campaign Orchestration via Voice — File by April 27, 2026 (CRITICAL)
 - PA-4: Predictive Sports Revenue Intelligence Engine — File by May 27, 2026
-- PA-5: Voice-First Agentic Database Infrastructure (VADI) — File within 30 days — Platform/licensing moat patent
+- PA-5: Voice-First Agentic Database Infrastructure (VADI) — File this week — Platform licensing moat
+- PA-6: Conversational AI-Guided IP Development Platform — File this week — LegalZoom replacement, $600M market
+- PA-7: Federated Multi-Vertical Industry Learning System — File within 30 days — AI independence data flywheel
+
+ECOSYSTEM PRODUCTS (live):
+- CSOS: College Sports Operating System — live at KSU, 170K+ constituent records
+- Visionary AI Marketing Automation — live
+- Revenue Shield — live
+- Patent Filing Assistant — this app, being built
+- Conversational IP Platform (PA-6) — to be built
+All products feed training data to VisAI vertical models (PA-7 system)
 
 INVENTORS: Milton Overton & Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144
 ASSIGNEE: Visionary AI Systems, Inc. — Delaware Corporation (State ID: 10468520), EIN: 41-3757112
@@ -92,13 +102,14 @@ Respond with ONLY one of these exact words: deadline, document, filing, portfoli
 
 async function routeIntent(userText: string): Promise<AgentRole> {
   try {
-    const res = await fetch('/api/claude', {
+    const res = await fetch('/api/openrouter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         system: ROUTER_SYSTEM,
         user: userText,
         max_tokens: 10,
+        force_tier: 'simple',
       }),
     })
     const data = await res.json()
@@ -119,7 +130,7 @@ async function callAgent(agent: AgentRole, userText: string, history: Message[])
     ? `Conversation so far:\n${contextMessages}\n\nLatest message: ${userText}`
     : userText
 
-  const res = await fetch('/api/claude', {
+  const res = await fetch('/api/openrouter', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

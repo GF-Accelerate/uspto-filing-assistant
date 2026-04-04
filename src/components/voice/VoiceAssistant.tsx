@@ -19,8 +19,8 @@ export function VoiceAssistant() {
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const {
-    messages, isListening, isThinking, transcript,
-    currentAgent, sendMessage, startListening, stopListening, stopSpeaking,
+    messages, isListening, isThinking, isSpeaking, transcript,
+    currentAgent, voiceReady, sendMessage, startListening, stopListening, stopSpeaking,
   } = useVoiceAssistant()
 
   // Auto-scroll to bottom on new messages
@@ -59,6 +59,8 @@ export function VoiceAssistant() {
           borderRadius: '50%',
           background: isListening
             ? 'linear-gradient(135deg, #dc2626, #b91c1c)'
+            : isSpeaking
+            ? 'linear-gradient(135deg, #7c3aed, #4f46e5)'
             : 'linear-gradient(135deg, #1e3a5f, #2563eb)',
           border: 'none',
           cursor: 'pointer',
@@ -68,11 +70,14 @@ export function VoiceAssistant() {
           fontSize: 22,
           boxShadow: isListening
             ? '0 0 0 4px rgba(220,38,38,0.3), 0 4px 16px rgba(0,0,0,0.25)'
+            : isSpeaking
+            ? '0 0 0 4px rgba(124,58,237,0.3), 0 4px 16px rgba(0,0,0,0.25)'
             : '0 4px 16px rgba(0,0,0,0.2)',
           transition: 'all 0.2s',
+          animation: isSpeaking ? 'speakPulse 1.5s ease-in-out infinite' : 'none',
         }}
       >
-        {isListening ? '🔴' : open ? '✕' : '🎙️'}
+        {isListening ? '🔴' : isSpeaking ? '🔊' : open ? '✕' : '🎙️'}
       </button>
 
       {/* ── Assistant panel ──────────────────────────────────────── */}
@@ -108,20 +113,46 @@ export function VoiceAssistant() {
             <div style={{ flex: 1 }}>
               <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>Patent Filing Assistant</div>
               <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>
-                Visionary AI Systems, Inc. — 5 patents
+                Visionary AI Systems, Inc. — 7 patents
               </div>
             </div>
-            {/* Active agent badge */}
-            <span style={{
-              background: 'rgba(255,255,255,0.15)',
-              color: '#fff',
-              fontSize: 10,
-              padding: '2px 8px',
-              borderRadius: 99,
-              fontWeight: 500,
-            }}>
-              {agentMeta.label}
-            </span>
+            {/* Active agent badge + voice status */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+              <span style={{
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+                fontSize: 10,
+                padding: '2px 8px',
+                borderRadius: 99,
+                fontWeight: 500,
+              }}>
+                {agentMeta.label}
+              </span>
+              {isSpeaking && (
+                <span style={{
+                  background: 'rgba(124,58,237,0.3)',
+                  color: '#e9d5ff',
+                  fontSize: 9,
+                  padding: '1px 6px',
+                  borderRadius: 99,
+                  fontWeight: 500,
+                  animation: 'speakPulse 1.5s ease-in-out infinite',
+                }}>
+                  🔊 Speaking...
+                </span>
+              )}
+              {!voiceReady && (
+                <span style={{
+                  background: 'rgba(239,68,68,0.3)',
+                  color: '#fca5a5',
+                  fontSize: 9,
+                  padding: '1px 6px',
+                  borderRadius: 99,
+                }}>
+                  Loading voice...
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Quick action pills */}
@@ -238,6 +269,42 @@ export function VoiceAssistant() {
               </div>
             )}
 
+            {/* Speaking indicator — shows when assistant is talking back */}
+            {isSpeaking && !isThinking && (
+              <div style={{
+                display: 'flex', gap: 8, alignItems: 'center',
+                padding: '4px 8px',
+              }}>
+                <div style={{
+                  display: 'flex', gap: 2, alignItems: 'flex-end', height: 16,
+                }}>
+                  {[0,1,2,3,4].map(i => (
+                    <span key={i} style={{
+                      width: 3,
+                      background: '#7c3aed',
+                      borderRadius: 2,
+                      animation: 'soundWave 0.8s ease-in-out infinite',
+                      animationDelay: `${i * 0.1}s`,
+                      display: 'inline-block',
+                    }} />
+                  ))}
+                </div>
+                <span style={{ fontSize: 11, color: '#7c3aed', fontWeight: 500 }}>
+                  Speaking...
+                </span>
+                <button
+                  onClick={stopSpeaking}
+                  style={{
+                    fontSize: 10, color: '#94a3b8', background: 'none',
+                    border: '1px solid #e2e8f0', borderRadius: 99,
+                    padding: '2px 8px', cursor: 'pointer',
+                  }}
+                >
+                  Stop
+                </button>
+              </div>
+            )}
+
             {/* Interim transcript */}
             {transcript && (
               <div style={{
@@ -295,19 +362,23 @@ export function VoiceAssistant() {
 
             {/* Voice */}
             <button
-              onClick={isListening ? stopListening : startListening}
+              onClick={isListening ? stopListening : isSpeaking ? stopSpeaking : startListening}
               disabled={isThinking}
-              title={isListening ? 'Stop listening' : 'Speak your question'}
+              title={isListening ? 'Stop listening' : isSpeaking ? 'Stop speaking' : 'Speak your question'}
               style={{
                 width: 34, height: 34, borderRadius: '50%',
-                background: isListening ? '#dc2626' : '#1e3a5f',
+                background: isListening ? '#dc2626' : isSpeaking ? '#7c3aed' : '#1e3a5f',
                 border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 14, flexShrink: 0, transition: 'all 0.15s',
-                boxShadow: isListening ? '0 0 0 3px rgba(220,38,38,0.3)' : 'none',
+                boxShadow: isListening
+                  ? '0 0 0 3px rgba(220,38,38,0.3)'
+                  : isSpeaking
+                  ? '0 0 0 3px rgba(124,58,237,0.3)'
+                  : 'none',
               }}
             >
-              {isListening ? '⏹' : '🎙️'}
+              {isListening ? '⏹' : isSpeaking ? '🔊' : '🎙️'}
             </button>
           </div>
         </div>
@@ -317,6 +388,14 @@ export function VoiceAssistant() {
         @keyframes pulse {
           0%, 60%, 100% { opacity: 0.3; transform: scale(0.8); }
           30% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes speakPulse {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
+        }
+        @keyframes soundWave {
+          0%, 100% { height: 4px; }
+          50% { height: 14px; }
         }
       `}</style>
     </>

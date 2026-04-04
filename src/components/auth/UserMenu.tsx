@@ -1,13 +1,23 @@
 import { useState } from 'react'
 import type { useAuth } from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
 
 interface Props {
   auth: ReturnType<typeof useAuth>
   onShowLogin: () => void
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  super_admin: 'Super Admin',
+  org_admin: 'Admin',
+  patent_manager: 'Manager',
+  inventor: 'Inventor',
+  viewer: 'Viewer',
+}
+
 export function UserMenu({ auth, onShowLogin }: Props) {
   const [open, setOpen] = useState(false)
+  const { profile, isAdmin } = useUserProfile()
 
   if (!auth.isConfigured) return null
 
@@ -51,6 +61,13 @@ export function UserMenu({ auth, onShowLogin }: Props) {
             <div className="px-4 py-2 border-b border-slate-100">
               <p className="text-xs font-medium text-slate-900">{name}</p>
               <p className="text-xs text-slate-400">{email}</p>
+              {profile?.role && (
+                <span className={`text-xs px-1.5 py-0.5 rounded mt-1 inline-block font-medium ${
+                  isAdmin ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {ROLE_LABELS[profile.role] ?? profile.role}
+                </span>
+              )}
             </div>
             <div className="px-3 py-1.5">
               <div className="flex items-center gap-2 px-1 py-1">

@@ -20,8 +20,13 @@ export function AuthModal({ auth, onClose }: Props) {
       await auth.login(email, password)
       if (!auth.error) onClose()
     } else {
-      await auth.register(email, password, name)
-      setDone(true)
+      const result = await auth.register(email, password, name)
+      if (result?.error) return
+      if (result?.needsConfirmation) {
+        setDone(true)
+      } else {
+        onClose()
+      }
     }
   }
 
@@ -87,7 +92,7 @@ export function AuthModal({ auth, onClose }: Props) {
 
             {auth.error && <Alert variant="danger" className="mb-3 text-xs">{auth.error}</Alert>}
 
-            <Button variant="primary" onClick={submit} disabled={auth.loading || !email || !password}
+            <Button variant="primary" onClick={submit} disabled={auth.loading || !email || !password || (mode === 'register' && !name.trim())}
               className="w-full">
               {auth.loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
             </Button>

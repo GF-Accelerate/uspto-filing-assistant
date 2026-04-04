@@ -75,9 +75,13 @@ function createUtterance(text: string, voice: SpeechSynthesisVoice | null): Spee
 export interface STTProvider {
   name: string
   available: boolean
-  start: (callbacks: STTCallbacks) => void
+  start: (callbacks: STTCallbacks, options?: STTOptions) => void
   stop: () => void
   abort: () => void
+}
+
+export interface STTOptions {
+  continuous?: boolean
 }
 
 export interface STTCallbacks {
@@ -100,7 +104,7 @@ export function createWebSpeechSTT(): STTProvider {
     name: 'WebSpeech',
     available: !!RecognitionClass,
 
-    start(callbacks: STTCallbacks) {
+    start(callbacks: STTCallbacks, options?: STTOptions) {
       if (!RecognitionClass) {
         callbacks.onError()
         return
@@ -109,7 +113,7 @@ export function createWebSpeechSTT(): STTProvider {
       if (recognition) recognition.abort()
 
       recognition = new RecognitionClass()
-      recognition.continuous = false
+      recognition.continuous = options?.continuous ?? false
       recognition.interimResults = true
       recognition.lang = 'en-US'
 

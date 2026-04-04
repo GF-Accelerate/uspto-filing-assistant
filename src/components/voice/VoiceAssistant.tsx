@@ -23,9 +23,9 @@ export function VoiceAssistant() {
   const navigate = useNavigate()
   const {
     messages, isListening, isThinking, isSpeaking, transcript,
-    currentAgent, voiceReady, pendingApproval,
+    currentAgent, voiceReady, pendingApproval, handsFree, wakeWordActive,
     sendMessage, startListening, stopListening, stopSpeaking,
-    handleApproval, setActionCallback,
+    handleApproval, setActionCallback, toggleHandsFree,
   } = useVoiceAssistant()
 
   // Wire up action callbacks for navigation
@@ -86,6 +86,8 @@ export function VoiceAssistant() {
             ? 'linear-gradient(135deg, #dc2626, #b91c1c)'
             : isSpeaking
             ? 'linear-gradient(135deg, #7c3aed, #4f46e5)'
+            : handsFree
+            ? 'linear-gradient(135deg, #059669, #10b981)'
             : 'linear-gradient(135deg, #1e3a5f, #2563eb)',
           border: 'none',
           cursor: 'pointer',
@@ -97,12 +99,14 @@ export function VoiceAssistant() {
             ? '0 0 0 4px rgba(220,38,38,0.3), 0 4px 16px rgba(0,0,0,0.25)'
             : isSpeaking
             ? '0 0 0 4px rgba(124,58,237,0.3), 0 4px 16px rgba(0,0,0,0.25)'
+            : handsFree
+            ? '0 0 0 4px rgba(16,185,129,0.3), 0 4px 16px rgba(0,0,0,0.25)'
             : '0 4px 16px rgba(0,0,0,0.2)',
           transition: 'all 0.2s',
           animation: isSpeaking ? 'speakPulse 1.5s ease-in-out infinite' : 'none',
         }}
       >
-        {isListening ? '🔴' : isSpeaking ? '🔊' : open ? '✕' : '🎙️'}
+        {isListening ? '🔴' : isSpeaking ? '🔊' : handsFree ? '🟢' : open ? '✕' : '🎙️'}
       </button>
 
       {/* ── Assistant panel ──────────────────────────────────────── */}
@@ -142,16 +146,30 @@ export function VoiceAssistant() {
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-              <span style={{
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                fontSize: 10,
-                padding: '2px 8px',
-                borderRadius: 99,
-                fontWeight: 500,
-              }}>
-                {agentMeta.label}
-              </span>
+              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                <span style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  color: '#fff',
+                  fontSize: 10,
+                  padding: '2px 8px',
+                  borderRadius: 99,
+                  fontWeight: 500,
+                }}>
+                  {agentMeta.label}
+                </span>
+                {handsFree && (
+                  <span style={{
+                    background: 'rgba(16,185,129,0.3)',
+                    color: '#6ee7b7',
+                    fontSize: 9,
+                    padding: '2px 6px',
+                    borderRadius: 99,
+                    fontWeight: 600,
+                  }}>
+                    HANDS-FREE
+                  </span>
+                )}
+              </div>
               {isSpeaking && (
                 <span style={{
                   background: 'rgba(124,58,237,0.3)',
@@ -379,6 +397,48 @@ export function VoiceAssistant() {
             )}
 
             <div ref={bottomRef} />
+          </div>
+
+          {/* Hands-free toggle + wake word hint */}
+          <div style={{
+            borderTop: '1px solid #f1f5f9',
+            padding: '4px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+            background: handsFree ? '#f0fdf4' : '#fff',
+          }}>
+            <button
+              onClick={toggleHandsFree}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '3px 10px',
+                borderRadius: 99,
+                border: handsFree ? '1px solid #16a34a' : '1px solid #e2e8f0',
+                background: handsFree ? '#dcfce7' : '#f8fafc',
+                color: handsFree ? '#15803d' : '#64748b',
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              <span style={{ fontSize: 13 }}>{handsFree ? '🟢' : '🔘'}</span>
+              Hands-free
+            </button>
+            {handsFree && wakeWordActive && (
+              <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 500 }}>
+                Listening... speak naturally
+              </span>
+            )}
+            {handsFree && !wakeWordActive && !isSpeaking && !isThinking && (
+              <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 500 }}>
+                Say "Hey Patent" or just speak
+              </span>
+            )}
           </div>
 
           {/* Input bar */}

@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import { usePortfolio }  from '@/hooks/usePortfolio'
 import { useWizard }     from '@/hooks/useWizard'
 import { useAuth }       from '@/hooks/useAuth'
+import { useUserProfile } from '@/hooks/useUserProfile'
 import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Dashboard }     from '@/pages/Dashboard'
 import { Wizard }        from '@/pages/Wizard'
@@ -29,6 +30,7 @@ export default function App() {
   const { portfolio, markFiled } = usePortfolio()
   const wizardCtx  = useWizard()
   const auth       = useAuth()
+  const { isAdmin } = useUserProfile()
   const navigate   = useNavigate()
   const { isEnabled } = useFeatureFlags()
   const pa1Days    = daysUntil('2027-04-03')
@@ -120,7 +122,7 @@ export default function App() {
                       {label}
                     </NavLink>
                   ))}
-                  {isEnabled('admin_console_enabled') && (
+                  {(isAdmin || isEnabled('admin_console_enabled')) && (
                   <div className="border-t border-slate-100 mt-1 pt-1">
                     <div className="px-4 py-1 text-xs text-slate-400 font-medium">Admin</div>
                     {adminNav.map(({ to, label }) => (

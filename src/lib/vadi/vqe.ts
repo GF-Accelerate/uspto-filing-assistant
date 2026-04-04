@@ -78,6 +78,21 @@ function detectAction(text: string): string | null {
   return null
 }
 
+// ── Wake word detection ─────────────────────────────────────────────────────
+
+const WAKE_PHRASES = ['hey patent', 'patent assistant', 'hey assistant', 'ok patent']
+
+export function detectWakeWord(transcript: string): { detected: boolean; cleanedText: string } {
+  const lower = transcript.toLowerCase().trim()
+  for (const phrase of WAKE_PHRASES) {
+    if (lower.startsWith(phrase)) {
+      const cleaned = transcript.slice(phrase.length).trim()
+      return { detected: true, cleanedText: cleaned || '' }
+    }
+  }
+  return { detected: false, cleanedText: transcript }
+}
+
 // Build context injection string for agent prompts
 export function contextToPrompt(ctx: ConversationContext): string {
   const parts: string[] = []

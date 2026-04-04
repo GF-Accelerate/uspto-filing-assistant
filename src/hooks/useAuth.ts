@@ -35,9 +35,13 @@ export function useAuth() {
 
   const register = useCallback(async (email: string, password: string, fullName: string) => {
     setState(s => ({ ...s, loading: true, error: '' }))
-    const { error } = await signUp(email, password, fullName)
-    if (error) setState(s => ({ ...s, loading: false, error: error.message }))
-    else setState(s => ({ ...s, loading: false, error: '' }))
+    const { data, error } = await signUp(email, password, fullName)
+    if (error) {
+      setState(s => ({ ...s, loading: false, error: error.message }))
+      return { error: error.message, needsConfirmation: false }
+    }
+    setState(s => ({ ...s, loading: false, error: '' }))
+    return { error: null, needsConfirmation: !data?.session }
   }, [])
 
   const loginWithGoogle = useCallback(async () => {

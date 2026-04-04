@@ -5,7 +5,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { AgentRole, VoiceAction } from '@/lib/vadi/aef'
 import { routeIntent, callAgent } from '@/lib/vadi/aef'
-import { selectAmericanFemaleVoice, emptyContext, updateContext, contextToPrompt, extractPatentIds } from '@/lib/vadi/vqe'
+import { selectAmericanFemaleVoice, emptyContext, updateContext, contextToPrompt, extractPatentIds, detectWakeWord } from '@/lib/vadi/vqe'
 import type { ConversationContext } from '@/lib/vadi/vqe'
 import { requiresApproval, createApprovalRequest, approveRequest, logApproval } from '@/lib/vadi/hal'
 import type { ApprovalRequest } from '@/lib/vadi/hal'
@@ -40,11 +40,18 @@ export function useVoiceAssistant() {
   const [currentAgent, setCurrentAgent] = useState<AgentRole>('general')
   const [voiceReady, setVoiceReady] = useState(false)
   const [pendingApproval, setPendingApproval] = useState<ApprovalRequest | null>(null)
+  const [handsFree, setHandsFree] = useState(false)
+  const [wakeWordActive, setWakeWordActive] = useState(false)
 
   // VADI modules
   const busRef = useRef<CommunicationBus | null>(null)
   const selectedVoiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const contextRef = useRef<ConversationContext>(emptyContext())
+
+  // Refs for mode tracking
+  const handsFreeRef = useRef(false)
+  const isThinkingRef = useRef(false)
+  const sendMessageRef = useRef<((text: string) => void) | null>(null)
 
   // Action callback — set by the parent component to handle navigation
   const actionCallbackRef = useRef<((action: VoiceAction) => void) | null>(null)
@@ -82,6 +89,48 @@ export function useVoiceAssistant() {
   }, [])
 
   // ── MPCB: Speak via TTS provider ─────────────────────────────────────
+  const autoListenAfterSpeak = useCallback(() => {
+    if (!handsFreeRef.current) return
+    const bus = busRef.current
+    if (!bus || !bus.stt.available) return
+    // Small delay before re-listening for natural conversation cadence
+    setTimeout(() => {
+      if (!isThinkingRef.current && handsFreeRef.current) {
+        bus.stt.start({
+          onStart: () => { setIsListening(true); setWakeWordActive(true) },
+          onEnd: () => {
+            setIsListening(false)
+            setWakeWordActive(false)
+            // Auto-restart in hands-free mode (handles network drops, silence timeouts)
+            if (handsFreeRef.current && !isThinkingRef.current) {
+              setTimeout(() => autoListenAfterSpeak(), 300)
+            }
+          },
+          onResult: (text, isFinal) => {
+            setTranscript(text)
+            if (isFinal && text.trim()) {
+              const { detected, cleanedText } = detectWakeWord(text)
+              if (detected && cleanedText) {
+                sendMessageRef.current?.(cleanedText)
+              } else if (!detected) {
+                // In hands-free mode, process all final speech (no wake word needed)
+                sendMessageRef.current?.(text)
+              }
+            }
+          },
+          onError: () => {
+            setIsListening(false)
+            setWakeWordActive(false)
+            // Auto-restart on error in hands-free mode
+            if (handsFreeRef.current) {
+              setTimeout(() => autoListenAfterSpeak(), 1000)
+            }
+          },
+        }, { continuous: true })
+      }
+    }, 600)
+  }, [])
+
   const speak = useCallback((text: string) => {
     const bus = busRef.current
     if (!bus) return
@@ -89,10 +138,13 @@ export function useVoiceAssistant() {
     bus.tts.cancel()
     bus.tts.speak(text, selectedVoiceRef.current, {
       onStart: () => setIsSpeaking(true),
-      onEnd: () => setIsSpeaking(false),
+      onEnd: () => {
+        setIsSpeaking(false)
+        autoListenAfterSpeak()
+      },
       onError: () => setIsSpeaking(false),
     })
-  }, [])
+  }, [autoListenAfterSpeak])
 
   // ── HAL: Execute action after approval ─────────────────────────────
   const executeAction = useCallback((action: VoiceAction) => {
@@ -124,9 +176,12 @@ export function useVoiceAssistant() {
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return
 
-    // Stop speech before processing
+    // Stop listening and speech before processing
+    busRef.current?.stt.stop()
     busRef.current?.tts.cancel()
+    setIsListening(false)
     setIsSpeaking(false)
+    setWakeWordActive(false)
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -136,6 +191,7 @@ export function useVoiceAssistant() {
     }
     setMessages(prev => [...prev, userMsg])
     setIsThinking(true)
+    isThinkingRef.current = true
     setTranscript('')
 
     try {
@@ -202,8 +258,30 @@ export function useVoiceAssistant() {
       setMessages(prev => [...prev, errMsg])
     } finally {
       setIsThinking(false)
+      isThinkingRef.current = false
     }
   }, [messages, speak, executeAction])
+
+  // Keep sendMessageRef in sync
+  sendMessageRef.current = sendMessage
+
+  // ── Hands-free mode toggle ─────────────────────────────────────────
+  const toggleHandsFree = useCallback(() => {
+    setHandsFree(prev => {
+      const next = !prev
+      handsFreeRef.current = next
+      if (next) {
+        // Start listening in continuous mode
+        autoListenAfterSpeak()
+      } else {
+        // Stop listening and reset
+        busRef.current?.stt.stop()
+        setIsListening(false)
+        setWakeWordActive(false)
+      }
+      return next
+    })
+  }, [autoListenAfterSpeak])
 
   // ── MPCB: STT controls ──────────────────────────────────────────────
   const startListening = useCallback(() => {
@@ -230,6 +308,7 @@ export function useVoiceAssistant() {
   const stopListening = useCallback(() => {
     busRef.current?.stt.stop()
     setIsListening(false)
+    setWakeWordActive(false)
   }, [])
 
   const stopSpeaking = useCallback(() => {
@@ -246,11 +325,14 @@ export function useVoiceAssistant() {
     currentAgent,
     voiceReady,
     pendingApproval,
+    handsFree,
+    wakeWordActive,
     sendMessage,
     startListening,
     stopListening,
     stopSpeaking,
     handleApproval,
     setActionCallback,
+    toggleHandsFree,
   }
 }

@@ -41,13 +41,23 @@ export async function getUser() {
   return data.user
 }
 
-// ── Portfolio cloud sync ──────────────────────────────────────────────────
-export async function loadPortfolioFromCloud(userId: string): Promise<Patent[] | null> {
+// ── Profile helpers ───────────────────────────────────────────────────────
+export async function getUserProfile(userId: string) {
+  if (!supabase) return null
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+  return data
+}
+
+// ── Portfolio cloud sync (org-scoped) ─────────────────────────────────────
+export async function loadPortfolioFromCloud(): Promise<Patent[] | null> {
   if (!supabase) return null
   const { data, error } = await supabase
     .from('patents')
     .select('*')
-    .eq('user_id', userId)
     .order('priority')
   if (error) { console.error('Cloud load error:', error); return null }
   return data?.map(row => ({
@@ -61,19 +71,25 @@ export async function loadPortfolioFromCloud(userId: string): Promise<Patent[] |
   })) ?? null
 }
 
-export async function savePortfolioToCloud(userId: string, portfolio: Patent[]) {
+export async function savePortfolioToCloud(portfolio: Patent[]) {
   if (!supabase) return
+  // Get the user's org_id from their profile
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  const profile = await getUserProfile(user.id)
+  if (!profile?.org_id) return
+
   const rows = portfolio.map(p => ({
-    user_id: userId,
+    org_id: profile.org_id,
     patent_id: p.id,
     title: p.title,
     status: p.status,
-    filed_date: p.filedDate,
-    app_number: p.appNumber,
-    deadline: p.deadline,
+    filed_date: p.filedDate || null,
+    app_number: p.appNumber || null,
+    deadline: p.deadline || null,
     priority: p.priority,
   }))
-  await supabase.from('patents').upsert(rows, { onConflict: 'user_id,patent_id' })
+  await supabase.from('patents').upsert(rows, { onConflict: 'org_id,patent_id' })
 }
 
 // ── Wizard session cloud sync ─────────────────────────────────────────────
@@ -88,7 +104,7 @@ export async function saveWizardSession(userId: string, patentId: string, state:
     cover_data: state.coverData,
     checks: state.checks ?? {},
     valid_result: state.validResult,
-    app_num: state.appNum ?? '',
+    app_number: state.appNum ?? '',
     updated_at: new Date().toISOString(),
   }, { onConflict: 'user_id,patent_id' })
 }
@@ -109,6 +125,24 @@ export async function loadWizardSession(userId: string, patentId: string): Promi
     coverData: data.cover_data,
     checks: data.checks,
     validResult: data.valid_result,
-    appNum: data.app_num,
+    appNum: data.app_number,
   }
+}
+
+// ── Audit log ─────────────────────────────────────────────────────────────
+export async function logAuditEvent(action: string, resourceType?: string, resourceId?: string, details?: Record<string, unknown>) {
+  if (!supabase) return
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  const profile = await getUserProfile(user.id)
+  if (!profile?.org_id) return
+
+  await supabase.from('audit_log').insert({
+    org_id: profile.org_id,
+    user_id: user.id,
+    action,
+    resource_type: resourceType,
+    resource_id: resourceId,
+    details: details ?? {},
+  })
 }

@@ -16,6 +16,10 @@ export interface FeatureFlags {
   prior_art_search_enabled: boolean
   filing_package_enabled: boolean
   reusable_profiles_enabled: boolean
+  // PA-5 Extension: VCE + DIC + PDB primitives (disabled by default)
+  invention_capture_enabled: boolean    // VCE: camera + AI vision analysis
+  domain_intelligence_enabled: boolean  // DIC: industry data capture
+  physical_digital_bridge_enabled: boolean  // PDB: photo-to-patent-doc pipeline
 }
 
 export type FlagKey = keyof FeatureFlags
@@ -33,6 +37,10 @@ const DEFAULT_FLAGS: FeatureFlags = {
   prior_art_search_enabled: true,
   filing_package_enabled: true,
   reusable_profiles_enabled: true,
+  // New VADI primitives — disabled by default until ready for production
+  invention_capture_enabled: false,
+  domain_intelligence_enabled: false,
+  physical_digital_bridge_enabled: false,
 }
 
 export function loadFeatureFlags(): FeatureFlags {

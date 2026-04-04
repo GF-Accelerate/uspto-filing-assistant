@@ -109,9 +109,56 @@ export function FilingPackage() {
   const [selectedPatent, setSelectedPatent] = useState<string>('PA-5')
   const [generating, setGenerating] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
+  const [batchSelected, setBatchSelected] = useState<Set<string>>(new Set())
 
   const patents = PORTFOLIO_INIT.filter(p => p.status !== 'filed')
   const filedPatents = PORTFOLIO_INIT.filter(p => p.status === 'filed')
+
+  const toggleBatch = (id: string) => {
+    setBatchSelected(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const handleBatchDownload = async () => {
+    if (batchSelected.size === 0) return
+    setGenerating('batch')
+    try {
+      const zip = new JSZip()
+      for (const patentId of batchSelected) {
+        const specText = PATENT_SPECS[patentId]
+        if (!specText) continue
+        const title = specText.match(/TITLE:\s*(.+)/)?.[1] ?? 'Patent Specification'
+        const data = buildExtractedData(patentId)
+        const safeName = patentId.replace(/[^a-zA-Z0-9-]/g, '')
+
+        const [specBlob, coverBlob] = await Promise.all([
+          generateSpecDOCX(specText, title, patentId),
+          generateCoverSheetDOCX(data, null, patentId),
+        ])
+
+        const folder = zip.folder(safeName)!
+        folder.file(`${safeName}-Specification.docx`, specBlob)
+        folder.file(`${safeName}-Cover-Sheet-PTO-SB-16.docx`, coverBlob)
+        folder.file('MANIFEST.txt', [
+          `Filing Package for ${patentId}: ${title}`,
+          `Generated: ${new Date().toLocaleDateString('en-US')}`,
+          `Entity Status: Small Entity ($320 filing fee)`,
+          '',
+          `${safeName}-Specification.docx          → "Specification"`,
+          `${safeName}-Cover-Sheet-PTO-SB-16.docx  → "Provisional Cover Sheet (SB16)"`,
+        ].join('\n'))
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      saveAs(zipBlob, `Batch-Filing-Package-${batchSelected.size}-patents.zip`)
+    } finally {
+      setGenerating(null)
+    }
+  }
   const documents = getDocumentsForPatent(selectedPatent)
   const readyDocs = documents.filter(d => d.status === 'ready')
 
@@ -229,6 +276,36 @@ export function FilingPackage() {
                   {p.id}: FILED ({p.appNumber})
                 </span>
               ))}
+            </div>
+          )}
+        </CardBody>
+      </Card>
+
+      {/* Batch Filing */}
+      <Card>
+        <CardHeader title="Batch Filing" right={
+          <span className="text-xs text-slate-400">{batchSelected.size} selected</span>
+        } />
+        <CardBody>
+          <p className="text-xs text-slate-500 mb-3">Select multiple patents to generate all filing packages in one ZIP.</p>
+          <div className="flex gap-2 flex-wrap mb-3">
+            {patents.filter(p => PATENT_SPECS[p.id]).map(p => (
+              <label key={p.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border cursor-pointer transition-colors ${
+                batchSelected.has(p.id) ? 'bg-blue-50 text-blue-700 border-blue-300' : 'bg-white text-slate-600 border-slate-200'
+              }`}>
+                <input type="checkbox" checked={batchSelected.has(p.id)} onChange={() => toggleBatch(p.id)} className="rounded" />
+                {p.id}
+              </label>
+            ))}
+          </div>
+          {batchSelected.size > 0 && (
+            <div className="flex items-center gap-3">
+              <Button variant="primary" onClick={handleBatchDownload} disabled={generating === 'batch'}>
+                {generating === 'batch' ? 'Generating...' : `Download ${batchSelected.size} Filing Packages (ZIP)`}
+              </Button>
+              <span className="text-xs text-slate-400">
+                Total fee: ${batchSelected.size * 320} ({batchSelected.size} x $320)
+              </span>
             </div>
           )}
         </CardBody>

@@ -126,6 +126,36 @@ export function getDefaultAssigneeProfile(): AssigneeProfile | undefined {
   return loadAssigneeProfiles().find(p => p.isDefault)
 }
 
+// ── Single-item CRUD aliases (used by Settings page) ─────────────
+
+export const getInventorProfiles = loadInventorProfiles
+export const getAssigneeProfiles = loadAssigneeProfiles
+
+export function saveInventorProfile(profile: InventorProfile): void {
+  const profiles = loadInventorProfiles()
+  const idx = profiles.findIndex(p => p.id === profile.id)
+  if (idx >= 0) profiles[idx] = profile
+  else profiles.push(profile)
+  saveInventorProfiles(profiles)
+}
+
+export function saveAssigneeProfile(profile: AssigneeProfile): void {
+  const profiles = loadAssigneeProfiles()
+  const idx = profiles.findIndex(p => p.id === profile.id)
+  if (idx >= 0) profiles[idx] = profile
+  else profiles.push(profile)
+  saveAssigneeProfiles(profiles)
+}
+
+export function deleteInventorProfile(id: string): void {
+  removeInventorProfile(id)
+}
+
+export function deleteAssigneeProfile(id: string): void {
+  const profiles = loadAssigneeProfiles().filter(p => p.id !== id)
+  saveAssigneeProfiles(profiles)
+}
+
 // ── Convert profiles to filing data format ───────────────────────
 
 export function inventorProfilesToFilingData(): Inventor[] {

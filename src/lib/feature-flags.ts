@@ -62,3 +62,16 @@ export function toggleFlag(key: FlagKey): FeatureFlags {
   saveFeatureFlags(flags)
   return flags
 }
+
+// Aliases for admin UI
+export const getFlags = loadFeatureFlags
+
+export function setFlag(key: FlagKey, value: boolean): void {
+  const flags = loadFeatureFlags()
+  flags[key] = value
+  saveFeatureFlags(flags)
+}
+
+export function resetFlags(): void {
+  saveFeatureFlags({ ...DEFAULT_FLAGS })
+}

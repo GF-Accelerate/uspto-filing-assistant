@@ -13,6 +13,12 @@ import { Legal }          from '@/pages/Legal'
 import { Trademark }      from '@/pages/Trademark'
 import { PriorArt }       from '@/pages/PriorArt'
 import { FilingPackage }  from '@/pages/FilingPackage'
+import { Calendar }       from '@/pages/Calendar'
+import { Settings }       from '@/pages/Settings'
+import { AdminDashboard } from '@/pages/admin/AdminDashboard'
+import { PatentOverview } from '@/pages/admin/PatentOverview'
+import { AuditLog }       from '@/pages/admin/AuditLog'
+import { FeatureFlags }   from '@/pages/admin/FeatureFlags'
 import { AuthModal }      from '@/components/auth/AuthModal'
 import { UserMenu }       from '@/components/auth/UserMenu'
 import { VoiceAssistant } from '@/components/voice/VoiceAssistant'
@@ -31,35 +37,40 @@ export default function App() {
     navigate('/wizard')
   }
 
-  // Split nav into primary (always visible) and secondary (overflow menu)
   const primaryNav = [
     { to: '/',           label: 'Portfolio'      },
     { to: '/wizard',     label: 'Wizard'         },
-    { to: '/drawings',   label: 'Drawings'       },
-    { to: '/downloads',  label: 'Downloads'      },
     { to: '/filing-package', label: 'Filing Pkg'  },
-    { to: '/deadlines',  label: 'Deadlines'      },
+    { to: '/calendar',   label: 'Calendar'       },
+    { to: '/downloads',  label: 'Downloads'      },
+    { to: '/drawings',   label: 'Drawings'       },
   ] as const
 
   const secondaryNav = [
-    { to: '/legal',      label: '📄 Legal Docs'  },
-    { to: '/trademark',  label: '™ Trademarks'   },
-    { to: '/prior-art',  label: '🔬 Prior Art'   },
+    { to: '/deadlines',  label: 'Deadlines'      },
+    { to: '/legal',      label: 'Legal Docs'     },
+    { to: '/trademark',  label: 'Trademarks'     },
+    { to: '/prior-art',  label: 'Prior Art'      },
+    { to: '/settings',   label: 'Settings'       },
     { to: '/guide',      label: 'USPTO Guide'    },
+  ] as const
+
+  const adminNav = [
+    { to: '/admin',          label: 'Dashboard'     },
+    { to: '/admin/patents',  label: 'Patents'       },
+    { to: '/admin/audit',    label: 'Audit Log'     },
+    { to: '/admin/flags',    label: 'Feature Flags' },
   ] as const
 
   const [moreOpen, setMoreOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      {/* ── Header: single responsive row ── */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 flex items-center gap-2 h-11">
-          {/* Logo + title */}
           <div className="w-6 h-6 rounded bg-blue-100 flex items-center justify-center text-xs flex-shrink-0">⚖</div>
           <span className="font-medium text-sm text-slate-800 hidden md:block whitespace-nowrap">Patent Filing</span>
 
-          {/* Primary nav */}
           <nav className="flex gap-0.5 ml-1">
             {primaryNav.map(({ to, label }) => (
               <NavLink key={to} to={to} end={to === '/'}
@@ -87,22 +98,35 @@ export default function App() {
             {moreOpen && (
               <>
                 <div style={{ position: 'fixed', inset: 0, zIndex: 40 }} onClick={() => setMoreOpen(false)} />
-                <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, zIndex: 50, minWidth: 160 }}
+                <div style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, zIndex: 50, minWidth: 180 }}
                   className="bg-white border border-slate-200 rounded-xl shadow-sm py-1">
                   {secondaryNav.map(({ to, label }) => (
                     <NavLink key={to} to={to}
                       onClick={() => setMoreOpen(false)}
                       className={({ isActive }) =>
                         `block px-4 py-2 text-xs font-medium transition-colors ${
-                          isActive
-                            ? 'text-blue-600 bg-blue-50'
-                            : 'text-slate-600 hover:bg-slate-50'
+                          isActive ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:bg-slate-50'
                         }`
                       }
                     >
                       {label}
                     </NavLink>
                   ))}
+                  <div className="border-t border-slate-100 mt-1 pt-1">
+                    <div className="px-4 py-1 text-xs text-slate-400 font-medium">Admin</div>
+                    {adminNav.map(({ to, label }) => (
+                      <NavLink key={to} to={to}
+                        onClick={() => setMoreOpen(false)}
+                        className={({ isActive }) =>
+                          `block px-4 py-2 text-xs font-medium transition-colors ${
+                            isActive ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:bg-slate-50'
+                          }`
+                        }
+                      >
+                        {label}
+                      </NavLink>
+                    ))}
+                  </div>
                 </div>
               </>
             )}
@@ -116,7 +140,6 @@ export default function App() {
           </span>
         </div>
 
-        {/* ── Warning / status bar — separate slim row ── */}
         <div className="bg-amber-50 border-t border-amber-200 px-4 py-1 flex items-center gap-3 flex-wrap text-xs text-amber-800">
           <span>
             <strong>USPTO requires ID.me + MFA to file</strong> — this app prepares all documents; you log in and click Submit.
@@ -142,10 +165,17 @@ export default function App() {
           <Route path="/deadlines"  element={<Deadlines />} />
           <Route path="/downloads"  element={<Downloads />} />
           <Route path="/filing-package" element={<FilingPackage />} />
+          <Route path="/calendar"   element={<Calendar />} />
+          <Route path="/settings"   element={<Settings />} />
           <Route path="/legal"      element={<Legal />} />
           <Route path="/trademark"  element={<Trademark />} />
           <Route path="/prior-art"  element={<PriorArt />} />
           <Route path="/guide"      element={<Guide />} />
+          {/* Admin routes */}
+          <Route path="/admin"          element={<AdminDashboard />} />
+          <Route path="/admin/patents"  element={<PatentOverview />} />
+          <Route path="/admin/audit"    element={<AuditLog />} />
+          <Route path="/admin/flags"    element={<FeatureFlags />} />
         </Routes>
       </main>
 

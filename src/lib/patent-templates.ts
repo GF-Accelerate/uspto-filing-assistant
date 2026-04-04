@@ -71,7 +71,7 @@ export function getDefaultTemplate(): Omit<PatentTemplate, 'id' | 'createdAt'> {
       assignee,
       entityStatus: 'Small Entity',
       filingDate: new Date().toISOString().split('T')[0],
-      independentClaims: 3,
+      independentClaims: 4,
       totalClaims: 14,
       hasDrawings: true,
       abstract: '',  // filled per-patent

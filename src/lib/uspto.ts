@@ -623,6 +623,24 @@ ABSTRACT
 
 A Voice-First Agentic Database Infrastructure (VADI) platform provides general-purpose infrastructure enabling third-party developers to build voice-controlled database applications with autonomous AI agent execution for any application domain. The platform comprises four infrastructure primitives available to all registered applications through a Developer SDK: a Voice-to-Query Engine converting natural language voice commands to optimized database queries through developer-extensible semantic mappings; an Agentic Execution Framework providing standardized agent registration, result routing, and multi-agent orchestration; a Human Authorization Layer enforced as an architectural primitive that intercepts all agent-initiated actions before execution and cannot be disabled by application-layer code; and a Multi-Provider Communication Bus providing failover-enabled delivery with compliance enforcement. Third-party developers extend the platform for any vertical domain (healthcare, legal, financial, retail, government, sports, or other) by registering domain-specific semantic mappings and agents through the SDK without modifying platform infrastructure code. The platform operates as a multi-tenant infrastructure with complete data isolation, serverless edge-function deployment, and versioned API access.
 
+DRAWINGS
+
+FIG. 1 — VADI Platform Architecture Overview illustrating the four platform primitives: Voice-to-Query Engine (VQE) 100, Agentic Execution Framework (AEF) 200, Human Authorization Layer (HAL) 300, and Multi-Provider Communication Bus (MPCB) 400, with Developer SDK interfaces connecting to each primitive and multi-tenant isolation boundaries.
+
+FIG. 2 — Voice-to-Query Engine (VQE) Pipeline Detail showing: standardized audio capture interface 110, multi-provider speech-to-text module 111, domain-aware NLP pipeline 120, configurable semantic mapping layer 130, query generation engine 140, and disambiguation protocol 150. Arrows indicate data flow from voice input through semantic mapping to database query output.
+
+FIG. 3 — Human Authorization Layer (HAL) Authorization Flow showing: Action Interceptor 310 receiving proposed actions from registered agents, Preview Generator 320 producing human-readable summaries, Authorization Interface 330 collecting human decisions, Authorization Store 340 maintaining immutable cryptographically-signed audit records, and Enforcement Engine 350 executing or blocking actions. The diagram emphasizes the platform-layer enforcement boundary that cannot be bypassed by application-layer code.
+
+FIG. 4 — Multi-Tenant Platform Architecture showing tenant isolation through row-level security, shared platform infrastructure resources (VQE, AEF, HAL, MPCB), configurable resource allocation policies, and serverless edge-function deployment with geographic distribution.
+
+FIG. 5 — End-to-End Data Flow depicting the complete voice-to-authorized-action sequence: (1) voice input capture, (2) STT transcription, (3) NLP intent classification, (4) semantic mapping to schema, (5) query generation and execution, (6) result routing to registered agent, (7) agent action proposal, (8) HAL interception and preview, (9) human authorization decision, (10) authorized action execution via MPCB.
+
+FILING METADATA
+Independent Claims: 4 (Claims 1, 9, 13, 14)
+Total Claims: 14
+Has Drawings: Yes (5 figures)
+Specification Paragraphs: [0001]–[0020]
+
 INVENTORS: Milton Overton & Lisa Overton
 ASSIGNEE: Visionary AI Systems, Inc. (Delaware)
 PRIORITY: This application claims priority benefit of PA-1 filed March 28, 2026

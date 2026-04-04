@@ -224,6 +224,30 @@ export function Settings() {
         </CardBody>
       </Card>
 
+      {/* Appearance */}
+      <Card>
+        <CardHeader title="Appearance" />
+        <CardBody>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-700">Dark Mode</p>
+              <p className="text-xs text-slate-400">Toggle between light and dark themes</p>
+            </div>
+            <button
+              onClick={() => {
+                const next = document.documentElement.classList.toggle('dark')
+                localStorage.setItem('uspto-dark-mode', String(next))
+              }}
+              className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors bg-slate-200"
+            >
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                localStorage.getItem('uspto-dark-mode') === 'true' ? 'translate-x-6' : 'translate-x-1'
+              }`} />
+            </button>
+          </div>
+        </CardBody>
+      </Card>
+
       {/* App Info */}
       <Card>
         <CardHeader title="Application Info" />

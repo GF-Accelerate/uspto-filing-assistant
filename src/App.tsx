@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import { usePortfolio }  from '@/hooks/usePortfolio'
 import { useWizard }     from '@/hooks/useWizard'
 import { useAuth }       from '@/hooks/useAuth'
+import { useFeatureFlags } from '@/hooks/useFeatureFlags'
 import { Dashboard }     from '@/pages/Dashboard'
 import { Wizard }        from '@/pages/Wizard'
 import { Drawings }      from '@/pages/Drawings'
@@ -29,8 +30,15 @@ export default function App() {
   const wizardCtx  = useWizard()
   const auth       = useAuth()
   const navigate   = useNavigate()
+  const { isEnabled } = useFeatureFlags()
   const pa1Days    = daysUntil('2027-04-03')
   const [showAuth, setShowAuth] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('uspto-dark-mode') === 'true')
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode)
+    localStorage.setItem('uspto-dark-mode', String(darkMode))
+  }, [darkMode])
 
   const handleOpen = (id: string) => {
     wizardCtx.open(id)
@@ -40,20 +48,20 @@ export default function App() {
   const primaryNav = [
     { to: '/',           label: 'Portfolio'      },
     { to: '/wizard',     label: 'Wizard'         },
-    { to: '/filing-package', label: 'Filing Pkg'  },
+    ...(isEnabled('filing_package_enabled') ? [{ to: '/filing-package', label: 'Filing Pkg' }]  : []),
     { to: '/calendar',   label: 'Calendar'       },
     { to: '/downloads',  label: 'Downloads'      },
-    { to: '/drawings',   label: 'Drawings'       },
-  ] as const
+    ...(isEnabled('drawing_generator_enabled') ? [{ to: '/drawings', label: 'Drawings' }]  : []),
+  ]
 
   const secondaryNav = [
     { to: '/deadlines',  label: 'Deadlines'      },
-    { to: '/legal',      label: 'Legal Docs'     },
-    { to: '/trademark',  label: 'Trademarks'     },
-    { to: '/prior-art',  label: 'Prior Art'      },
+    ...(isEnabled('legal_docs_enabled')       ? [{ to: '/legal',     label: 'Legal Docs' }]  : []),
+    ...(isEnabled('trademark_module_enabled') ? [{ to: '/trademark', label: 'Trademarks' }]  : []),
+    ...(isEnabled('prior_art_search_enabled') ? [{ to: '/prior-art', label: 'Prior Art' }]   : []),
     { to: '/settings',   label: 'Settings'       },
     { to: '/guide',      label: 'USPTO Guide'    },
-  ] as const
+  ]
 
   const adminNav = [
     { to: '/admin',          label: 'Dashboard'     },
@@ -65,8 +73,8 @@ export default function App() {
   const [moreOpen, setMoreOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans dark:text-slate-100">
+      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 flex items-center gap-2 h-11">
           <div className="w-6 h-6 rounded bg-blue-100 flex items-center justify-center text-xs flex-shrink-0">⚖</div>
           <span className="font-medium text-sm text-slate-800 hidden md:block whitespace-nowrap">Patent Filing</span>
@@ -112,6 +120,7 @@ export default function App() {
                       {label}
                     </NavLink>
                   ))}
+                  {isEnabled('admin_console_enabled') && (
                   <div className="border-t border-slate-100 mt-1 pt-1">
                     <div className="px-4 py-1 text-xs text-slate-400 font-medium">Admin</div>
                     {adminNav.map(({ to, label }) => (
@@ -127,6 +136,7 @@ export default function App() {
                       </NavLink>
                     ))}
                   </div>
+                  )}
                 </div>
               </>
             )}
@@ -134,6 +144,13 @@ export default function App() {
 
           <div className="flex-1" />
 
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="px-2 py-1 rounded text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {darkMode ? 'Light' : 'Dark'}
+          </button>
           <UserMenu auth={auth} onShowLogin={() => setShowAuth(true)} />
           <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium flex-shrink-0 hidden sm:block">
             PATENT PENDING
@@ -181,8 +198,8 @@ export default function App() {
 
       {showAuth && <AuthModal auth={auth} onClose={() => setShowAuth(false)} />}
 
-      {/* Voice AI Assistant — floating panel, always available */}
-      <VoiceAssistant />
+      {/* Voice AI Assistant — floating panel, gated by feature flag */}
+      {isEnabled('voice_assistant_enabled') && <VoiceAssistant />}
     </div>
   )
 }

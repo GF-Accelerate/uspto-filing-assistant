@@ -1,32 +1,57 @@
-// VoiceAssistant — floating voice AI panel
-// Pattern copied from CSOS voice interface — no CSOS code modified
-// Agents: deadline | document | filing | portfolio | claims | general
+// VoiceAssistant — floating voice AI panel (PA-5 VADI aligned)
+// Pipeline: VQE (capture) → AEF (agents) → HAL (approval) → MPCB (speak)
+// Agents: deadline | document | filing | portfolio | claims | workflow | general
 
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useVoiceAssistant, type AgentRole } from '@/hooks/useVoiceAssistant'
 
-const AGENT_LABELS: Record<AgentRole, { label: string; color: string; bg: string }> = {
-  deadline:  { label: '⏰ Deadline', color: 'text-red-700',    bg: 'bg-red-50'    },
-  document:  { label: '📄 Document', color: 'text-blue-700',   bg: 'bg-blue-50'   },
-  filing:    { label: '📋 Filing',   color: 'text-indigo-700', bg: 'bg-indigo-50' },
-  portfolio: { label: '🗂 Portfolio', color: 'text-violet-700', bg: 'bg-violet-50' },
-  claims:    { label: '⚖️ Claims',   color: 'text-amber-700',  bg: 'bg-amber-50'  },
-  general:   { label: '🏛 USPTO',    color: 'text-slate-700',  bg: 'bg-slate-50'  },
+const AGENT_LABELS: Record<AgentRole, { label: string; color: string }> = {
+  deadline:  { label: '⏰ Deadline',  color: 'text-red-700'    },
+  document:  { label: '📄 Document',  color: 'text-blue-700'   },
+  filing:    { label: '📋 Filing',    color: 'text-indigo-700' },
+  portfolio: { label: '🗂 Portfolio',  color: 'text-violet-700' },
+  claims:    { label: '⚖️ Claims',    color: 'text-amber-700'  },
+  workflow:  { label: '🚀 Workflow',  color: 'text-emerald-700' },
+  general:   { label: '🏛 USPTO',     color: 'text-slate-700'  },
 }
 
 export function VoiceAssistant() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
   const {
     messages, isListening, isThinking, isSpeaking, transcript,
-    currentAgent, voiceReady, sendMessage, startListening, stopListening, stopSpeaking,
+    currentAgent, voiceReady, pendingApproval,
+    sendMessage, startListening, stopListening, stopSpeaking,
+    handleApproval, setActionCallback,
   } = useVoiceAssistant()
+
+  // Wire up action callbacks for navigation
+  useEffect(() => {
+    setActionCallback((action) => {
+      switch (action.type) {
+        case 'OPEN_WIZARD':
+          navigate('/wizard')
+          break
+        case 'OPEN_FILING_PACKAGE':
+          navigate('/filing-package')
+          break
+        case 'NAVIGATE':
+          navigate(action.payload)
+          break
+        case 'GENERATE_DOC':
+          navigate('/filing-package')
+          break
+      }
+    })
+  }, [navigate, setActionCallback])
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, isThinking])
+  }, [messages, isThinking, pendingApproval])
 
   const handleSend = () => {
     if (!input.trim()) return
@@ -116,7 +141,6 @@ export function VoiceAssistant() {
                 Visionary AI Systems, Inc. — 7 patents
               </div>
             </div>
-            {/* Active agent badge + voice status */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
               <span style={{
                 background: 'rgba(255,255,255,0.15)',
@@ -166,7 +190,7 @@ export function VoiceAssistant() {
           }}>
             {[
               { label: '⏰ Deadlines', q: 'What are my most urgent patent deadlines?' },
-              { label: '📋 Next step', q: 'What is my next step to file PA-1 tonight?' },
+              { label: '🚀 File PA-5', q: 'File PA-5 for me' },
               { label: '📄 Documents', q: 'Which documents do I need to upload to Patent Center?' },
               { label: '⚖️ PA-5 moat', q: 'How does PA-5 create a licensing moat?' },
             ].map(({ label, q }) => (
@@ -239,6 +263,45 @@ export function VoiceAssistant() {
               </div>
             ))}
 
+            {/* HAL Approval prompt */}
+            {pendingApproval && (
+              <div style={{
+                background: '#fffbeb',
+                border: '1px solid #fbbf24',
+                borderRadius: 12,
+                padding: '10px 14px',
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#92400e', marginBottom: 6 }}>
+                  ⚖️ Action requires approval
+                </div>
+                <div style={{ fontSize: 12, color: '#78350f', marginBottom: 8 }}>
+                  {pendingApproval.description}
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => handleApproval(true)}
+                    style={{
+                      padding: '4px 14px', borderRadius: 99, border: 'none',
+                      background: '#059669', color: '#fff', fontSize: 11,
+                      fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleApproval(false)}
+                    style={{
+                      padding: '4px 14px', borderRadius: 99,
+                      border: '1px solid #d1d5db', background: '#fff',
+                      color: '#6b7280', fontSize: 11, fontWeight: 500, cursor: 'pointer',
+                    }}
+                  >
+                    Deny
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Thinking indicator */}
             {isThinking && (
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
@@ -269,7 +332,7 @@ export function VoiceAssistant() {
               </div>
             )}
 
-            {/* Speaking indicator — shows when assistant is talking back */}
+            {/* Speaking indicator */}
             {isSpeaking && !isThinking && (
               <div style={{
                 display: 'flex', gap: 8, alignItems: 'center',

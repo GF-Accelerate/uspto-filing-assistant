@@ -1,10 +1,18 @@
-// useVoiceAssistant — mirrors CSOS voice pipeline exactly
-// Web Speech API → intent parse → agent router → specialized agents → TTS
-// No CSOS codebase was modified — this is a standalone implementation
+// useVoiceAssistant — PA-5 VADI-aligned voice pipeline
+// VQE (voice capture + context) → AEF (agent routing + execution) → HAL (approval gate) → MPCB (TTS/STT)
+// Refactored from flat implementation to modular VADI primitives.
 
 import { useState, useRef, useCallback, useEffect } from 'react'
+import type { AgentRole, VoiceAction } from '@/lib/vadi/aef'
+import { routeIntent, callAgent } from '@/lib/vadi/aef'
+import { selectAmericanFemaleVoice, emptyContext, updateContext, contextToPrompt, extractPatentIds } from '@/lib/vadi/vqe'
+import type { ConversationContext } from '@/lib/vadi/vqe'
+import { requiresApproval, createApprovalRequest, approveRequest, logApproval } from '@/lib/vadi/hal'
+import type { ApprovalRequest } from '@/lib/vadi/hal'
+import { createDefaultBus } from '@/lib/vadi/mpcb'
+import type { CommunicationBus } from '@/lib/vadi/mpcb'
 
-export type AgentRole = 'deadline' | 'document' | 'filing' | 'portfolio' | 'claims' | 'general'
+export type { AgentRole } from '@/lib/vadi/aef'
 
 export interface Message {
   id: string
@@ -12,194 +20,16 @@ export interface Message {
   text: string
   agent?: AgentRole
   timestamp: Date
-}
-
-// ── Knowledge base: patent filing domain context ──────────────────────────
-// Live portfolio data is injected via buildDynamicKnowledge() below
-
-import { PORTFOLIO_INIT, daysUntil } from '@/lib/uspto'
-
-function buildDynamicKnowledge(): string {
-  const portfolioLines = PORTFOLIO_INIT.map(p => {
-    const days = daysUntil(p.deadline)
-    const daysStr = days !== null ? ` — ${days} days remaining` : ''
-    const statusStr = p.status === 'filed'
-      ? `FILED (App #${p.appNumber})${p.deadline ? ` — Nonprovisional due ${p.deadline}${daysStr}` : ''}`
-      : p.status === 'ready'
-      ? `Ready to file${daysStr}`
-      : p.status === 'draft'
-      ? 'Draft — spec in progress'
-      : 'Planned'
-    return `- ${p.id}: ${p.title} — ${statusStr}`
-  }).join('\n')
-
-  const filedCount = PORTFOLIO_INIT.filter(p => p.status === 'filed').length
-  const readyCount = PORTFOLIO_INIT.filter(p => p.status === 'ready').length
-
-  return `You are the Patent Filing AI Assistant for Visionary AI Systems, Inc.
-You have complete knowledge of the following portfolio:
-
-PATENT PORTFOLIO (${PORTFOLIO_INIT.length} patents — ${filedCount} filed, ${readyCount} ready):
-${portfolioLines}
-
-ECOSYSTEM PRODUCTS (live):
-- CSOS: College Sports Operating System — live at KSU, 170K+ constituent records
-- Visionary AI Marketing Automation — live
-- Revenue Shield — live
-- Patent Filing Assistant — this app
-- Conversational IP Platform (PA-6) — to be built
-All products feed training data to VisAI vertical models (PA-7 system)
-
-INVENTORS: Milton Overton & Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144
-ASSIGNEE: Visionary AI Systems, Inc. — Delaware Corporation (State ID: 10468520), EIN: 41-3757112
-ENTITY STATUS: Small Entity — $320 filing fee per provisional
-
-KEY FILING STEPS at patentcenter.uspto.gov:
-1. New submission → Patent application → Utility → Provisional (35 USC 111(b)) → Small Entity
-2. Web ADS → Add inventors (Milton + Lisa, Kennesaw GA 30144) → Add Assignee (Visionary AI Systems Inc, Delaware Corp)
-3. Upload documents: Specification (DOCX type: "Specification"), Cover Sheet (DOCX type: "Provisional Cover Sheet (SB16)"), Drawings (PDF type: "Drawings")
-4. Pay $320 → Submit → SAVE APPLICATION NUMBER (format: 63/XXX,XXX or 64/XXX,XXX)
-
-NEW APP FEATURES:
-- Downloads page now has DOCX generation for all 7 patent specs
-- Filing Package page generates one-click ZIP with Specification + Cover Sheet + manifest
-- All patent specs (PA-1 through PA-7) are available for immediate DOCX export
-
-PRIORITY ACTIONS:
-1. Sign Assignment Agreement (50/50 Milton/Lisa — Delaware)
-2. File PA-5 VADI this week ($320) — platform licensing moat
-3. File PA-2 + PA-3 by April 27, 2026 ($640 total) — CRITICAL DEADLINE
-4. Get USPTO ODP API key for post-filing tracking
-
-AGENTS AVAILABLE:
-- deadline: answers questions about filing deadlines and priority dates
-- document: helps find and identify correct documents to file
-- filing: walks through Patent Center step by step
-- portfolio: answers questions about specific patents and claims
-- claims: explains patent claims language and HITL gate innovations
-- general: USPTO rules, fees, procedures`
-}
-
-const PATENT_KNOWLEDGE = buildDynamicKnowledge()
-
-// ── Agent system prompts ──────────────────────────────────────────────────
-const AGENT_PROMPTS: Record<AgentRole, string> = {
-  deadline: `${PATENT_KNOWLEDGE}\n\nYou are the DEADLINE AGENT. Focus on dates, deadlines, and priority windows. Always state exact dates and days remaining. Be urgent about missed deadlines. Keep responses under 3 sentences. Speak in plain English.`,
-  document: `${PATENT_KNOWLEDGE}\n\nYou are the DOCUMENT AGENT. Help identify the correct documents to download, what each file is for, and what document type to select in Patent Center. Keep responses concise and actionable.`,
-  filing: `${PATENT_KNOWLEDGE}\n\nYou are the FILING GUIDE AGENT. Walk through Patent Center steps one at a time. Be specific about what to click, what to type, what to select. Reference the exact field names and dropdown values.`,
-  portfolio: `${PATENT_KNOWLEDGE}\n\nYou are the PORTFOLIO AGENT. Answer questions about specific patents, their claims, innovations, competitive advantage, and relationship to each other. Explain the HITL gate non-bypass language and why it matters for licensing.`,
-  claims: `${PATENT_KNOWLEDGE}\n\nYou are the CLAIMS AGENT. Explain patent claim language, independent vs dependent claims, and how the HITL non-bypass language in Claim 1 and Claim 9 distinguishes this invention from LangGraph, HumanLayer, and CrewAI. Keep it accessible.`,
-  general: `${PATENT_KNOWLEDGE}\n\nYou are the GENERAL USPTO AGENT. Answer questions about USPTO procedures, fees, provisional vs nonprovisional differences, small entity status, assignment recording, and trademark filing. Be accurate and cite specific regulations when helpful.`,
-}
-
-// ── Intent router — maps user query to agent ─────────────────────────────
-const ROUTER_SYSTEM = `You are an intent router for a patent filing assistant.
-Classify the user's message into exactly one of these agents:
-- deadline: anything about dates, deadlines, days remaining, priority windows, when to file
-- document: anything about which files to use, what to download, document types
-- filing: anything about steps in Patent Center, how to file, what to click
-- portfolio: questions about specific patents PA-1 through PA-5, innovations, competitive landscape
-- claims: questions about claim language, HITL gate, independent/dependent claims
-- general: USPTO rules, fees, entity status, procedures, assignment, trademarks
-
-Respond with ONLY one of these exact words: deadline, document, filing, portfolio, claims, general`
-
-async function routeIntent(userText: string): Promise<AgentRole> {
-  try {
-    const res = await fetch('/api/openrouter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system: ROUTER_SYSTEM,
-        user: userText,
-        max_tokens: 10,
-        force_tier: 'simple',
-      }),
-    })
-    const data = await res.json()
-    const role = (data.text || '').trim().toLowerCase() as AgentRole
-    return ['deadline','document','filing','portfolio','claims','general'].includes(role)
-      ? role : 'general'
-  } catch {
-    return 'general'
-  }
-}
-
-async function callAgent(agent: AgentRole, userText: string, history: Message[]): Promise<string> {
-  const contextMessages = history.slice(-6).map(m =>
-    `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`
-  ).join('\n')
-
-  const userPrompt = contextMessages
-    ? `Conversation so far:\n${contextMessages}\n\nLatest message: ${userText}`
-    : userText
-
-  const res = await fetch('/api/openrouter', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system: AGENT_PROMPTS[agent],
-      user: userPrompt,
-      max_tokens: 300,
-    }),
-  })
-  const data = await res.json()
-  return data.text || 'I encountered an error. Please try again.'
-}
-
-// ── American female voice selection with async loading ────────────────────
-// Web Speech API voices load asynchronously. We must wait for onvoiceschanged
-// before selecting. Priority order targets natural American female voices.
-const PREFERRED_VOICES_PRIORITY = [
-  // Chrome on Windows — best quality American female voices
-  'Microsoft Aria Online (Natural)',     // Windows 11 neural voice — best quality
-  'Microsoft Jenny Online (Natural)',    // Windows 11 neural voice
-  'Google US English',                   // Chrome's built-in US English female
-  // macOS voices
-  'Samantha',                            // macOS default female — very natural
-  'Karen',                               // macOS Australian but clear English
-  // Fallback patterns — match by language and gender hints
-  'Microsoft Zira',                      // Windows built-in US female
-  'Microsoft Aria',                      // Windows neural (offline version)
-  'Google US English Female',            // Some Chrome versions label it this way
-]
-
-function selectAmericanFemaleVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-  // First pass: exact name match from priority list
-  for (const preferred of PREFERRED_VOICES_PRIORITY) {
-    const match = voices.find(v => v.name.includes(preferred))
-    if (match) return match
-  }
-
-  // Second pass: any English (US) female voice
-  const usEnglish = voices.filter(v =>
-    v.lang === 'en-US' || v.lang === 'en_US'
-  )
-  if (usEnglish.length > 0) {
-    // Prefer voices with "female" or common female voice names
-    const femaleHints = ['female', 'woman', 'zira', 'aria', 'jenny', 'samantha', 'salli', 'joanna', 'kendra', 'ivy']
-    const female = usEnglish.find(v =>
-      femaleHints.some(h => v.name.toLowerCase().includes(h))
-    )
-    if (female) return female
-    // If no female hint found, return the first US English voice
-    return usEnglish[0]
-  }
-
-  // Third pass: any English voice at all (en-GB, en-AU, etc.)
-  const anyEnglish = voices.find(v => v.lang.startsWith('en'))
-  if (anyEnglish) return anyEnglish
-
-  // Last resort: first available voice
-  return voices[0] || null
+  actions?: VoiceAction[]
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────
+
 export function useVoiceAssistant() {
   const [messages, setMessages] = useState<Message[]>([{
     id: 'welcome',
     role: 'assistant',
-    text: "Hi Milton! I'm your Patent Filing Assistant. I can help with deadlines, documents, filing steps, and your patent portfolio. Ask me anything — or tap the mic to speak.",
+    text: "Hi Milton! I'm your Patent Filing Assistant. I can help with deadlines, documents, filing steps, and your patent portfolio. Ask me anything — or tap the mic to speak. Try: \"File PA-5 for me\" or \"What's my next deadline?\"",
     agent: 'general',
     timestamp: new Date(),
   }])
@@ -209,104 +39,93 @@ export function useVoiceAssistant() {
   const [transcript, setTranscript] = useState('')
   const [currentAgent, setCurrentAgent] = useState<AgentRole>('general')
   const [voiceReady, setVoiceReady] = useState(false)
+  const [pendingApproval, setPendingApproval] = useState<ApprovalRequest | null>(null)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null)
-  const synthRef = useRef<SpeechSynthesis | null>(null)
+  // VADI modules
+  const busRef = useRef<CommunicationBus | null>(null)
   const selectedVoiceRef = useRef<SpeechSynthesisVoice | null>(null)
+  const contextRef = useRef<ConversationContext>(emptyContext())
 
-  // ── Initialize TTS with proper async voice loading ──────────────────
+  // Action callback — set by the parent component to handle navigation
+  const actionCallbackRef = useRef<((action: VoiceAction) => void) | null>(null)
+
+  const setActionCallback = useCallback((cb: (action: VoiceAction) => void) => {
+    actionCallbackRef.current = cb
+  }, [])
+
+  // ── Initialize MPCB (TTS/STT providers) ──────────────────────────────
   useEffect(() => {
+    const bus = createDefaultBus()
+    busRef.current = bus
+
+    // Initialize voice selection
     const synth = window.speechSynthesis
     if (!synth) return
-    synthRef.current = synth
 
     const loadVoices = () => {
       const voices = synth.getVoices()
-      if (voices.length === 0) return // not loaded yet
+      if (voices.length === 0) return
 
       const selected = selectAmericanFemaleVoice(voices)
       selectedVoiceRef.current = selected
       setVoiceReady(true)
 
       if (selected) {
-        console.log(`[VoiceAssistant] Selected voice: "${selected.name}" (${selected.lang})`)
+        console.log(`[VADI/MPCB] Selected voice: "${selected.name}" (${selected.lang})`)
       }
     }
 
-    // Try immediately (works in some browsers)
     loadVoices()
-
-    // Also listen for async load event (required in Chrome)
     synth.onvoiceschanged = loadVoices
 
-    return () => {
-      synth.onvoiceschanged = null
-    }
+    return () => { synth.onvoiceschanged = null }
   }, [])
 
+  // ── MPCB: Speak via TTS provider ─────────────────────────────────────
   const speak = useCallback((text: string) => {
-    const synth = synthRef.current
-    if (!synth) return
+    const bus = busRef.current
+    if (!bus) return
 
-    // Cancel any ongoing speech
-    synth.cancel()
+    bus.tts.cancel()
+    bus.tts.speak(text, selectedVoiceRef.current, {
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    })
+  }, [])
 
-    const utt = new SpeechSynthesisUtterance(text)
-    utt.rate = 1.05    // Slightly faster than default for conversational feel
-    utt.pitch = 1.05   // Slightly higher for friendly female tone
-    utt.volume = 1.0
-
-    // Apply the pre-selected American female voice
-    if (selectedVoiceRef.current) {
-      utt.voice = selectedVoiceRef.current
-    }
-
-    // Track speaking state for UI feedback
-    utt.onstart = () => setIsSpeaking(true)
-    utt.onend = () => setIsSpeaking(false)
-    utt.onerror = () => setIsSpeaking(false)
-
-    // Chrome has a bug where long utterances get cut off after ~15 seconds.
-    // Workaround: chunk long text into sentences and speak sequentially.
-    if (text.length > 200) {
-      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text]
-      let idx = 0
-
-      const speakNext = () => {
-        if (idx >= sentences.length) {
-          setIsSpeaking(false)
-          return
-        }
-        const chunk = new SpeechSynthesisUtterance(sentences[idx].trim())
-        chunk.rate = utt.rate
-        chunk.pitch = utt.pitch
-        chunk.volume = utt.volume
-        if (selectedVoiceRef.current) chunk.voice = selectedVoiceRef.current
-
-        chunk.onstart = () => setIsSpeaking(true)
-        chunk.onend = () => {
-          idx++
-          speakNext()
-        }
-        chunk.onerror = () => {
-          setIsSpeaking(false)
-        }
-        synth.speak(chunk)
-      }
-
-      setIsSpeaking(true)
-      speakNext()
-    } else {
-      synth.speak(utt)
+  // ── HAL: Execute action after approval ─────────────────────────────
+  const executeAction = useCallback((action: VoiceAction) => {
+    if (actionCallbackRef.current) {
+      actionCallbackRef.current(action)
     }
   }, [])
 
+  const handleApproval = useCallback((approved: boolean) => {
+    if (!pendingApproval) return
+
+    const resolved = approved
+      ? approveRequest(pendingApproval)
+      : { ...pendingApproval, status: 'denied' as const, resolvedAt: new Date().toISOString() }
+
+    logApproval(resolved)
+
+    if (approved) {
+      executeAction(pendingApproval.action)
+      speak(`Okay, ${pendingApproval.description.toLowerCase()}.`)
+    } else {
+      speak('Action cancelled.')
+    }
+
+    setPendingApproval(null)
+  }, [pendingApproval, executeAction, speak])
+
+  // ── Main message pipeline: VQE → AEF → HAL → MPCB ──────────────────
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return
 
-    // Stop any current speech before processing new message
-    synthRef.current?.cancel()
+    // Stop speech before processing
+    busRef.current?.tts.cancel()
     setIsSpeaking(false)
 
     const userMsg: Message = {
@@ -320,24 +139,58 @@ export function useVoiceAssistant() {
     setTranscript('')
 
     try {
-      // Route to correct agent
+      // VQE: Extract patent mentions and update context
+      const mentionedPatents = extractPatentIds(text)
+      if (mentionedPatents.length > 0) {
+        contextRef.current = {
+          ...contextRef.current,
+          currentPatentId: mentionedPatents[mentionedPatents.length - 1],
+          mentionedPatents: [...new Set([...contextRef.current.mentionedPatents, ...mentionedPatents])].slice(-5),
+        }
+      }
+
+      // AEF: Route to agent
       const agent = await routeIntent(text)
       setCurrentAgent(agent)
 
-      // Call agent with conversation history
-      const response = await callAgent(agent, text, [...messages, userMsg])
+      // VQE: Update context with agent role
+      contextRef.current = updateContext(contextRef.current, text, agent)
+      const ctxPrompt = contextToPrompt(contextRef.current)
+
+      // AEF: Call agent with context
+      const response = await callAgent(
+        agent,
+        text,
+        [...messages, userMsg].map(m => ({ role: m.role, text: m.text })),
+        ctxPrompt,
+      )
 
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        text: response,
+        text: response.text,
         agent,
         timestamp: new Date(),
+        actions: response.actions,
       }
       setMessages(prev => [...prev, assistantMsg])
 
-      // Speak the response — this is what makes it two-way
-      speak(response)
+      // HAL: Check actions for approval requirement
+      for (const action of response.actions) {
+        if (requiresApproval(action)) {
+          const request = createApprovalRequest(action)
+          setPendingApproval(request)
+          // Speak the response but don't execute until approved
+          speak(response.text)
+          return
+        } else {
+          // Auto-approved actions execute immediately
+          executeAction(action)
+        }
+      }
+
+      // MPCB: Speak response
+      speak(response.text)
     } catch {
       const errMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -350,57 +203,37 @@ export function useVoiceAssistant() {
     } finally {
       setIsThinking(false)
     }
-  }, [messages, speak])
+  }, [messages, speak, executeAction])
 
+  // ── MPCB: STT controls ──────────────────────────────────────────────
   const startListening = useCallback(() => {
-    // Stop speaking before listening — prevents feedback loop
-    synthRef.current?.cancel()
+    busRef.current?.tts.cancel()
     setIsSpeaking(false)
 
-    // Web Speech API — same pattern as CSOS voice pipeline
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const win = window as any
-    const RecognitionClass = win.SpeechRecognition ?? win.webkitSpeechRecognition
-    if (!RecognitionClass) {
+    const bus = busRef.current
+    if (!bus || !bus.stt.available) {
       alert('Voice input requires Chrome or Edge. Please type your question.')
       return
     }
 
-    if (recognitionRef.current) {
-      recognitionRef.current.abort()
-    }
-
-    const rec = new RecognitionClass()
-    rec.continuous = false
-    rec.interimResults = true
-    rec.lang = 'en-US'
-
-    rec.onstart = () => setIsListening(true)
-    rec.onend = () => setIsListening(false)
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    rec.onresult = (e: any) => {
-      const results = Array.from(e.results)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const text = results.map((r: any) => r[0].transcript).join('')
-      setTranscript(text)
-      if (e.results[e.results.length - 1].isFinal) {
-        sendMessage(text)
-      }
-    }
-
-    rec.onerror = () => setIsListening(false)
-    recognitionRef.current = rec
-    rec.start()
+    bus.stt.start({
+      onStart: () => setIsListening(true),
+      onEnd: () => setIsListening(false),
+      onResult: (text, isFinal) => {
+        setTranscript(text)
+        if (isFinal) sendMessage(text)
+      },
+      onError: () => setIsListening(false),
+    })
   }, [sendMessage])
 
   const stopListening = useCallback(() => {
-    recognitionRef.current?.stop()
+    busRef.current?.stt.stop()
     setIsListening(false)
   }, [])
 
   const stopSpeaking = useCallback(() => {
-    synthRef.current?.cancel()
+    busRef.current?.tts.cancel()
     setIsSpeaking(false)
   }, [])
 
@@ -412,9 +245,12 @@ export function useVoiceAssistant() {
     transcript,
     currentAgent,
     voiceReady,
+    pendingApproval,
     sendMessage,
     startListening,
     stopListening,
     stopSpeaking,
+    handleApproval,
+    setActionCallback,
   }
 }

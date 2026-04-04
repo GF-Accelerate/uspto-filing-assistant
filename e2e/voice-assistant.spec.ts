@@ -30,7 +30,9 @@ test.describe('Voice Assistant', () => {
     // Quick action buttons contain these labels
     await expect(page.locator('button:text("Deadlines")')).toBeVisible()
     await expect(page.locator('button:text("File PA-5")')).toBeVisible()
-    await expect(page.locator('button:text("Documents")')).toBeVisible()
+    await expect(page.locator('button:text("Prior Art")')).toBeVisible()
+    await expect(page.locator('button:text("Legal Docs")')).toBeVisible()
+    await expect(page.locator('button:text("Drawings")')).toBeVisible()
   })
 
   test('text input field is present and functional', async ({ page }) => {

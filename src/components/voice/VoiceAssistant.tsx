@@ -28,7 +28,7 @@ export function VoiceAssistant() {
     handleApproval, setActionCallback, toggleHandsFree,
   } = useVoiceAssistant()
 
-  // Wire up action callbacks for navigation
+  // Wire up action callbacks for navigation and feature execution
   useEffect(() => {
     setActionCallback((action) => {
       switch (action.type) {
@@ -43,6 +43,41 @@ export function VoiceAssistant() {
           break
         case 'GENERATE_DOC':
           navigate('/filing-package')
+          break
+        case 'OPEN_DRAWINGS':
+          navigate('/drawings')
+          break
+        case 'OPEN_PRIOR_ART':
+          navigate('/prior-art')
+          break
+        case 'OPEN_LEGAL':
+          navigate('/legal')
+          break
+        case 'OPEN_TRADEMARK':
+          navigate('/trademark')
+          break
+        case 'OPEN_CALENDAR':
+          navigate('/calendar')
+          break
+        case 'OPEN_SETTINGS':
+          navigate('/settings')
+          break
+        case 'OPEN_ADMIN':
+          navigate('/admin')
+          break
+        case 'TOGGLE_DARK_MODE':
+          document.documentElement.classList.toggle('dark')
+          localStorage.setItem('dark-mode',
+            document.documentElement.classList.contains('dark') ? 'true' : 'false')
+          break
+        case 'RUN_PRIOR_ART_SEARCH':
+          navigate(`/prior-art?q=${encodeURIComponent(action.payload)}`)
+          break
+        case 'GENERATE_LEGAL_DOC':
+          navigate(`/legal?type=${encodeURIComponent(action.payload)}`)
+          break
+        case 'RUN_TRADEMARK_SEARCH':
+          navigate(`/trademark?q=${encodeURIComponent(action.payload)}`)
           break
       }
     })
@@ -210,7 +245,9 @@ export function VoiceAssistant() {
               { label: '⏰ Deadlines', q: 'What are my most urgent patent deadlines?' },
               { label: '🚀 File PA-5', q: 'File PA-5 for me' },
               { label: '📄 Documents', q: 'Which documents do I need to upload to Patent Center?' },
-              { label: '⚖️ PA-5 moat', q: 'How does PA-5 create a licensing moat?' },
+              { label: '🔍 Prior Art', q: 'Open prior art search' },
+              { label: '📝 Legal Docs', q: 'Open legal document generator' },
+              { label: '🎨 Drawings', q: 'Open patent drawings' },
             ].map(({ label, q }) => (
               <button
                 key={label}

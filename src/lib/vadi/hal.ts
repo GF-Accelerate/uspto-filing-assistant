@@ -20,12 +20,23 @@ export interface ApprovalRequest {
 const APPROVAL_REQUIRED: Set<VoiceAction['type']> = new Set([
   'OPEN_WIZARD',         // Starting a filing workflow
   'GENERATE_DOC',        // Generating official documents
+  'GENERATE_LEGAL_DOC',  // Generating legal documents (NDA, Assignment, etc.)
+  'RUN_PRIOR_ART_SEARCH', // Running prior art search (uses API credits)
+  'RUN_TRADEMARK_SEARCH', // Running trademark clearance search (uses API credits)
 ])
 
 // Actions that are safe to execute without approval
 const AUTO_APPROVED: Set<VoiceAction['type']> = new Set([
   'NAVIGATE',            // Page navigation is always safe
   'OPEN_FILING_PACKAGE', // Viewing filing package is read-only
+  'OPEN_DRAWINGS',       // Opening drawings page is read-only
+  'OPEN_PRIOR_ART',      // Opening prior art page is read-only
+  'OPEN_LEGAL',          // Opening legal docs page is read-only
+  'OPEN_TRADEMARK',      // Opening trademark page is read-only
+  'OPEN_CALENDAR',       // Opening calendar is read-only
+  'OPEN_SETTINGS',       // Opening settings is read-only
+  'OPEN_ADMIN',          // Opening admin dashboard is read-only
+  'TOGGLE_DARK_MODE',    // UI preference toggle
 ])
 
 // ── Gate check ─────────────────────────────────────────────────────────────
@@ -55,6 +66,28 @@ function describeAction(action: VoiceAction): string {
       return `View filing package for ${action.payload}`
     case 'NAVIGATE':
       return `Navigate to ${action.payload}`
+    case 'OPEN_DRAWINGS':
+      return 'Open patent drawings generator'
+    case 'OPEN_PRIOR_ART':
+      return 'Open prior art search page'
+    case 'OPEN_LEGAL':
+      return 'Open legal document generator'
+    case 'OPEN_TRADEMARK':
+      return 'Open trademark portfolio manager'
+    case 'OPEN_CALENDAR':
+      return 'Open deadline calendar'
+    case 'OPEN_SETTINGS':
+      return 'Open inventor/assignee settings'
+    case 'OPEN_ADMIN':
+      return 'Open admin dashboard'
+    case 'TOGGLE_DARK_MODE':
+      return 'Toggle dark mode'
+    case 'RUN_PRIOR_ART_SEARCH':
+      return `Run prior art search for: ${action.payload}`
+    case 'GENERATE_LEGAL_DOC':
+      return `Generate legal document: ${action.payload}`
+    case 'RUN_TRADEMARK_SEARCH':
+      return `Run trademark clearance search for: ${action.payload}`
     default:
       return `Execute action: ${action.type}`
   }

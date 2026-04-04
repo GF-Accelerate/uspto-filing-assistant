@@ -9,7 +9,7 @@ test.describe('Feature Flags', () => {
   })
 
   test('default flags enable key features', async ({ page }) => {
-    const flags = await page.evaluate(() => {
+    await page.evaluate(() => {
       const raw = localStorage.getItem('uspto-feature-flags-v1')
       return raw ? JSON.parse(raw) : null
     })

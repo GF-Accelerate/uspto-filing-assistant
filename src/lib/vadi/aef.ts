@@ -59,11 +59,23 @@ KEY FILING STEPS at patentcenter.uspto.gov:
 3. Upload documents: Specification (DOCX type: "Specification"), Cover Sheet (DOCX type: "Provisional Cover Sheet (SB16)"), Drawings (PDF type: "Drawings")
 4. Pay $320 → Submit → SAVE APPLICATION NUMBER (format: 63/XXX,XXX or 64/XXX,XXX)
 
-APP FEATURES:
-- Downloads page has DOCX generation for all 7 patent specs
-- Filing Package page generates one-click ZIP with Specification + Cover Sheet + manifest
-- Wizard walks through 6-step filing process with AI analysis
-- Voice commands can navigate to Filing Package, Wizard, or Downloads
+APP PAGES & FEATURES:
+- Portfolio (/) — Dashboard showing all 7 patents with status badges
+- Wizard (/wizard) — 6-step filing workflow with AI analysis
+- Filing Package (/filing-package) — One-click ZIP: Spec + Cover Sheet + manifest, batch filing
+- Drawings (/drawings) — Mermaid.js patent drawing generator with PDF export at 300 DPI
+- Calendar (/calendar) — Deadline calendar with ICS export
+- Downloads (/downloads) — DOCX generation for all 7 patent specs
+- Deadlines (/deadlines) — Deadline tracking with 30/7 day alerts
+- Legal Docs (/legal) — AI-powered legal document generator (NDA, Assignment, Disclosure, License, Office Action Response, Cease & Desist)
+- Trademarks (/trademark) — Trademark portfolio manager with clearance search, TEAS Plus guide, specimen builder
+- Prior Art (/prior-art) — AI-powered prior art search with FTO analysis, risk assessment, web search
+- Settings (/settings) — Inventor/Assignee profile management, dark mode toggle
+- USPTO Guide (/guide) — Step-by-step patent filing instructions
+- Admin Dashboard (/admin) — System stats, HAL audit log, deadline overview
+- Feature Flags (/admin/flags) — Toggle app features on/off
+- Audit Log (/admin/audit) — HAL approval history
+- Patent Overview (/admin/patents) — Cross-org patent table
 
 PRIORITY ACTIONS:
 1. Sign Assignment Agreement (50/50 Milton/Lisa — Delaware)
@@ -95,8 +107,8 @@ const REGISTRY: AgentCapability[] = [
     role: 'filing',
     description: 'Patent Center step-by-step guidance',
     keywords: ['patent center', 'how to file', 'step', 'click', 'submit', 'web ads', 'login', 'id.me', 'mfa'],
-    canTriggerActions: false,
-    systemPrompt: `${knowledge}\n\nYou are the FILING GUIDE AGENT. Walk through Patent Center steps one at a time. Be specific about what to click, what to type, what to select. Reference the exact field names and dropdown values.`,
+    canTriggerActions: true,
+    systemPrompt: `${knowledge}\n\nYou are the FILING GUIDE AGENT. Walk through Patent Center steps one at a time. Be specific about what to click, what to type, what to select. Reference the exact field names and dropdown values. If the user wants to open the filing wizard or guide page, include [ACTION:OPEN_WIZARD:PA-X] or [ACTION:NAVIGATE:/guide].`,
   },
   {
     role: 'portfolio',
@@ -114,22 +126,43 @@ const REGISTRY: AgentCapability[] = [
   },
   {
     role: 'workflow',
-    description: 'Filing workflow commands — open wizard, generate packages',
-    keywords: ['file for me', 'start filing', 'open wizard', 'generate package', 'zip', 'filing package', 'begin filing', 'ready to file'],
+    description: 'Filing workflow commands, page navigation, and feature execution',
+    keywords: ['file for me', 'start filing', 'open wizard', 'generate package', 'zip', 'filing package', 'begin filing', 'ready to file',
+      'go to', 'open', 'show me', 'navigate', 'take me', 'switch to', 'drawings', 'calendar', 'deadlines', 'downloads',
+      'prior art', 'legal', 'trademark', 'settings', 'admin', 'dark mode', 'guide', 'search prior art', 'generate legal',
+      'trademark search', 'clearance', 'audit', 'feature flags'],
     canTriggerActions: true,
-    systemPrompt: `${knowledge}\n\nYou are the WORKFLOW AGENT. You help users start filing workflows. When a user wants to file a patent, include the appropriate action tag:
+    systemPrompt: `${knowledge}\n\nYou are the WORKFLOW AGENT. You help users start filing workflows and navigate to any page in the app. Include the appropriate action tag:
+
+FILING ACTIONS:
 - [ACTION:OPEN_WIZARD:PA-X] — opens the filing wizard for patent PA-X
 - [ACTION:OPEN_FILING_PACKAGE:PA-X] — opens the Filing Package page for patent PA-X
-- [ACTION:NAVIGATE:/path] — navigates to a page (e.g., /downloads, /drawings)
+- [ACTION:GENERATE_DOC:PA-X] — generates DOCX documents for patent PA-X
 
-Always confirm which patent before triggering an action. If the user says "file PA-5" or "start filing PA-3", include the action tag AND explain what will happen next. Keep responses brief and action-oriented.`,
+PAGE NAVIGATION:
+- [ACTION:NAVIGATE:/path] — navigates to any page (e.g., /downloads, /guide)
+- [ACTION:OPEN_DRAWINGS:] — opens the patent drawings generator
+- [ACTION:OPEN_PRIOR_ART:] — opens prior art search page
+- [ACTION:OPEN_LEGAL:] — opens legal document generator
+- [ACTION:OPEN_TRADEMARK:] — opens trademark portfolio manager
+- [ACTION:OPEN_CALENDAR:] — opens deadline calendar with ICS export
+- [ACTION:OPEN_SETTINGS:] — opens inventor/assignee settings
+- [ACTION:OPEN_ADMIN:] — opens admin dashboard
+
+FEATURE EXECUTION:
+- [ACTION:RUN_PRIOR_ART_SEARCH:query] — runs a prior art search with the given query
+- [ACTION:GENERATE_LEGAL_DOC:type] — generates a legal document (NDA, Assignment, Disclosure, License, Office Action Response, Cease & Desist)
+- [ACTION:RUN_TRADEMARK_SEARCH:query] — runs a trademark clearance search
+- [ACTION:TOGGLE_DARK_MODE:] — toggles dark mode on/off
+
+For filing actions, always confirm which patent before triggering. For navigation, go directly. Keep responses brief and action-oriented.`,
   },
   {
     role: 'general',
-    description: 'USPTO rules, fees, and procedures',
+    description: 'USPTO rules, fees, procedures, and app navigation',
     keywords: ['fee', 'cost', 'entity', 'status', 'trademark', 'assignment', 'provisional', 'nonprovisional', 'regulation'],
-    canTriggerActions: false,
-    systemPrompt: `${knowledge}\n\nYou are the GENERAL USPTO AGENT. Answer questions about USPTO procedures, fees, provisional vs nonprovisional differences, small entity status, assignment recording, and trademark filing. Be accurate and cite specific regulations when helpful.`,
+    canTriggerActions: true,
+    systemPrompt: `${knowledge}\n\nYou are the GENERAL USPTO AGENT. Answer questions about USPTO procedures, fees, provisional vs nonprovisional differences, small entity status, assignment recording, and trademark filing. Be accurate and cite specific regulations when helpful. If the user asks to navigate somewhere or wants to see a specific page, you can include navigation actions like [ACTION:NAVIGATE:/path] or [ACTION:OPEN_TRADEMARK:] to help them get there.`,
   },
 ]
 
@@ -191,16 +224,19 @@ export interface AgentResponse {
 
 export interface VoiceAction {
   type: 'OPEN_WIZARD' | 'OPEN_FILING_PACKAGE' | 'NAVIGATE' | 'GENERATE_DOC'
-  payload: string  // patent ID or route path
+    | 'OPEN_DRAWINGS' | 'OPEN_PRIOR_ART' | 'OPEN_LEGAL' | 'OPEN_TRADEMARK'
+    | 'OPEN_CALENDAR' | 'OPEN_SETTINGS' | 'OPEN_ADMIN' | 'TOGGLE_DARK_MODE'
+    | 'RUN_PRIOR_ART_SEARCH' | 'GENERATE_LEGAL_DOC' | 'RUN_TRADEMARK_SEARCH'
+  payload: string  // patent ID, route path, or parameter
 }
 
 // Parse action tags from agent response text
 function parseActions(text: string): VoiceAction[] {
   const actions: VoiceAction[] = []
-  const actionRegex = /\[ACTION:(OPEN_WIZARD|OPEN_FILING_PACKAGE|NAVIGATE|GENERATE_DOC):([^\]]+)\]/g
+  const actionRegex = /\[ACTION:(OPEN_WIZARD|OPEN_FILING_PACKAGE|NAVIGATE|GENERATE_DOC|OPEN_DRAWINGS|OPEN_PRIOR_ART|OPEN_LEGAL|OPEN_TRADEMARK|OPEN_CALENDAR|OPEN_SETTINGS|OPEN_ADMIN|TOGGLE_DARK_MODE|RUN_PRIOR_ART_SEARCH|GENERATE_LEGAL_DOC|RUN_TRADEMARK_SEARCH):([^\]]*)\]/g
   let match
   while ((match = actionRegex.exec(text)) !== null) {
-    actions.push({ type: match[1] as VoiceAction['type'], payload: match[2] })
+    actions.push({ type: match[1] as VoiceAction['type'], payload: match[2] || '' })
   }
   return actions
 }

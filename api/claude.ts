@@ -22,7 +22,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured on server' })
   }
 
-  const { system, user, max_tokens = 1000 } = req.body as {
+  const body = req.body as Record<string, unknown>
+
+  // Raw mode: pass full request body through (used by Prior Art, etc.)
+  if (body.raw === true) {
+    const { raw: _, anthropic_beta, ...requestBody } = body as Record<string, unknown>
+
+    // Build headers
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    }
+    if (anthropic_beta) {
+      headers['anthropic-beta'] = String(anthropic_beta)
+    }
+
+    // Ensure model is set
+    if (!requestBody.model) {
+      requestBody.model = MODEL
+    }
+
+    try {
+      const upstream = await fetch(ANTHROPIC_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody),
+      })
+
+      const data = await upstream.json()
+
+      if (!upstream.ok) {
+        return res.status(upstream.status).json({ error: data.error?.message || 'Upstream error' })
+      }
+
+      // Return full response for raw mode
+      return res.status(200).json(data)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      return res.status(500).json({ error: `Proxy error: ${message}` })
+    }
+  }
+
+  // Simple mode: system + user message (used by Wizard, etc.)
+  const { system, user, max_tokens = 1000 } = body as {
     system: string
     user: string
     max_tokens?: number

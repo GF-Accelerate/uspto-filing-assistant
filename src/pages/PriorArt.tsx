@@ -59,11 +59,8 @@ const PATENT_SEARCHES: SearchConfig[] = [
   },
 ]
 
-// ── Claude API with web search ────────────────────────────────────────────
+// ── Claude API with web search (via /api/claude proxy) ────────────────────
 async function searchPriorArt(config: SearchConfig): Promise<string> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  if (!apiKey) throw new Error('API key not set')
-
   const keywordStr = config.keywords.join('; ')
   const query = `Prior art patent search for: "${config.title}"
 
@@ -84,14 +81,12 @@ Please:
 
 Format your response with clear sections for each patent found, then the analysis.`
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/api/claude', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'anthropic-version': '2023-06-01',
-      'anthropic-beta': 'web-search-2025-03-05',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
+      raw: true,
+      anthropic_beta: 'web-search-2025-03-05',
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
       tools: [{ type: 'web_search_20250305', name: 'web_search' }],
@@ -100,9 +95,12 @@ Format your response with clear sections for each patent found, then the analysi
     }),
   })
 
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.error || `API error: ${res.status}`)
+  }
   const data = await res.json()
-  if (data.error) throw new Error(data.error.message)
+  if (data.error) throw new Error(data.error)
 
   // Extract all text blocks from the response (web search returns multiple content blocks)
   return data.content
@@ -116,19 +114,12 @@ async function analyzePatentConflict(
   priorArtText: string,
   config: SearchConfig
 ): Promise<PriorArtResult> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  if (!apiKey) throw new Error('API key not set')
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/api/claude', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
       system: 'You are a patent attorney analyzing prior art results. Respond ONLY with valid JSON, no markdown fences.',
-      messages: [{
-        role: 'user',
-        content: `Analyze this prior art search result for patent "${config.title}" and return structured JSON.
+      user: `Analyze this prior art search result for patent "${config.title}" and return structured JSON.
 
 Prior art search results:
 ${priorArtText.substring(0, 3000)}
@@ -155,12 +146,12 @@ Return JSON with EXACTLY this structure:
   "keyDifferences": ["key difference 1", "key difference 2", "key difference 3"],
   "recommendations": ["recommendation 1", "recommendation 2", "recommendation 3"]
 }`,
-      }],
+      max_tokens: 2000,
     }),
   })
 
   const data = await res.json()
-  const raw = data.content?.[0]?.text ?? ''
+  const raw = data.text ?? ''
   return JSON.parse(raw.replace(/```json|```/g, '').trim()) as PriorArtResult
 }
 

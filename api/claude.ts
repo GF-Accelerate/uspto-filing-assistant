@@ -26,7 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Raw mode: pass full request body through (used by Prior Art, etc.)
   if (body.raw === true) {
-    const { raw: _, anthropic_beta, ...requestBody } = body as Record<string, unknown>
+    const { raw: _raw, anthropic_beta, ...requestBody } = body as Record<string, unknown>
+    void _raw // stripped from upstream request
 
     // Build headers
     const headers: Record<string, string> = {

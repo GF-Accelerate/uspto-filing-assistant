@@ -6,20 +6,24 @@ import { daysUntil, USPTO_URLS } from '@/lib/uspto'
 interface Props { portfolio: Patent[]; onOpen: (id: string) => void }
 
 export function Dashboard({ portfolio, onOpen }: Props) {
+  const pa1Deadline = daysUntil('2027-04-03')
+
   const metrics = [
     { label:'Total patents', value:portfolio.length },
     { label:'Filed', value:portfolio.filter(p=>p.status==='filed').length },
     { label:'Ready to file', value:portfolio.filter(p=>p.status==='ready').length },
-    { label:'Days to PA-1 deadline', value: daysUntil('2027-03-28'), warn:true },
+    { label:'PA-1 nonprovisional', value: pa1Deadline !== null ? `${pa1Deadline}d` : '—', warn:true },
   ]
 
   const actions = [
-    { label:'File PA-2 (corrected inventors)', deadline:'April 27, 2026', urgent:true },
+    { label:'Sign Assignment Agreement (50/50 Milton/Lisa)', deadline:'This week', urgent:true },
+    { label:'File PA-5 VADI — platform licensing moat', deadline:'This week', urgent:true },
+    { label:'File PA-2 (athletic dept management)', deadline:'April 27, 2026', urgent:true },
     { label:'File PA-3 (campaign orchestration)', deadline:'April 27, 2026', urgent:true },
-    { label:'Execute assignment agreement', deadline:'This week', urgent:true },
-    { label:'Engage registered patent attorney', deadline:'Within 14 days', urgent:false },
+    { label:'File PA-6 (IP development platform)', deadline:'This week', urgent:false },
     { label:'File PA-4 (revenue intelligence)', deadline:'May 27, 2026', urgent:false },
-    { label:'File PA-1 nonprovisional', deadline:'March 28, 2027 — MANDATORY', urgent:false },
+    { label:'File PA-7 (federated learning)', deadline:'Within 30 days', urgent:false },
+    { label:'PA-1 nonprovisional (App #64/029,100)', deadline:'April 3, 2027 — MANDATORY', urgent:false },
   ]
 
   const resources = [
@@ -39,7 +43,7 @@ export function Dashboard({ portfolio, onOpen }: Props) {
         {metrics.map(m => (
           <div key={m.label} className="bg-white border border-slate-200 rounded-lg p-4">
             <div className="text-xs text-slate-500 mb-1">{m.label}</div>
-            <div className={['text-2xl font-medium', m.warn && (m.value as number) < 90 ? 'text-amber-600' : 'text-slate-900'].join(' ')}>{m.value}</div>
+            <div className={['text-2xl font-medium', m.warn ? 'text-amber-600' : 'text-slate-900'].join(' ')}>{m.value}</div>
           </div>
         ))}
       </div>

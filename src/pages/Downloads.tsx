@@ -3,7 +3,8 @@ import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
-import { PA1_SPEC_SUMMARY, PA2_SPEC_SUMMARY, PA3_SPEC_SUMMARY } from '@/lib/uspto'
+import { PA1_SPEC_SUMMARY, PA2_SPEC_SUMMARY, PA3_SPEC_SUMMARY, PA5_SPEC_SUMMARY, PA6_SPEC_SUMMARY, PA7_SPEC_SUMMARY } from '@/lib/uspto'
+import { downloadSpecDOCX } from '@/lib/docx-generator'
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function downloadText(content: string, filename: string) {
@@ -61,12 +62,12 @@ const DOCUMENTS = [
         id: 'pa1-spec',
         title: 'PA-1 Provisional Patent Application',
         subtitle: 'Voice-Controlled Database Query + Autonomous Agent Execution',
-        badge: 'Ready to file',
+        badge: 'FILED',
         badgeVariant: 'success' as const,
-        deadline: 'Filed March 28, 2026 · Nonprovisional due March 28, 2027',
-        formats: ['TXT', 'Copy'],
+        deadline: 'Filed April 3, 2026 (App #64/029,100) · Nonprovisional due April 3, 2027',
         spec: PA1_SPEC_SUMMARY,
         filename: 'PA1-Voice-Database-Provisional-Patent.txt',
+        patentId: 'PA-1',
         externalUrl: undefined,
       },
       {
@@ -75,10 +76,10 @@ const DOCUMENTS = [
         subtitle: 'Athletic Department Management Platform (Corrected)',
         badge: 'URGENT — April 27',
         badgeVariant: 'danger' as const,
-        deadline: 'File by April 27, 2026 — 26 days remaining',
-        formats: ['TXT', 'Copy'],
+        deadline: 'File by April 27, 2026',
         spec: PA2_SPEC_SUMMARY,
         filename: 'PA2-Athletic-Platform-Provisional-Patent.txt',
+        patentId: 'PA-2',
         externalUrl: undefined,
       },
       {
@@ -87,10 +88,46 @@ const DOCUMENTS = [
         subtitle: 'Multi-Modal Campaign Orchestration via Voice',
         badge: 'URGENT — April 27',
         badgeVariant: 'danger' as const,
-        deadline: 'File by April 27, 2026 — 26 days remaining',
-        formats: ['TXT', 'Copy'],
+        deadline: 'File by April 27, 2026',
         spec: PA3_SPEC_SUMMARY,
         filename: 'PA3-Campaign-Orchestration-Provisional-Patent.txt',
+        patentId: 'PA-3',
+        externalUrl: undefined,
+      },
+      {
+        id: 'pa5-spec',
+        title: 'PA-5 Provisional Patent Application',
+        subtitle: 'Voice-First Agentic Database Infrastructure (VADI)',
+        badge: 'File this week',
+        badgeVariant: 'warning' as const,
+        deadline: 'Platform licensing moat — file ASAP',
+        spec: PA5_SPEC_SUMMARY,
+        filename: 'PA5-VADI-Provisional-Patent.txt',
+        patentId: 'PA-5',
+        externalUrl: undefined,
+      },
+      {
+        id: 'pa6-spec',
+        title: 'PA-6 Provisional Patent Application',
+        subtitle: 'Conversational AI-Guided IP Development Platform',
+        badge: 'File this week',
+        badgeVariant: 'warning' as const,
+        deadline: 'LegalZoom replacement — $600M market',
+        spec: PA6_SPEC_SUMMARY,
+        filename: 'PA6-IP-Development-Platform-Provisional-Patent.txt',
+        patentId: 'PA-6',
+        externalUrl: undefined,
+      },
+      {
+        id: 'pa7-spec',
+        title: 'PA-7 Provisional Patent Application',
+        subtitle: 'Federated Multi-Vertical Industry Learning System',
+        badge: 'Within 30 days',
+        badgeVariant: 'info' as const,
+        deadline: 'AI independence data flywheel',
+        spec: PA7_SPEC_SUMMARY,
+        filename: 'PA7-Federated-Learning-Provisional-Patent.txt',
+        patentId: 'PA-7',
         externalUrl: undefined,
       },
     ],
@@ -101,13 +138,13 @@ const DOCUMENTS = [
       {
         id: 'assignment',
         title: 'Inventor Assignment Agreement',
-        subtitle: 'Transfers all 5 patents from inventors to Visionary AI Systems Inc',
+        subtitle: 'Transfers all 7 patents from inventors to Visionary AI Systems Inc',
         badge: 'Sign this week',
         badgeVariant: 'warning' as const,
         deadline: 'Must be executed before filing any patent',
-        formats: ['TXT', 'Copy'],
         spec: ASSIGNMENT_TEXT,
         filename: 'Inventor-Assignment-Agreement.txt',
+        patentId: undefined as string | undefined,
         externalUrl: undefined,
       },
     ],
@@ -122,10 +159,10 @@ const DOCUMENTS = [
         badge: 'Download from USPTO',
         badgeVariant: 'info' as const,
         deadline: 'One required per patent application',
-        formats: ['USPTO Link'],
-        spec: null,
+        spec: null as string | null,
         filename: '',
-        externalUrl: 'https://www.uspto.gov/sites/default/files/documents/sb0016.pdf',
+        patentId: undefined as string | undefined,
+        externalUrl: 'https://www.uspto.gov/sites/default/files/documents/sb0016.pdf' as string | undefined,
       },
       {
         id: 'feeschedule',
@@ -134,10 +171,10 @@ const DOCUMENTS = [
         badge: 'Verify before filing',
         badgeVariant: 'neutral' as const,
         deadline: 'Fees change January 1 each year',
-        formats: ['USPTO Link'],
-        spec: null,
+        spec: null as string | null,
         filename: '',
-        externalUrl: 'https://www.uspto.gov/learning-and-resources/fees-and-payment/uspto-fee-schedule',
+        patentId: undefined as string | undefined,
+        externalUrl: 'https://www.uspto.gov/learning-and-resources/fees-and-payment/uspto-fee-schedule' as string | undefined,
       },
     ],
   },
@@ -215,18 +252,30 @@ export function Downloads() {
                         </a>
                       ) : (
                         <>
+                          {doc.patentId && (
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              onClick={() => {
+                                const title = doc.spec!.match(/TITLE:\s*(.+)/)?.[1] ?? doc.subtitle
+                                downloadSpecDOCX(doc.spec!, title, doc.patentId!)
+                              }}
+                            >
+                              ⬇ DOCX
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             onClick={() => downloadText(doc.spec!, doc.filename)}
                           >
-                            ⬇ Download .txt
+                            ⬇ .txt
                           </Button>
                           <Button
                             size="sm"
                             variant={copied === doc.id ? 'primary' : 'secondary'}
                             onClick={() => copyToClipboard(doc.spec!, doc.id)}
                           >
-                            {copied === doc.id ? '✓ Copied!' : 'Copy text'}
+                            {copied === doc.id ? '✓ Copied!' : 'Copy'}
                           </Button>
                         </>
                       )}

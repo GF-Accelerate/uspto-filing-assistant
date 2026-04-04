@@ -12,6 +12,7 @@ import { Downloads }      from '@/pages/Downloads'
 import { Legal }          from '@/pages/Legal'
 import { Trademark }      from '@/pages/Trademark'
 import { PriorArt }       from '@/pages/PriorArt'
+import { FilingPackage }  from '@/pages/FilingPackage'
 import { AuthModal }      from '@/components/auth/AuthModal'
 import { UserMenu }       from '@/components/auth/UserMenu'
 import { VoiceAssistant } from '@/components/voice/VoiceAssistant'
@@ -36,6 +37,7 @@ export default function App() {
     { to: '/wizard',     label: 'Wizard'         },
     { to: '/drawings',   label: 'Drawings'       },
     { to: '/downloads',  label: 'Downloads'      },
+    { to: '/filing-package', label: 'Filing Pkg'  },
     { to: '/deadlines',  label: 'Deadlines'      },
   ] as const
 
@@ -139,6 +141,7 @@ export default function App() {
           <Route path="/drawings"   element={<Drawings />} />
           <Route path="/deadlines"  element={<Deadlines />} />
           <Route path="/downloads"  element={<Downloads />} />
+          <Route path="/filing-package" element={<FilingPackage />} />
           <Route path="/legal"      element={<Legal />} />
           <Route path="/trademark"  element={<Trademark />} />
           <Route path="/prior-art"  element={<PriorArt />} />

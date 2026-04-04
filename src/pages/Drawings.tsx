@@ -288,6 +288,14 @@ async function downloadPDF(
     pageW / 2, pageH - 0.35, { align: 'center' }
   )
 
+  // Validate page size is exactly 8.5x11" (US Letter) per 37 CFR 1.84
+  const pdfPageW = pdf.internal.pageSize.getWidth()
+  const pdfPageH = pdf.internal.pageSize.getHeight()
+  if (Math.abs(pdfPageW - 8.5) > 0.01 || Math.abs(pdfPageH - 11) > 0.01) {
+    alert(`Page size validation failed: ${pdfPageW}" x ${pdfPageH}" — USPTO requires exactly 8.5" x 11"`)
+    return
+  }
+
   const safe = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0, 30)}`
   pdf.save(`PA1-${safe}.pdf`)
 }

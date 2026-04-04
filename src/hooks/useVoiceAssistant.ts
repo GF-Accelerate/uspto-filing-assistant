@@ -15,23 +15,38 @@ export interface Message {
 }
 
 // ── Knowledge base: patent filing domain context ──────────────────────────
-const PATENT_KNOWLEDGE = `You are the Patent Filing AI Assistant for Visionary AI Systems, Inc.
+// Live portfolio data is injected via buildDynamicKnowledge() below
+
+import { PORTFOLIO_INIT, daysUntil } from '@/lib/uspto'
+
+function buildDynamicKnowledge(): string {
+  const portfolioLines = PORTFOLIO_INIT.map(p => {
+    const days = daysUntil(p.deadline)
+    const daysStr = days !== null ? ` — ${days} days remaining` : ''
+    const statusStr = p.status === 'filed'
+      ? `FILED (App #${p.appNumber})${p.deadline ? ` — Nonprovisional due ${p.deadline}${daysStr}` : ''}`
+      : p.status === 'ready'
+      ? `Ready to file${daysStr}`
+      : p.status === 'draft'
+      ? 'Draft — spec in progress'
+      : 'Planned'
+    return `- ${p.id}: ${p.title} — ${statusStr}`
+  }).join('\n')
+
+  const filedCount = PORTFOLIO_INIT.filter(p => p.status === 'filed').length
+  const readyCount = PORTFOLIO_INIT.filter(p => p.status === 'ready').length
+
+  return `You are the Patent Filing AI Assistant for Visionary AI Systems, Inc.
 You have complete knowledge of the following portfolio:
 
-PATENT PORTFOLIO (7 patents):
-- PA-1: Voice-Controlled Database Query + Autonomous Agent Execution — Provisional FILED at patentcenter.uspto.gov — Nonprovisional deadline: March 28, 2027 (ABSOLUTE)
-- PA-2: Athletic Department Management Platform — File by April 27, 2026 (CRITICAL — 25 days)
-- PA-3: Multi-Modal Campaign Orchestration via Voice — File by April 27, 2026 (CRITICAL)
-- PA-4: Predictive Sports Revenue Intelligence Engine — File by May 27, 2026
-- PA-5: Voice-First Agentic Database Infrastructure (VADI) — File this week — Platform licensing moat
-- PA-6: Conversational AI-Guided IP Development Platform — File this week — LegalZoom replacement, $600M market
-- PA-7: Federated Multi-Vertical Industry Learning System — File within 30 days — AI independence data flywheel
+PATENT PORTFOLIO (${PORTFOLIO_INIT.length} patents — ${filedCount} filed, ${readyCount} ready):
+${portfolioLines}
 
 ECOSYSTEM PRODUCTS (live):
 - CSOS: College Sports Operating System — live at KSU, 170K+ constituent records
 - Visionary AI Marketing Automation — live
 - Revenue Shield — live
-- Patent Filing Assistant — this app, being built
+- Patent Filing Assistant — this app
 - Conversational IP Platform (PA-6) — to be built
 All products feed training data to VisAI vertical models (PA-7 system)
 
@@ -41,34 +56,20 @@ ENTITY STATUS: Small Entity — $320 filing fee per provisional
 
 KEY FILING STEPS at patentcenter.uspto.gov:
 1. New submission → Patent application → Utility → Provisional (35 USC 111(b)) → Small Entity
-2. Web ADS → Add inventors (Milton + Lisa, Kennesaw GA 30144) → Application details (title + Small Entity) → Skip Representatives → Skip First Inventor to File → Skip Authorization to Permit Access → Skip Applicant → Add Assignee (Visionary AI Systems Inc, Delaware Corp)
-3. Upload documents: Specification (DOCX), Cover Sheet (DOCX), FIG 1-5 PDFs (type: Drawings)
-4. Pay $320 → Submit → SAVE APPLICATION NUMBER (format: 63/XXX,XXX)
+2. Web ADS → Add inventors (Milton + Lisa, Kennesaw GA 30144) → Add Assignee (Visionary AI Systems Inc, Delaware Corp)
+3. Upload documents: Specification (DOCX type: "Specification"), Cover Sheet (DOCX type: "Provisional Cover Sheet (SB16)"), Drawings (PDF type: "Drawings")
+4. Pay $320 → Submit → SAVE APPLICATION NUMBER (format: 63/XXX,XXX or 64/XXX,XXX)
 
-TRADE SECRETS (do NOT include in any patent document):
-- Exact NLP prompt templates achieving 94% accuracy
-- Specific RFE scoring weight values
-- Athletic domain vocabulary corpus
-- Edge function performance tuning configurations
-- External API integration methods
+NEW APP FEATURES:
+- Downloads page now has DOCX generation for all 7 patent specs
+- Filing Package page generates one-click ZIP with Specification + Cover Sheet + manifest
+- All patent specs (PA-1 through PA-7) are available for immediate DOCX export
 
-KEY LEGAL DOCUMENTS READY TO DOWNLOAD in the app:
-- PA1-Complete-Provisional-Patent-DELAWARE.docx
-- PA1-Cover-Sheet-PTO-SB-16-DELAWARE.docx
-- PA1-FIG-1 through PA1-FIG-5 PDFs (drawings)
-- PA5-Voice-First-Agentic-DB-Infrastructure-VADI.docx
-- Assignment-Agreement-Final-Delaware-50-50.docx (SIGN TONIGHT — 50/50 Milton/Lisa)
-- Invention-Disclosure-IDF-001.docx (SIGN TONIGHT)
-- Trade-Secret-Registry.docx
-- Attorney-Handoff-Package.docx
-
-CRITICAL ACTIONS TONIGHT:
-1. Fix inventor names in Patent Center (remove prefix/middle name)
-2. Complete ADS → Upload documents → Pay $320 → Get application number
-3. Sign Assignment Agreement + Invention Disclosure (both inventors)
-4. File PA-5 this week ($320)
-5. File PA-2 + PA-3 by April 27 ($640)
-6. Rotate ALL API keys (GitHub, Vercel, Supabase, Anthropic — all shared in chat)
+PRIORITY ACTIONS:
+1. Sign Assignment Agreement (50/50 Milton/Lisa — Delaware)
+2. File PA-5 VADI this week ($320) — platform licensing moat
+3. File PA-2 + PA-3 by April 27, 2026 ($640 total) — CRITICAL DEADLINE
+4. Get USPTO ODP API key for post-filing tracking
 
 AGENTS AVAILABLE:
 - deadline: answers questions about filing deadlines and priority dates
@@ -77,6 +78,9 @@ AGENTS AVAILABLE:
 - portfolio: answers questions about specific patents and claims
 - claims: explains patent claims language and HITL gate innovations
 - general: USPTO rules, fees, procedures`
+}
+
+const PATENT_KNOWLEDGE = buildDynamicKnowledge()
 
 // ── Agent system prompts ──────────────────────────────────────────────────
 const AGENT_PROMPTS: Record<AgentRole, string> = {

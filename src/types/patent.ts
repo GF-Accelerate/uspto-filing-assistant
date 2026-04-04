@@ -1,5 +1,5 @@
 // All domain types — import from here, never redefine elsewhere
-export type PatentStatus = 'filed' | 'ready' | 'draft' | 'planned'
+export type PatentStatus = 'filed' | 'ready' | 'draft' | 'planned' | 'filing' | 'prosecution' | 'granted' | 'abandoned'
 export type EntityStatus = 'Small Entity' | 'Large Entity' | 'Micro Entity'
 
 export interface Inventor { name: string; address: string; citizenship: string }

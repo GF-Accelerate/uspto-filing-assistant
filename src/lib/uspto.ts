@@ -24,19 +24,18 @@ export const USPTO_FEES = {
 } as const
 
 // ── IMPORTANT: Status reflects ACTUAL filing status ──────────────
-// PA-1 documents are PREPARED but NOT YET SUBMITTED to USPTO.
-// You must go to patentcenter.uspto.gov, log in with ID.me + MFA,
-// and submit the documents to receive an official Application Number.
+// PA-1 FILED: Application #64/029,100 — April 3, 2026
+// Nonprovisional deadline: April 3, 2027 — MANDATORY (no extensions)
 // Only update status to 'filed' after receiving a USPTO Filing Receipt.
 // ─────────────────────────────────────────────────────────────────
 export const PORTFOLIO_INIT: Patent[] = [
   {
     id: 'PA-1',
     title: 'Voice-Controlled Database Query + Autonomous Agent Execution',
-    status: 'ready',          // ← Documents prepared; awaiting USPTO submission
-    filedDate: null,
-    appNumber: '',
-    deadline: null,
+    status: 'filed',
+    filedDate: '2026-04-03',
+    appNumber: '64/029,100',
+    deadline: '2027-04-03',   // 12-month nonprovisional deadline — MANDATORY
     priority: 1,
   },
   {

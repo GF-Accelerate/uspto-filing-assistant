@@ -2,7 +2,7 @@ import type { Patent } from '@/types/patent'
 import { PORTFOLIO_INIT } from '@/lib/uspto'
 
 const PORTFOLIO_KEY = 'vais:patent-portfolio'
-const SCHEMA_VERSION = '2'   // bump when PORTFOLIO_INIT structure changes
+const SCHEMA_VERSION = '3'   // v3: PA-1 status=filed, extended PatentStatus types
 const VERSION_KEY    = 'vais:schema-version'
 
 export function loadPortfolio(): Patent[] | null {

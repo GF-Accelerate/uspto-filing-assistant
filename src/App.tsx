@@ -23,7 +23,7 @@ export default function App() {
   const wizardCtx  = useWizard()
   const auth       = useAuth()
   const navigate   = useNavigate()
-  const pa1Days    = daysUntil('2027-03-28')
+  const pa1Days    = daysUntil('2027-04-03')
   const [showAuth, setShowAuth] = useState(false)
 
   const handleOpen = (id: string) => {

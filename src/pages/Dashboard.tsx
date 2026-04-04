@@ -2,11 +2,13 @@ import type { Patent } from '@/types/patent'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { PatentCard } from '@/components/portfolio/PatentCard'
 import { daysUntil, USPTO_URLS } from '@/lib/uspto'
+import { getAllReceipts } from '@/lib/filing-receipts'
 
 interface Props { portfolio: Patent[]; onOpen: (id: string) => void }
 
 export function Dashboard({ portfolio, onOpen }: Props) {
   const pa1Deadline = daysUntil('2027-04-03')
+  const receipts = getAllReceipts()
 
   const metrics = [
     { label:'Total patents', value:portfolio.length },
@@ -52,6 +54,30 @@ export function Dashboard({ portfolio, onOpen }: Props) {
         <CardHeader title="Patent Portfolio — Visionary AI Systems Inc" right={<span className="text-xs text-slate-400">Inventors: Milton & Lisa Overton</span>} />
         {portfolio.map(p => <PatentCard key={p.id} patent={p} onOpen={onOpen} />)}
       </Card>
+
+      {receipts.length > 0 && (
+        <Card className="mb-5">
+          <CardHeader title="Filing Receipts" right={<span className="text-xs text-slate-400">{receipts.length} filed</span>} />
+          <div className="p-5 pt-2">
+            {receipts.map(r => (
+              <div key={r.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                <div>
+                  <div className="text-sm font-medium text-slate-800">{r.patentId} — App #{r.appNumber}</div>
+                  <div className="text-xs text-slate-500">Filed {r.filingDate} | {r.entityStatus} | ${r.feesPaid}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-amber-700 font-medium">
+                    Nonprovisional: {r.nonprovisionalDeadline}
+                  </div>
+                  {daysUntil(r.nonprovisionalDeadline) !== null && (
+                    <div className="text-xs text-slate-400">{daysUntil(r.nonprovisionalDeadline)}d remaining</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <Card>

@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import type { Patent } from '@/types/patent'
 import type { useWizard } from '@/hooks/useWizard'
 import { useClaudeAPI } from '@/hooks/useClaudeAPI'
+import { saveReceipt } from '@/lib/filing-receipts'
+import { transitionStatus } from '@/lib/patent-lifecycle'
 import { WizardShell } from '@/components/wizard/WizardShell'
 import { Step1Input }      from '@/components/wizard/Step1Input'
 import { Step2Analysis }   from '@/components/wizard/Step2Analysis'
@@ -18,12 +20,26 @@ interface Props {
 
 export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
   const navigate   = useNavigate()
-  const { wizard, open, close, setStep, update, toggleCheck } = ctx
+  const { wizard, open, close, setStep, update, toggleCheck, hasSavedSession, resumeSaved, discardSaved } = ctx
   const api        = useClaudeAPI({ wizard, update, setStep })
 
   if (!wizard.activePatentId) {
     return (
       <div className="bg-white border border-slate-200 rounded-xl p-10 text-center">
+        {hasSavedSession && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-left max-w-md mx-auto">
+            <p className="text-sm font-medium text-blue-800 mb-2">Resume previous session?</p>
+            <p className="text-xs text-blue-600 mb-3">You have an unsaved wizard session. Would you like to continue where you left off?</p>
+            <div className="flex gap-2">
+              <button onClick={resumeSaved} className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                Resume
+              </button>
+              <button onClick={discardSaved} className="px-3 py-1.5 bg-white text-slate-600 text-xs font-medium rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                Discard
+              </button>
+            </div>
+          </div>
+        )}
         <p className="text-slate-500 mb-4 text-sm">Select a patent to begin the filing wizard</p>
         <div className="flex flex-col gap-2 max-w-md mx-auto mb-6">
           {portfolio.filter(p => p.status !== 'filed').map(p => (
@@ -106,7 +122,28 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
           onBack={() => setStep(5)}
           onSave={() => {
             if (wizard.appNum) {
-              onMarkFiled(wizard.activePatentId!, wizard.appNum)
+              const patentId = wizard.activePatentId!
+              const today = new Date().toISOString().split('T')[0]
+              const deadlineDate = new Date()
+              deadlineDate.setFullYear(deadlineDate.getFullYear() + 1)
+
+              // Save filing receipt
+              saveReceipt({
+                patentId,
+                appNumber: wizard.appNum,
+                filingDate: today,
+                nonprovisionalDeadline: deadlineDate.toISOString().split('T')[0],
+                entityStatus: 'Small Entity',
+                feesPaid: 320,
+              })
+
+              // Record lifecycle transition
+              const patent = portfolio.find(p => p.id === patentId)
+              if (patent) {
+                transitionStatus(patentId, patent.status, 'filed', `Filed as ${wizard.appNum}`, wizard.appNum)
+              }
+
+              onMarkFiled(patentId, wizard.appNum)
               close()
               navigate('/')
             }

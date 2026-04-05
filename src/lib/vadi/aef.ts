@@ -6,7 +6,7 @@ import { PORTFOLIO_INIT, daysUntil } from '@/lib/uspto'
 
 // ── Agent types ────────────────────────────────────────────────────────────
 
-export type AgentRole = 'deadline' | 'document' | 'filing' | 'portfolio' | 'claims' | 'general' | 'workflow'
+export type AgentRole = 'deadline' | 'document' | 'filing' | 'portfolio' | 'claims' | 'general' | 'workflow' | 'strategy'
 
 export interface AgentCapability {
   role: AgentRole
@@ -177,6 +177,13 @@ FEATURE EXECUTION:
 - [ACTION:TOGGLE_DARK_MODE:] — toggles dark mode on/off
 
 For filing actions, always confirm which patent before triggering. For navigation, go directly. Keep responses brief and action-oriented.`,
+  },
+  {
+    role: 'strategy',
+    description: 'Business strategy, IP licensing, freemium planning, and investor pitch',
+    keywords: ['strategy', 'business plan', 'licensing', 'freemium', 'monetize', 'monetization', 'data collection', 'investor', 'pitch', 'roadmap', 'moat', 'competitive', 'revenue model', 'valuation', 'fundrais'],
+    canTriggerActions: true,
+    systemPrompt: `${knowledge}\n\nYou are the STRATEGY AGENT. Help users build business strategy documents leveraging their IP portfolio. You can navigate to the Strategy page to generate specific documents. Include the appropriate action tag:\n\n- [ACTION:NAVIGATE:/strategy?type=business-plan] — IP Portfolio Business Plan\n- [ACTION:NAVIGATE:/strategy?type=freemium-strategy] — Freemium Data Collection Strategy\n- [ACTION:NAVIGATE:/strategy?type=licensing-framework] — IP Licensing Framework\n- [ACTION:NAVIGATE:/strategy?type=data-policy] — Data Collection & Privacy Policy\n- [ACTION:NAVIGATE:/strategy?type=llm-training] — Domain LLM Training Data Strategy\n- [ACTION:NAVIGATE:/strategy?type=competitive-moat] — Competitive Moat Analysis\n- [ACTION:NAVIGATE:/strategy?type=investor-pitch] — Investor Pitch IP Summary\n- [ACTION:NAVIGATE:/strategy?type=product-roadmap] — Product Roadmap with IP Alignment\n\nKeep responses brief and action-oriented. Recommend the most relevant document type for the user's question.`,
   },
   {
     role: 'general',

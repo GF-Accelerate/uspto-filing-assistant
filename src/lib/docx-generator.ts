@@ -354,6 +354,92 @@ export async function downloadCoverSheetDOCX(
   saveAs(blob, `${safeName}-Cover-Sheet-PTO-SB-16.docx`)
 }
 
+// ── Generate Strategy Document DOCX ──────────────────────────────
+
+export async function generateStrategyDOCX(
+  content: string,
+  title: string,
+  _docType: string
+): Promise<Blob> {
+  const lines = content.split('\n')
+  const children: Paragraph[] = []
+
+  // Company letterhead
+  children.push(new Paragraph({
+    children: [text('VISIONARY AI SYSTEMS, INC.', { bold: true, size: TITLE_SIZE })],
+    alignment: AlignmentType.CENTER,
+    spacing: { line: LINE_SPACING, after: 60 },
+  }))
+  children.push(new Paragraph({
+    children: [text('Delaware Corporation | 1102 Cool Springs Drive, Kennesaw, GA 30144', { italic: true, size: 20 })],
+    alignment: AlignmentType.CENTER,
+    spacing: { line: LINE_SPACING, after: 120 },
+  }))
+  children.push(new Paragraph({
+    children: [text('CONFIDENTIAL', { bold: true, size: FONT_SIZE })],
+    alignment: AlignmentType.CENTER,
+    spacing: { line: LINE_SPACING, after: 60 },
+  }))
+  children.push(new Paragraph({
+    children: [text(`Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, { size: FONT_SIZE })],
+    alignment: AlignmentType.RIGHT,
+    spacing: { line: LINE_SPACING, after: 240 },
+  }))
+
+  // Document title
+  children.push(new Paragraph({
+    children: [text(title, { bold: true, size: HEADING_SIZE })],
+    alignment: AlignmentType.CENTER,
+    spacing: { line: LINE_SPACING, after: 360 },
+  }))
+
+  // Parse content — handle markdown-style headings and bullets
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+
+    if (trimmed.startsWith('# ')) {
+      children.push(sectionHeading(trimmed.substring(2)))
+    } else if (trimmed.startsWith('## ')) {
+      children.push(sectionHeading(trimmed.substring(3)))
+    } else if (trimmed.startsWith('### ')) {
+      children.push(para(trimmed.substring(4), { bold: true, spacing: { before: 120 } }))
+    } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+      children.push(para(trimmed.substring(2), { indent: { left: convertInchesToTwip(0.5) } }))
+    } else if (/^\d+\.\s/.test(trimmed)) {
+      children.push(para(trimmed, { spacing: { before: 60 } }))
+    } else if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+      children.push(para(trimmed.replace(/\*\*/g, ''), { bold: true, spacing: { before: 120 } }))
+    } else {
+      children.push(para(trimmed))
+    }
+  }
+
+  const doc = new Document({
+    sections: [{
+      properties: {
+        ...DEFAULT_SECTION,
+        type: SectionType.CONTINUOUS,
+      },
+      children,
+    }],
+  })
+
+  return await Packer.toBlob(doc)
+}
+
+// ── Generate and download strategy doc ──────────────────────────
+
+export async function downloadStrategyDOCX(
+  content: string,
+  title: string,
+  docType: string
+): Promise<void> {
+  const blob = await generateStrategyDOCX(content, title, docType)
+  const safeName = docType.replace(/[^a-zA-Z0-9-]/g, '')
+  saveAs(blob, `VAIS-${safeName}-${new Date().toISOString().split('T')[0]}.docx`)
+}
+
 // ── Parse spec text into sections ────────────────────────────────
 
 interface SpecSection {

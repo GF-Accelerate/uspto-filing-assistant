@@ -13,6 +13,7 @@ const AGENT_LABELS: Record<AgentRole, { label: string; color: string }> = {
   portfolio: { label: '🗂 Portfolio',  color: 'text-violet-700' },
   claims:    { label: '⚖️ Claims',    color: 'text-amber-700'  },
   workflow:  { label: '🚀 Workflow',  color: 'text-emerald-700' },
+  strategy:  { label: '📊 Strategy', color: 'text-teal-700'   },
   general:   { label: '🏛 USPTO',     color: 'text-slate-700'  },
 }
 

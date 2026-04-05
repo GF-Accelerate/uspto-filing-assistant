@@ -17,6 +17,7 @@ import { PriorArt }       from '@/pages/PriorArt'
 import { FilingPackage }  from '@/pages/FilingPackage'
 import { Calendar }       from '@/pages/Calendar'
 import { Settings }       from '@/pages/Settings'
+import { Strategy }       from '@/pages/Strategy'
 import { AdminDashboard } from '@/pages/admin/AdminDashboard'
 import { PatentOverview } from '@/pages/admin/PatentOverview'
 import { AuditLog }       from '@/pages/admin/AuditLog'
@@ -61,6 +62,7 @@ export default function App() {
     ...(isEnabled('legal_docs_enabled')       ? [{ to: '/legal',     label: 'Legal Docs' }]  : []),
     ...(isEnabled('trademark_module_enabled') ? [{ to: '/trademark', label: 'Trademarks' }]  : []),
     ...(isEnabled('prior_art_search_enabled') ? [{ to: '/prior-art', label: 'Prior Art' }]   : []),
+    ...(isEnabled('strategy_docs_enabled')  ? [{ to: '/strategy',  label: 'Strategy' }]    : []),
     { to: '/settings',   label: 'Settings'       },
     { to: '/guide',      label: 'USPTO Guide'    },
   ]
@@ -189,6 +191,7 @@ export default function App() {
           <Route path="/legal"      element={<Legal />} />
           <Route path="/trademark"  element={<Trademark />} />
           <Route path="/prior-art"  element={<PriorArt />} />
+          <Route path="/strategy"  element={<Strategy />} />
           <Route path="/guide"      element={<Guide />} />
           {/* Admin routes */}
           <Route path="/admin"          element={<AdminDashboard />} />

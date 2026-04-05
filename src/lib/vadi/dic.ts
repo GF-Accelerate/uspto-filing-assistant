@@ -265,6 +265,187 @@ export function getCollegeSportsTemplate(): Omit<DataCategory, 'id'>[] {
   ]
 }
 
+// ── Marketing Automation Template (PA-7 primary data source) ──────────────
+
+export function getMarketingAutomationTemplate(): Omit<DataCategory, 'id'>[] {
+  return [
+    {
+      name: 'Campaign Performance',
+      description: 'Campaign engagement metrics, delivery stats, and conversion data',
+      fields: createFields([
+        ['campaign_type', 'string', 'Type of campaign (email, social, SMS, multi-channel)', true],
+        ['send_count', 'number', 'Number of messages sent', true],
+        ['open_rate', 'number', 'Open rate percentage', true],
+        ['click_rate', 'number', 'Click-through rate percentage', true],
+        ['conversion_rate', 'number', 'Conversion rate percentage', false],
+        ['send_time', 'string', 'Time of day sent (hour bucket)', true],
+        ['day_of_week', 'string', 'Day of week sent', true],
+        ['date', 'date', 'Campaign date', true],
+      ]),
+      captureFrequency: 'event-driven',
+      privacyLevel: 'internal',
+    },
+    {
+      name: 'Lead Scoring',
+      description: 'Lead scoring signal weights and conversion predictions',
+      fields: createFields([
+        ['score', 'number', 'Computed lead score (0-100)', true],
+        ['signals_used', 'number', 'Number of behavioral signals in score', true],
+        ['top_signal', 'string', 'Highest-weight scoring signal', true],
+        ['converted', 'boolean', 'Whether lead eventually converted', false],
+        ['days_to_convert', 'number', 'Days from first touch to conversion', false],
+        ['date', 'date', 'Scoring date', true],
+      ]),
+      captureFrequency: 'daily',
+      privacyLevel: 'internal',
+    },
+    {
+      name: 'Audience Segmentation',
+      description: 'Segment performance differentials and targeting effectiveness',
+      fields: createFields([
+        ['segment_name', 'string', 'Name of audience segment', true],
+        ['segment_size', 'number', 'Number of contacts in segment', true],
+        ['engagement_rate', 'number', 'Segment engagement rate', true],
+        ['response_differential', 'number', 'Performance vs unsegmented baseline', false],
+        ['date', 'date', 'Analysis date', true],
+      ]),
+      captureFrequency: 'daily',
+      privacyLevel: 'internal',
+    },
+    {
+      name: 'Content Effectiveness',
+      description: 'Subject line, template, and content type performance',
+      fields: createFields([
+        ['content_type', 'string', 'Content type (email, landing page, social post)', true],
+        ['template_category', 'string', 'Template category used', true],
+        ['engagement_score', 'number', 'Composite engagement score (0-100)', true],
+        ['funnel_stage', 'string', 'Funnel stage (awareness, consideration, decision)', true],
+        ['date', 'date', 'Content date', true],
+      ]),
+      captureFrequency: 'event-driven',
+      privacyLevel: 'internal',
+    },
+  ]
+}
+
+// ── Faith Community Template (MDALS — NO religious data) ──────────────────
+
+export function getFaithCommunityTemplate(): Omit<DataCategory, 'id'>[] {
+  return [
+    {
+      name: 'Content Engagement',
+      description: 'Content viewing patterns and engagement curves — NO religious content analysis',
+      fields: createFields([
+        ['content_type', 'string', 'Type of content (sermon, devotional, announcement, event)', true],
+        ['view_duration_seconds', 'number', 'Seconds spent viewing content', true],
+        ['completion_rate', 'number', 'Percentage of content consumed', true],
+        ['interaction_count', 'number', 'Number of interactions (likes, shares, comments)', false],
+        ['day_of_week', 'string', 'Day of week', true],
+        ['date', 'date', 'Content date', true],
+      ]),
+      captureFrequency: 'event-driven',
+      privacyLevel: 'internal',
+    },
+    {
+      name: 'Event Attendance',
+      description: 'Event attendance patterns and scheduling effectiveness',
+      fields: createFields([
+        ['event_type', 'string', 'Type of event (service, study, social, outreach)', true],
+        ['attendance_count', 'number', 'Number of attendees', true],
+        ['capacity_pct', 'number', 'Percentage of capacity filled', false],
+        ['day_of_week', 'string', 'Day of week', true],
+        ['time_slot', 'string', 'Time slot (morning, afternoon, evening)', true],
+        ['date', 'date', 'Event date', true],
+      ]),
+      captureFrequency: 'event-driven',
+      privacyLevel: 'internal',
+    },
+    {
+      name: 'Community Health',
+      description: 'Aggregate community interaction metrics — NO individual edges or religious data',
+      fields: createFields([
+        ['active_members', 'number', 'Count of members active this period', true],
+        ['new_members', 'number', 'New members joined', true],
+        ['group_count', 'number', 'Number of active groups', true],
+        ['avg_group_size', 'number', 'Average group size', true],
+        ['retention_rate', 'number', 'Member retention rate percentage', false],
+        ['date', 'date', 'Measurement date', true],
+      ]),
+      captureFrequency: 'weekly',
+      privacyLevel: 'internal',
+    },
+  ]
+}
+
+// ── Personal Growth Template (Vision Board) ───────────────────────────────
+
+export function getPersonalGrowthTemplate(): Omit<DataCategory, 'id'>[] {
+  return [
+    {
+      name: 'Goal Tracking',
+      description: 'Goal categories, progress trajectories, and completion patterns',
+      fields: createFields([
+        ['goal_category', 'string', 'Goal category (fitness, financial, career, relationship, creative)', true],
+        ['progress_pct', 'number', 'Progress percentage toward goal (0-100)', true],
+        ['days_since_creation', 'number', 'Days since goal was created', true],
+        ['check_in_count', 'number', 'Number of progress check-ins', true],
+        ['status', 'enum', 'Goal status (active, completed, paused, abandoned)', true],
+        ['date', 'date', 'Check-in date', true],
+      ]),
+      captureFrequency: 'event-driven',
+      privacyLevel: 'internal',
+    },
+    {
+      name: 'Board Engagement',
+      description: 'Vision board creation patterns and visualization preferences',
+      fields: createFields([
+        ['board_theme', 'string', 'Board theme category', true],
+        ['item_count', 'number', 'Number of items on board', true],
+        ['view_frequency', 'number', 'Times board was viewed this period', true],
+        ['edit_count', 'number', 'Number of edits/updates', false],
+        ['visualization_type', 'string', 'Preferred visualization style', false],
+        ['date', 'date', 'Activity date', true],
+      ]),
+      captureFrequency: 'daily',
+      privacyLevel: 'internal',
+    },
+  ]
+}
+
+// ── Financial Planning Template (FirePath — max anonymization) ────────────
+
+export function getFinancialPlanningTemplate(): Omit<DataCategory, 'id'>[] {
+  return [
+    {
+      name: 'Planning Patterns',
+      description: 'Financial planning workflow patterns — anonymized aggregate only, k>=50',
+      fields: createFields([
+        ['plan_type', 'string', 'Type of financial plan (retirement, savings, debt, education)', true],
+        ['simulation_count', 'number', 'Number of Monte Carlo simulations run', true],
+        ['risk_tolerance', 'enum', 'Risk tolerance level (conservative, moderate, aggressive)', true],
+        ['planning_horizon_years', 'number', 'Planning time horizon in years', true],
+        ['feature_used', 'string', 'Feature used (calculator, simulator, planner, advisor)', true],
+        ['date', 'date', 'Activity date', true],
+      ]),
+      captureFrequency: 'event-driven',
+      privacyLevel: 'confidential',
+    },
+    {
+      name: 'Financial Wellness',
+      description: 'Aggregate financial wellness indicators — statistical summaries only, never individual',
+      fields: createFields([
+        ['wellness_score_bucket', 'string', 'Score bucket (0-20, 21-40, 41-60, 61-80, 81-100)', true],
+        ['goal_category', 'string', 'Financial goal category', true],
+        ['goal_completion_rate', 'number', 'Goal completion rate for cohort', true],
+        ['cohort_size', 'number', 'Size of anonymized cohort (must be >= 50)', true],
+        ['date', 'date', 'Measurement period', true],
+      ]),
+      captureFrequency: 'weekly',
+      privacyLevel: 'confidential',
+    },
+  ]
+}
+
 function createFields(specs: [string, DataField['type'], string, boolean][]): DataField[] {
   return specs.map(([name, type, description, required]) => ({
     name, type, description, required,

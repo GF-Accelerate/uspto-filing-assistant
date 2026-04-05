@@ -16,6 +16,7 @@ export interface FeatureFlags {
   prior_art_search_enabled: boolean
   filing_package_enabled: boolean
   reusable_profiles_enabled: boolean
+  strategy_docs_enabled: boolean         // IP strategy document builder
   // PA-5 Extension: VCE + DIC + PDB primitives (disabled by default)
   invention_capture_enabled: boolean    // VCE: camera + AI vision analysis
   domain_intelligence_enabled: boolean  // DIC: industry data capture
@@ -37,6 +38,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   prior_art_search_enabled: true,
   filing_package_enabled: true,
   reusable_profiles_enabled: true,
+  strategy_docs_enabled: true,
   // New VADI primitives — enabled for admin/owner access
   invention_capture_enabled: true,
   domain_intelligence_enabled: true,
@@ -102,6 +104,7 @@ const ALL_ENABLED: FeatureFlags = {
   prior_art_search_enabled: true,
   filing_package_enabled: true,
   reusable_profiles_enabled: true,
+  strategy_docs_enabled: true,
   invention_capture_enabled: true,
   domain_intelligence_enabled: true,
   physical_digital_bridge_enabled: true,

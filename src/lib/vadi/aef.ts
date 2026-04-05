@@ -122,7 +122,7 @@ const REGISTRY: AgentCapability[] = [
     description: 'Document identification and types',
     keywords: ['document', 'docx', 'pdf', 'download', 'file type', 'upload', 'specification', 'cover sheet', 'drawing', 'format'],
     canTriggerActions: true,
-    systemPrompt: `${knowledge}\n\nYou are the DOCUMENT AGENT. Help identify the correct documents to download, what each file is for, and what document type to select in Patent Center. When the user wants to generate or download a document, include [ACTION:GENERATE_DOC:PA-X] in your response (replacing PA-X with the patent ID). Keep responses concise and actionable.`,
+    systemPrompt: `${knowledge}\n\nYou are the DOCUMENT AGENT. Help identify the correct documents to download, what each file is for, and what document type to select in Patent Center. When the user wants to generate or download a document, include [ACTION:GENERATE_DOC:PA-X] in your response (replacing PA-X with the patent ID). When the user wants to download a specification, include [ACTION:DOWNLOAD_SPEC:PA-X]. Keep responses concise and actionable.`,
   },
   {
     role: 'filing',
@@ -151,7 +151,9 @@ const REGISTRY: AgentCapability[] = [
     keywords: ['file for me', 'start filing', 'open wizard', 'generate package', 'zip', 'filing package', 'begin filing', 'ready to file',
       'go to', 'open', 'show me', 'navigate', 'take me', 'switch to', 'drawings', 'calendar', 'deadlines', 'downloads',
       'prior art', 'legal', 'trademark', 'settings', 'admin', 'dark mode', 'guide', 'search prior art', 'generate legal',
-      'trademark search', 'clearance', 'audit', 'feature flags'],
+      'trademark search', 'clearance', 'audit', 'feature flags',
+      'render', 'render drawings', 'render figures', 'download drawing', 'download figure',
+      'custom drawing', 'add drawing', 'download all drawings', 'download spec', 'download specification'],
     canTriggerActions: true,
     systemPrompt: `${knowledge}\n\nYou are the WORKFLOW AGENT. You help users start filing workflows and navigate to any page in the app. Include the appropriate action tag:
 
@@ -175,6 +177,13 @@ FEATURE EXECUTION:
 - [ACTION:GENERATE_LEGAL_DOC:type] — generates a legal document (NDA, Assignment, Disclosure, License, Office Action Response, Cease & Desist)
 - [ACTION:RUN_TRADEMARK_SEARCH:query] — runs a trademark clearance search
 - [ACTION:TOGGLE_DARK_MODE:] — toggles dark mode on/off
+
+DRAWING ACTIONS:
+- [ACTION:NAVIGATE:/drawings?patent=PA-X] — open drawings for a specific patent
+- [ACTION:RENDER_DRAWINGS:] — render all figures on the drawings page
+- [ACTION:DOWNLOAD_DRAWING:FIG. N] — download a specific figure as PDF (e.g., FIG. 1, FIG. 6)
+- [ACTION:ADD_CUSTOM_DRAWING:] — open the custom drawing input panel
+- [ACTION:DOWNLOAD_ALL_DRAWINGS:] — batch download all rendered figures as PDFs
 
 For filing actions, always confirm which patent before triggering. For navigation, go directly. Keep responses brief and action-oriented.`,
   },
@@ -255,13 +264,15 @@ export interface VoiceAction {
     | 'OPEN_DRAWINGS' | 'OPEN_PRIOR_ART' | 'OPEN_LEGAL' | 'OPEN_TRADEMARK'
     | 'OPEN_CALENDAR' | 'OPEN_SETTINGS' | 'OPEN_ADMIN' | 'TOGGLE_DARK_MODE'
     | 'RUN_PRIOR_ART_SEARCH' | 'GENERATE_LEGAL_DOC' | 'RUN_TRADEMARK_SEARCH'
+    | 'RENDER_DRAWINGS' | 'DOWNLOAD_DRAWING' | 'ADD_CUSTOM_DRAWING'
+    | 'DOWNLOAD_ALL_DRAWINGS' | 'DOWNLOAD_SPEC'
   payload: string  // patent ID, route path, or parameter
 }
 
 // Parse action tags from agent response text
 function parseActions(text: string): VoiceAction[] {
   const actions: VoiceAction[] = []
-  const actionRegex = /\[ACTION:(OPEN_WIZARD|OPEN_FILING_PACKAGE|NAVIGATE|GENERATE_DOC|OPEN_DRAWINGS|OPEN_PRIOR_ART|OPEN_LEGAL|OPEN_TRADEMARK|OPEN_CALENDAR|OPEN_SETTINGS|OPEN_ADMIN|TOGGLE_DARK_MODE|RUN_PRIOR_ART_SEARCH|GENERATE_LEGAL_DOC|RUN_TRADEMARK_SEARCH):([^\]]*)\]/g
+  const actionRegex = /\[ACTION:(OPEN_WIZARD|OPEN_FILING_PACKAGE|NAVIGATE|GENERATE_DOC|OPEN_DRAWINGS|OPEN_PRIOR_ART|OPEN_LEGAL|OPEN_TRADEMARK|OPEN_CALENDAR|OPEN_SETTINGS|OPEN_ADMIN|TOGGLE_DARK_MODE|RUN_PRIOR_ART_SEARCH|GENERATE_LEGAL_DOC|RUN_TRADEMARK_SEARCH|RENDER_DRAWINGS|DOWNLOAD_DRAWING|ADD_CUSTOM_DRAWING|DOWNLOAD_ALL_DRAWINGS|DOWNLOAD_SPEC):([^\]]*)\]/g
   let match
   while ((match = actionRegex.exec(text)) !== null) {
     actions.push({ type: match[1] as VoiceAction['type'], payload: match[2] || '' })

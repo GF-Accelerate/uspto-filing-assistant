@@ -80,6 +80,21 @@ export function VoiceAssistant() {
         case 'RUN_TRADEMARK_SEARCH':
           navigate(`/trademark?q=${encodeURIComponent(action.payload)}`)
           break
+        case 'RENDER_DRAWINGS':
+          window.dispatchEvent(new CustomEvent('voice-action', { detail: { type: 'RENDER_DRAWINGS' } }))
+          break
+        case 'DOWNLOAD_DRAWING':
+          window.dispatchEvent(new CustomEvent('voice-action', { detail: { type: 'DOWNLOAD_DRAWING', payload: action.payload } }))
+          break
+        case 'ADD_CUSTOM_DRAWING':
+          window.dispatchEvent(new CustomEvent('voice-action', { detail: { type: 'ADD_CUSTOM_DRAWING' } }))
+          break
+        case 'DOWNLOAD_ALL_DRAWINGS':
+          window.dispatchEvent(new CustomEvent('voice-action', { detail: { type: 'DOWNLOAD_ALL_DRAWINGS' } }))
+          break
+        case 'DOWNLOAD_SPEC':
+          navigate(`/downloads?generate=${encodeURIComponent(action.payload)}`)
+          break
       }
     })
   }, [navigate, setActionCallback])

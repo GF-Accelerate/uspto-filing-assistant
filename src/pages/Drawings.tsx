@@ -1,167 +1,23 @@
 /// <reference types="vite/client" />
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
+import {
+  PATENT_DRAWINGS, getPatentIds,
+  loadCustomDrawings, saveCustomDrawings,
+  type DrawingDef,
+} from '@/lib/patent-drawings'
 
 // USPTO 37 C.F.R. §1.84 compliant drawing specs
 // Page: 8.5x11" at 300 DPI = 2550x3300px
 // Usable area: 6 15/16" x 9 5/8" = 2081x2888px
 // Margins: top 1", left 1", right 5/8", bottom 3/8"
 
-const USPTO_FIGURES = [
-  {
-    id: 'fig1', figNum: 'FIG. 1', title: 'System Architecture Overview',
-    desc: 'Overall block diagram: Voice Input Layer (110) → NLP Engine (120) → SQL Query Generator (130) → Database Layer (140) → Agent Framework (150) → Multi-Modal Response (160)',
-    mermaid: `graph TD
-    A["<b>110</b> — Voice Input Layer<br/><i>Web Speech API · Noise Cancellation</i><br/><i>Athletic-Domain Vocabulary</i>"]
-    B["<b>120</b> — NLP Engine<br/><i>GPT-4o-mini · 94% Accuracy</i><br/><i>200+ Intent Patterns</i>"]
-    C["<b>130</b> — SQL Query Generator<br/><i>Semantic Schema Mapping</i><br/><i>Join-Path Optimization · &lt;200ms</i>"]
-    D["<b>140</b> — Database Layer<br/><i>PostgreSQL · 170,529 Records</i><br/><i>Row-Level Security · 10 Roles</i>"]
-    E["<b>150</b> — Agent Framework<br/><i>9 Specialized AI Agents</i><br/><i>HITL Approval Gate</i>"]
-    F["<b>160</b> — Multi-Modal Response<br/><i>Voice Synthesis · Dashboard</i><br/><i>WebSocket Streaming</i>"]
-    G["<b>125</b> — Disambiguation<br/><i>confidence &lt; 0.75 threshold</i>"]
-    A --> B
-    B --> C
-    B -.->|"low confidence"| G
-    G --> C
-    C --> D
-    D --> E
-    E --> F
-    style A fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style B fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style C fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style D fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style E fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    style F fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style G fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b`,
-  },
-  {
-    id: 'fig2', figNum: 'FIG. 2', title: 'Voice Processing & SQL Generation Flow',
-    desc: 'Flowchart from voice input through NLP intent classification, confidence check, disambiguation, SQL generation, database execution, and result return',
-    mermaid: `flowchart TD
-    S(["<b>START</b> — Voice Command Received"])
-    A["<b>210</b> — Audio Preprocessing<br/><i>Noise Cancellation · Domain Vocab</i>"]
-    B["<b>220</b> — Intent Classification<br/><i>GPT-4o-mini LLM · NER Extraction</i>"]
-    C{"<b>230</b> — Confidence Check"}
-    D["<b>235</b> — Disambiguation Query<br/><i>Prompt User for Clarification</i>"]
-    E["<b>240</b> — Parameter Extraction<br/><i>Entity-to-Schema Mapping</i>"]
-    F["<b>250</b> — Join-Path Optimizer<br/><i>Cost-Based Query Planner</i>"]
-    G["<b>260</b> — SQL Generation<br/><i>Validation &amp; Index Selection</i>"]
-    H["<b>270</b> — Database Execution<br/><i>RLS Applied · Audit Logged</i>"]
-    K{"<b>280</b> — Result Size Check"}
-    L["<b>285</b> — Batch Pagination<br/><i>1,000 rows per cycle</i>"]
-    E2(["<b>END</b> — Results Returned"])
-    S --> A --> B --> C
-    C -->|"≥ 0.75"| E
-    C -->|"&lt; 0.75"| D
-    D --> B
-    E --> F --> G --> H --> K
-    K -->|"&gt; 1,000 rows"| L --> E2
-    K -->|"≤ 1,000 rows"| E2
-    style S fill:#1e40af,stroke:#1e40af,color:#ffffff
-    style E2 fill:#15803d,stroke:#15803d,color:#ffffff
-    style C fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    style K fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    style D fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
-    style A fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style B fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style E fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style F fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style G fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style H fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style L fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
-  },
-  {
-    id: 'fig3', figNum: 'FIG. 3', title: 'Nine-Agent Autonomous Framework',
-    desc: 'All 9 AI agents (310–390) coordinated by Multi-Agent Chain Orchestrator (305) under mandatory Human-in-the-Loop Approval Gate (300)',
-    mermaid: `graph TD
-    HITL["<b>300</b> — HUMAN-IN-THE-LOOP APPROVAL GATE<br/><i>Mandatory · Cannot Be Bypassed · Explicit Staff Authorization</i>"]
-    ORCH["<b>305</b> — Multi-Agent Chain Orchestrator<br/><i>Task Routing · Dependency Resolution · State Management</i>"]
-    A1["<b>310</b><br/>Donor Cultivation"]
-    A2["<b>320</b><br/>Proposal Generation"]
-    A3["<b>330</b><br/>Campaign Manager"]
-    A4["<b>340</b><br/>Compliance Monitor"]
-    A5["<b>350</b><br/>Revenue Analytics"]
-    A6["<b>360</b><br/>Fan Engagement"]
-    A7["<b>370</b><br/>Recruiting Intelligence"]
-    A8["<b>380</b><br/>Facility Operations"]
-    A9["<b>390</b><br/>Executive Briefing"]
-    HITL --> ORCH
-    ORCH --> A1 & A2 & A3
-    ORCH --> A4 & A5 & A6
-    ORCH --> A7 & A8 & A9
-    style HITL fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
-    style ORCH fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
-    style A1 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style A2 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style A3 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style A4 fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    style A5 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style A6 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style A7 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style A8 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style A9 fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
-  },
-  {
-    id: 'fig4', figNum: 'FIG. 4', title: 'Multi-Provider Communication Failover',
-    desc: 'Human Approval Gate (400) → SendGrid primary (410) → Resend secondary (420) → AgentMail tertiary (430) with Webhook Monitoring (440) and Cryptographic Audit Trail (450)',
-    mermaid: `flowchart LR
-    HITL["<b>400</b><br/>Human Approval Gate<br/><i>Explicit Authorization</i>"]
-    SP["<b>410</b><br/>SendGrid<br/><i>Primary Provider</i>"]
-    R["<b>420</b><br/>Resend<br/><i>Secondary Provider</i>"]
-    AM["<b>430</b><br/>AgentMail<br/><i>Tertiary Provider</i>"]
-    OK(["✓ Delivered"])
-    FAIL(["⚠ Alert Staff"])
-    WH["<b>440</b><br/>Webhook Monitoring<br/><i>Open · Click · Bounce</i>"]
-    AT["<b>450</b><br/>Cryptographic<br/>Audit Trail"]
-    HITL --> SP
-    SP -->|"Success"| OK
-    SP -->|"Failure"| R
-    R -->|"Success"| OK
-    R -->|"Failure"| AM
-    AM -->|"Success"| OK
-    AM -->|"All fail"| FAIL
-    OK --> WH & AT
-    style HITL fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
-    style SP fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style R fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    style AM fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
-    style OK fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style FAIL fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
-    style WH fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
-    style AT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
-  },
-  {
-    id: 'fig5', figNum: 'FIG. 5', title: 'Database Layer & RFE Lead Scoring',
-    desc: 'Core tables with record counts, RFE Scoring Engine (550), external cross-reference sources (560), and Row-Level Security enforcement (570)',
-    mermaid: `graph TD
-    EXT["<b>560</b> — External Data Sources<br/><i>SEC EDGAR · FEC Records</i><br/><i>OpenCorporates · LinkedIn Evaboot</i>"]
-    RFE["<b>550</b> — RFE Scoring Engine<br/><i>calculate_lead_scores()</i><br/><i>Configurable Weights · Continuous Updates</i>"]
-    CM["<b>510</b> — constituent_master<br/><i>170,529 Records</i>"]
-    PT["<b>520</b> — pac_transactions<br/><i>334,518 Records</i>"]
-    OPP["<b>530</b> — opportunities<br/><i>8,113 Records</i>"]
-    LS["<b>540</b> — lead_scores<br/><i>167,740 Scored Records</i><br/><i>Renewal · Gift · Churn Risk</i>"]
-    RLS["<b>570</b> — Row-Level Security<br/><i>10 Enterprise Roles · JWT Auth</i>"]
-    EXT --> RFE
-    CM --> RFE
-    PT --> RFE
-    OPP --> RFE
-    RFE --> LS
-    RLS -.->|"enforces on"| CM & PT & OPP & LS
-    style EXT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
-    style RFE fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
-    style CM fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style PT fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style OPP fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
-    style LS fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
-    style RLS fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b`,
-  },
-]
-
 type DrawingStatus = 'pending' | 'generating' | 'done' | 'error'
-interface Drawing { id: string; figNum: string; title: string; desc: string; mermaid: string; svg: string; status: DrawingStatus }
+interface Drawing extends DrawingDef { svg: string; status: DrawingStatus; isCustom?: boolean }
 
 // Mermaid init directive — embedded in each diagram so theme always applies
 const MERMAID_INIT = `%%{init: {
@@ -203,7 +59,8 @@ async function renderMermaidToSVG(mermaidCode: string): Promise<string> {
 async function downloadPDF(
   el: HTMLDivElement | null,
   figNum: string,
-  title: string
+  title: string,
+  patentId: string
 ) {
   if (!el) { alert('Drawing not rendered yet — click Render first'); return }
 
@@ -216,9 +73,6 @@ async function downloadPDF(
   const usableW = 6.875, usableH = 9.0
 
   // ── Temporarily remove scroll constraints so FULL diagram is captured ──
-  // The preview div has maxHeight: 420px and overflow: auto which truncates
-  // the diagram when html2canvas screenshots it. We expand it to full height,
-  // capture, then restore original styles.
   const origMaxH   = el.style.maxHeight
   const origOverflow = el.style.overflow
   const origHeight = el.style.height
@@ -297,25 +151,65 @@ async function downloadPDF(
   }
 
   const safe = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0, 30)}`
-  pdf.save(`PA1-${safe}.pdf`)
+  pdf.save(`${patentId}-${safe}.pdf`)
 }
 
-function downloadSVG(svg: string, figNum: string) {
+function downloadSVG(svg: string, figNum: string, patentId: string) {
   const blob = new Blob([svg], { type: 'image/svg+xml' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `PA1-${figNum.replace('. ', '-')}.svg`
+  a.download = `${patentId}-${figNum.replace('. ', '-')}.svg`
   a.click()
   URL.revokeObjectURL(url)
 }
 
 export function Drawings() {
-  const [drawings, setDrawings] = useState<Drawing[]>(
-    USPTO_FIGURES.map(f => ({ ...f, svg: '', status: 'pending' as DrawingStatus }))
+  const [searchParams, setSearchParams] = useSearchParams()
+  const patentParam = searchParams.get('patent') || 'PA-1'
+  const patentIds = getPatentIds()
+  const [selectedPatent, setSelectedPatent] = useState(
+    patentIds.includes(patentParam) ? patentParam : 'PA-1'
   )
+
+  // Build drawings from built-in + custom
+  const buildDrawings = useCallback((patentId: string): Drawing[] => {
+    const builtIn = (PATENT_DRAWINGS[patentId] || []).map(f => ({
+      ...f, svg: '', status: 'pending' as DrawingStatus, isCustom: false,
+    }))
+    const custom = loadCustomDrawings(patentId).map(f => ({
+      ...f, svg: '', status: 'pending' as DrawingStatus, isCustom: true,
+    }))
+    return [...builtIn, ...custom]
+  }, [])
+
+  const [drawings, setDrawings] = useState<Drawing[]>(() => buildDrawings(selectedPatent))
   const [generating, setGenerating] = useState(false)
   const previewRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  // Custom drawing input state
+  const [customDesc, setCustomDesc] = useState('')
+  const [customTitle, setCustomTitle] = useState('')
+  const [customMermaid, setCustomMermaid] = useState('')
+  const [showManualInput, setShowManualInput] = useState(false)
+  const [generatingCustom, setGeneratingCustom] = useState(false)
+  const [showCustomPanel, setShowCustomPanel] = useState(false)
+
+  // Update drawings when patent changes
+  const handlePatentChange = useCallback((patentId: string) => {
+    setSelectedPatent(patentId)
+    setSearchParams({ patent: patentId })
+    setDrawings(buildDrawings(patentId))
+  }, [buildDrawings, setSearchParams])
+
+  // Sync with URL param changes (e.g. from voice navigation)
+  useEffect(() => {
+    const urlPatent = searchParams.get('patent')
+    if (urlPatent && patentIds.includes(urlPatent) && urlPatent !== selectedPatent) {
+      setSelectedPatent(urlPatent)
+      setDrawings(buildDrawings(urlPatent))
+    }
+  }, [searchParams, patentIds, selectedPatent, buildDrawings])
 
   const update = (id: string, updates: Partial<Drawing>) =>
     setDrawings(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d))
@@ -347,7 +241,107 @@ export function Drawings() {
     setGenerating(false)
   }
 
+  // ── Custom Drawing: AI generation ──────────────────────────────────────
+  const generateCustomDiagram = async () => {
+    if (!customDesc.trim()) return
+    setGeneratingCustom(true)
+    try {
+      const res = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system: `You are a patent drawing specialist for USPTO provisional applications.
+Convert the user's description into valid Mermaid.js diagram code.
+Use flowchart TD or graph TD syntax.
+Style nodes with fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f for primary nodes.
+Use fill:#fee2e2,stroke:#dc2626 for authorization/security nodes.
+Use fill:#dcfce7,stroke:#15803d for data/output nodes.
+Use fill:#fef3c7,stroke:#d97706 for decision/warning nodes.
+Add component reference numbers (e.g., 100, 110, 200) in bold.
+Keep labels concise.
+Respond with ONLY the Mermaid code — no markdown fences, no explanation.`,
+          user: customDesc,
+          max_tokens: 1000,
+        }),
+      })
+      const data = await res.json()
+      const mermaidCode = (data.text || '').replace(/```mermaid|```/g, '').trim()
+      setCustomMermaid(mermaidCode)
+    } catch (e) {
+      console.error('Claude diagram generation error:', e)
+      setCustomMermaid('flowchart TD\n    A["Error generating diagram"] --> B["Try manual input"]')
+    }
+    setGeneratingCustom(false)
+  }
+
+  // ── Add custom drawing ─────────────────────────────────────────────────
+  const addCustomDrawing = () => {
+    if (!customMermaid.trim() || !customTitle.trim()) return
+    const nextFigNum = drawings.length + 1
+    const newDrawing: DrawingDef = {
+      id: `custom-${Date.now()}`,
+      figNum: `FIG. ${nextFigNum}`,
+      title: customTitle.trim(),
+      desc: customDesc.trim() || customTitle.trim(),
+      mermaid: customMermaid.trim(),
+    }
+    // Save to localStorage
+    const existing = loadCustomDrawings(selectedPatent)
+    saveCustomDrawings(selectedPatent, [...existing, newDrawing])
+    // Add to state
+    setDrawings(prev => [...prev, { ...newDrawing, svg: '', status: 'pending', isCustom: true }])
+    // Reset form
+    setCustomDesc('')
+    setCustomTitle('')
+    setCustomMermaid('')
+    setShowCustomPanel(false)
+  }
+
+  // ── Remove custom drawing ──────────────────────────────────────────────
+  const removeCustomDrawing = (drawingId: string) => {
+    const custom = loadCustomDrawings(selectedPatent).filter(d => d.id !== drawingId)
+    saveCustomDrawings(selectedPatent, custom)
+    setDrawings(prev => prev.filter(d => d.id !== drawingId))
+  }
+
+  // ── Voice event listeners ──────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      if (!detail?.type) return
+      switch (detail.type) {
+        case 'RENDER_DRAWINGS':
+          generateAll()
+          break
+        case 'DOWNLOAD_DRAWING': {
+          const figNum = detail.payload || ''
+          const target = drawings.find(d =>
+            d.figNum.replace(/\s/g, '') === figNum.replace(/\s/g, '') ||
+            d.figNum === `FIG. ${figNum}` ||
+            d.figNum === figNum
+          )
+          if (target && target.status === 'done') {
+            downloadPDF(previewRefs.current[target.id], target.figNum, target.title, selectedPatent)
+          }
+          break
+        }
+        case 'ADD_CUSTOM_DRAWING':
+          setShowCustomPanel(true)
+          break
+        case 'DOWNLOAD_ALL_DRAWINGS':
+          drawings.filter(d => d.status === 'done').forEach(d => {
+            downloadPDF(previewRefs.current[d.id], d.figNum, d.title, selectedPatent)
+          })
+          break
+      }
+    }
+    window.addEventListener('voice-action', handler)
+    return () => window.removeEventListener('voice-action', handler)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawings, selectedPatent])
+
   const doneCount = drawings.filter(d => d.status === 'done').length
+  const builtInCount = (PATENT_DRAWINGS[selectedPatent] || []).length
 
   return (
     <div className="space-y-4">
@@ -358,32 +352,61 @@ export function Drawings() {
               <h2 className="text-sm font-medium text-slate-900 mb-1">Patent Drawings — Mermaid.js + PDF Export</h2>
               <p className="text-sm text-slate-500 leading-relaxed">
                 Professional USPTO-format drawings rendered by Mermaid.js at 300 DPI. Export as
-                print-ready PDF (8.5×11" with correct margins) or SVG for Patent Center upload.
+                print-ready PDF (8.5x11" with correct margins) or SVG for Patent Center upload.
               </p>
             </div>
-            <div className="flex gap-2 flex-shrink-0">
+            <div className="flex gap-2 flex-shrink-0 items-center">
+              {/* Patent selector */}
+              <select
+                value={selectedPatent}
+                onChange={e => handlePatentChange(e.target.value)}
+                className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {patentIds.map(id => {
+                  const count = (PATENT_DRAWINGS[id] || []).length
+                  return (
+                    <option key={id} value={id}>
+                      {id} ({count} fig{count !== 1 ? 's' : ''})
+                    </option>
+                  )
+                })}
+              </select>
               <Button
                 variant="primary" size="sm"
                 onClick={generateAll}
-                disabled={generating || doneCount === drawings.length}
+                disabled={generating || doneCount === drawings.length || drawings.length === 0}
               >
-                {generating ? 'Rendering…' : doneCount === drawings.length ? '✓ All ready' : `Render all ${drawings.length} figures`}
+                {generating ? 'Rendering...' : doneCount === drawings.length && drawings.length > 0 ? 'All ready' : `Render all ${drawings.length} figures`}
               </Button>
             </div>
           </div>
           <div className="flex gap-4 mt-3 text-xs text-slate-500 flex-wrap">
-            <span>✓ Mermaid.js rendering engine</span>
-            <span>✓ 300 DPI PNG/PDF export</span>
-            <span>✓ 8.5×11" with USPTO margins</span>
-            <span>✓ Figure numbers per 37 C.F.R. §1.84</span>
-            <span>✓ SVG direct-upload to Patent Center</span>
+            <span>Mermaid.js rendering engine</span>
+            <span>300 DPI PNG/PDF export</span>
+            <span>8.5x11" with USPTO margins</span>
+            <span>Figure numbers per 37 C.F.R. 1.84</span>
+            <span>SVG direct-upload to Patent Center</span>
           </div>
         </CardBody>
       </Card>
 
       <Alert variant="info">
-        <strong>Provisional drawings tip:</strong> For your provisional application, informal drawings are fully acceptable. These Mermaid diagrams meet that standard. Formal drawings (exact line weights, hatching per §1.84) are only required for the nonprovisional filing due March 28, 2027.
+        <strong>Provisional drawings tip:</strong> For your provisional application, informal drawings are fully acceptable. These Mermaid diagrams meet that standard. Formal drawings (exact line weights, hatching per 1.84) are only required for the nonprovisional filing due March 28, 2027.
       </Alert>
+
+      {drawings.length === 0 && (
+        <Card>
+          <CardBody>
+            <div className="text-center py-8">
+              <p className="text-slate-500 mb-2">No drawings defined for {selectedPatent}</p>
+              <p className="text-sm text-slate-400 mb-4">Add custom drawings below, or select a patent with existing figures.</p>
+              <Button size="sm" variant="primary" onClick={() => setShowCustomPanel(true)}>
+                Add Custom Drawing
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      )}
 
       {drawings.map(drawing => (
         <Card key={drawing.id}>
@@ -392,6 +415,7 @@ export function Drawings() {
               <div className="flex items-center gap-3">
                 <span className="font-mono text-xs text-slate-400 w-12 flex-shrink-0">{drawing.figNum}</span>
                 <span className="text-sm">{drawing.title}</span>
+                {drawing.isCustom && <Badge variant="info">Custom</Badge>}
               </div>
             }
             right={
@@ -401,14 +425,14 @@ export function Drawings() {
                   drawing.status === 'generating' ? 'info' :
                   drawing.status === 'error' ? 'danger' : 'neutral'
                 }>
-                  {drawing.status === 'generating' ? '⟳ Rendering…' :
-                   drawing.status === 'done' ? '✓ Ready' :
-                   drawing.status === 'error' ? '✗ Error' : 'Pending'}
+                  {drawing.status === 'generating' ? 'Rendering...' :
+                   drawing.status === 'done' ? 'Ready' :
+                   drawing.status === 'error' ? 'Error' : 'Pending'}
                 </Badge>
                 {drawing.status === 'done' && (
                   <>
-                    <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum)}>SVG</Button>
-                    <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title)}>PDF ↓</Button>
+                    <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum, selectedPatent)}>SVG</Button>
+                    <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title, selectedPatent)}>PDF</Button>
                   </>
                 )}
                 {drawing.status !== 'done' && drawing.status !== 'generating' && (
@@ -418,6 +442,9 @@ export function Drawings() {
                 )}
                 {drawing.status === 'error' && (
                   <Button size="sm" onClick={() => generateOne(drawing)}>Retry</Button>
+                )}
+                {drawing.isCustom && (
+                  <Button size="sm" onClick={() => removeCustomDrawing(drawing.id)}>Remove</Button>
                 )}
               </div>
             }
@@ -429,7 +456,7 @@ export function Drawings() {
               <div className="h-40 bg-slate-50 border border-slate-200 rounded flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                  <p className="text-xs text-slate-400">Rendering {drawing.figNum} with Mermaid.js…</p>
+                  <p className="text-xs text-slate-400">Rendering {drawing.figNum} with Mermaid.js...</p>
                 </div>
               </div>
             )}
@@ -444,8 +471,8 @@ export function Drawings() {
                 <div className="border-t border-slate-100 px-3 py-2 bg-slate-50 flex items-center justify-between">
                   <span className="text-xs text-slate-400 font-mono">{drawing.figNum} — {drawing.title}</span>
                   <div className="flex gap-2">
-                    <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum)}>⬇ SVG</Button>
-                    <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title)}>⬇ PDF (300 DPI)</Button>
+                    <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum, selectedPatent)}>SVG</Button>
+                    <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title, selectedPatent)}>PDF (300 DPI)</Button>
                   </div>
                 </div>
               </div>
@@ -464,13 +491,115 @@ export function Drawings() {
         </Card>
       ))}
 
+      {/* ── Custom Drawing Input ────────────────────────────────────────── */}
+      <Card>
+        <CardHeader
+          title="Add Custom Drawing"
+          right={
+            <Button size="sm" onClick={() => setShowCustomPanel(!showCustomPanel)}>
+              {showCustomPanel ? 'Close' : 'Add Drawing'}
+            </Button>
+          }
+        />
+        {showCustomPanel && (
+          <CardBody>
+            <div className="space-y-4">
+              {/* AI-powered generation */}
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Drawing Title *</label>
+                <input
+                  type="text"
+                  value={customTitle}
+                  onChange={e => setCustomTitle(e.target.value)}
+                  placeholder="e.g., Authentication Flow Diagram"
+                  className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  Describe the drawing (AI will generate Mermaid code)
+                </label>
+                <textarea
+                  value={customDesc}
+                  onChange={e => setCustomDesc(e.target.value)}
+                  placeholder="Describe the system architecture, data flow, or process you want to illustrate. Include component names and reference numbers if applicable."
+                  rows={3}
+                  className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                />
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="sm" variant="primary"
+                    onClick={generateCustomDiagram}
+                    disabled={!customDesc.trim() || generatingCustom}
+                  >
+                    {generatingCustom ? 'Generating...' : 'Generate Diagram with AI'}
+                  </Button>
+                  <button
+                    onClick={() => setShowManualInput(!showManualInput)}
+                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    {showManualInput ? 'Hide manual input' : 'Or enter Mermaid code directly'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Manual Mermaid input */}
+              {showManualInput && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Mermaid Code</label>
+                  <textarea
+                    value={customMermaid}
+                    onChange={e => setCustomMermaid(e.target.value)}
+                    placeholder={`flowchart TD\n    A["Component 100"] --> B["Component 200"]\n    B --> C["Component 300"]`}
+                    rows={6}
+                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                  />
+                </div>
+              )}
+
+              {/* Generated Mermaid preview */}
+              {customMermaid && !showManualInput && (
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">
+                    Generated Mermaid Code (edit if needed)
+                  </label>
+                  <textarea
+                    value={customMermaid}
+                    onChange={e => setCustomMermaid(e.target.value)}
+                    rows={6}
+                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                  />
+                </div>
+              )}
+
+              {/* Add button */}
+              {customMermaid && (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm" variant="primary"
+                    onClick={addCustomDrawing}
+                    disabled={!customTitle.trim() || !customMermaid.trim()}
+                  >
+                    Add as FIG. {drawings.length + 1}
+                  </Button>
+                  <span className="text-xs text-slate-400 self-center">
+                    Custom drawings are saved to your browser and persist across sessions.
+                  </span>
+                </div>
+              )}
+            </div>
+          </CardBody>
+        )}
+      </Card>
+
       <Card>
         <CardHeader title="How to include drawings in your Patent Center filing" />
         <CardBody>
           <div className="space-y-2 text-sm text-slate-700">
             {[
-              ['1', 'Click "Render all 5 figures" above to generate all drawings'],
-              ['2', 'Click "PDF ↓" for each figure — saves a print-ready 8.5×11" PDF at 300 DPI'],
+              ['1', `Click "Render all ${drawings.length} figures" above to generate all drawings`],
+              ['2', 'Click "PDF" for each figure — saves a print-ready 8.5x11" PDF at 300 DPI'],
               ['3', 'In Patent Center, during document upload: add each PDF with document type "Drawings"'],
               ['4', 'Alternatively, click "SVG" to download the vector file — also accepted by Patent Center'],
               ['5', 'Verify reference numerals in drawings (110, 120, etc.) match your specification text'],
@@ -481,6 +610,11 @@ export function Drawings() {
               </div>
             ))}
           </div>
+          {builtInCount > 0 && (
+            <div className="mt-3 text-xs text-slate-400">
+              {selectedPatent} has {builtInCount} built-in figure{builtInCount !== 1 ? 's' : ''}{drawings.length > builtInCount ? ` + ${drawings.length - builtInCount} custom` : ''}.
+            </div>
+          )}
         </CardBody>
       </Card>
     </div>

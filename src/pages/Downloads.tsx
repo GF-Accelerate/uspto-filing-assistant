@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
-import { PA1_SPEC_SUMMARY, PA2_SPEC_SUMMARY, PA3_SPEC_SUMMARY, PA5_SPEC_SUMMARY, PA6_SPEC_SUMMARY, PA7_SPEC_SUMMARY } from '@/lib/uspto'
+import { PA1_SPEC_SUMMARY, PA2_SPEC_SUMMARY, PA3_SPEC_SUMMARY, PA5_SPEC_SUMMARY, PA6_SPEC_SUMMARY, PA7_SPEC_SUMMARY, PA8_SPEC_SUMMARY, PA9_SPEC_SUMMARY, PA10_SPEC_SUMMARY } from '@/lib/uspto'
 import { downloadSpecDOCX } from '@/lib/docx-generator'
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -130,6 +130,42 @@ const DOCUMENTS = [
         patentId: 'PA-7',
         externalUrl: undefined,
       },
+      {
+        id: 'pa8-spec',
+        title: 'PA-8 Provisional Patent Application',
+        subtitle: 'Adaptive Multi-Model AI Orchestration + Confidence-Based Autonomy',
+        badge: 'Draft — May 2026',
+        badgeVariant: 'neutral' as const,
+        deadline: 'Covers highest-risk uncovered innovations from 11 products',
+        spec: PA8_SPEC_SUMMARY,
+        filename: 'PA8-Multi-Model-Orchestration-Provisional-Patent.txt',
+        patentId: 'PA-8',
+        externalUrl: undefined,
+      },
+      {
+        id: 'pa9-spec',
+        title: 'PA-9 Provisional Patent Application',
+        subtitle: 'Domain-Adaptive Worship & Community Technology Platform',
+        badge: 'Planned — June 2026',
+        badgeVariant: 'neutral' as const,
+        deadline: 'Denomination-aware content generation + faith community intelligence',
+        spec: PA9_SPEC_SUMMARY,
+        filename: 'PA9-Worship-Technology-Provisional-Patent.txt',
+        patentId: 'PA-9',
+        externalUrl: undefined,
+      },
+      {
+        id: 'pa10-spec',
+        title: 'PA-10 Provisional Patent Application',
+        subtitle: 'Voice-First Financial Planning Infrastructure for Public Safety',
+        badge: 'Planned — June 2026',
+        badgeVariant: 'neutral' as const,
+        deadline: 'Encrypted bank tokens + pension engine + Monte Carlo',
+        spec: PA10_SPEC_SUMMARY,
+        filename: 'PA10-Financial-Planning-Provisional-Patent.txt',
+        patentId: 'PA-10',
+        externalUrl: undefined,
+      },
     ],
   },
   {
@@ -138,7 +174,7 @@ const DOCUMENTS = [
       {
         id: 'assignment',
         title: 'Inventor Assignment Agreement',
-        subtitle: 'Transfers all 7 patents from inventors to Visionary AI Systems Inc',
+        subtitle: 'Transfers all 10 patents from inventors to Visionary AI Systems Inc',
         badge: 'Sign this week',
         badgeVariant: 'warning' as const,
         deadline: 'Must be executed before filing any patent',

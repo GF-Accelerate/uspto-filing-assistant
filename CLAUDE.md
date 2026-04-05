@@ -239,7 +239,17 @@ These map to actual USPTO provisional application requirements.
 | PA-5 | Voice-First Agentic Database Infrastructure (VADI) | Ready | — | File this week |
 | PA-6 | Conversational AI-Guided IP Development Platform | Ready | — | File this week |
 | PA-7 | Federated Multi-Vertical Industry Learning System | Ready | — | Within 30 days |
+| PA-8 | Adaptive Multi-Model AI Orchestration + Confidence-Based Autonomy | Draft | — | May 2026 |
+| PA-9 | Domain-Adaptive Worship & Community Technology Platform | Planned | — | June 2026 |
+| PA-10 | Voice-First Financial Planning Infrastructure for Public Safety | Planned | — | June 2026 |
 | PGI-1 | Agentic Personal Growth Infrastructure + Likeness-Preserving Viz | Filing | — | Check notice PDF |
+
+### New Patent Candidates (April 2026 IP Protection Report)
+
+PA-8 covers 3 high-risk uncovered innovations: confidence-based autonomy routing (Marketing Automation),
+ephemeral token voice architecture (Batman OS), and 7-model AI orchestration (Marketing Automation).
+PA-9 covers denomination-aware theological content generation (MDALS Virtual Church).
+PA-10 covers encrypted bank token management and pension calculation engine (FirePath Financial Aid).
 
 ### Cross-Entity: Revenue Shield AI, LLC
 

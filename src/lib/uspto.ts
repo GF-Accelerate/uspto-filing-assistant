@@ -113,6 +113,34 @@ export const PORTFOLIO_INIT: Patent[] = [
     deadline: null,
     priority: 1,
   },
+  // ── New Patent Candidates (from IP Protection Report April 2026) ───
+  {
+    id: 'PA-8',
+    title: 'Adaptive Multi-Model AI Orchestration with Confidence-Based Autonomy',
+    status: 'draft',
+    filedDate: null,
+    appNumber: '',
+    deadline: null,
+    priority: 1,
+  },
+  {
+    id: 'PA-9',
+    title: 'Domain-Adaptive Worship & Community Technology Platform',
+    status: 'planned',
+    filedDate: null,
+    appNumber: '',
+    deadline: null,
+    priority: 2,
+  },
+  {
+    id: 'PA-10',
+    title: 'Voice-First Financial Planning Infrastructure for Public Safety',
+    status: 'planned',
+    filedDate: null,
+    appNumber: '',
+    deadline: null,
+    priority: 2,
+  },
 ]
 
 // 14-item HITL checklist — DO NOT MODIFY without legal review
@@ -779,8 +807,27 @@ ABSTRACT
 
 A conversational AI platform guides inventors through end-to-end IP development via natural language dialogue. Six specialized agents conduct invention elicitation, trade secret segregation, prior art search, business structure recommendation, patent specification drafting, and USPTO filing automation. A Human Authorization Layer enforced at platform infrastructure level intercepts all USPTO submission actions and cannot be disabled by agent logic or application code. The system enables progression from invention description through prior art clearance, business structure advice, provisional patent filing, and attorney handoff in a single conversational session.
 
+---
+
+V. PHYSICAL INVENTION CAPTURE PIPELINE (Updated April 2026)
+
+Agent 140g — Visual Capture Engine (VCE): Camera-based capture of physical inventions for patent documentation. AI component identification from photographs, automatic claim element suggestion from visual analysis, specification text generation from captured images. Supports landscape and portrait orientations with device metadata capture.
+
+Agent 140h — Physical-Digital Bridge (PDB): Connects physical world captures to digital patent documentation. Maps captured images to specification sections (figures, component descriptions, measurements, material specifications). HAL-gated approval before incorporation into filing documents.
+
+---
+
+VI. CROSS-PRODUCT IP PLATFORM CAPABILITIES (Updated April 2026)
+
+[0008] The system integrates with an IP Fortress operational module providing: patent lifecycle tracking from concept through filing to grant/abandonment; knowledge management with AI-powered querying across IP documents; IP document versioning and attachment management; attorney information storage; and filing deadline tracking across multiple patent applications and entities.
+
+[0009] The system has been validated across 11 production products spanning 9+ industry verticals (sports, finance, legal, religious, marketing, IP management, personal growth, insurance, education), demonstrating broad enablement and utility of the conversational AI-guided IP development method.
+
+---
+
 INVENTORS: Milton Overton & Lisa Overton
-ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)`
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+IMPLEMENTATION EVIDENCE: USPTO Patent Filing Assistant (production), Ops Command Center (IP Fortress module)`
 
 // ── PA-7 Specification — Federated Multi-Vertical Industry Learning ───
 export const PA7_SPEC_SUMMARY = `TITLE: System and Method for Federated Multi-Vertical Industry Learning with Configurable Data Governance, Adaptive Model Routing, and Continuous Ecosystem Intelligence Aggregation
@@ -982,10 +1029,159 @@ INVENTOR: Milton Overton (solo)
 ASSIGNEE: Visionary AI Systems, Inc. (Delaware C-Corporation)
 STATUS: Filing notice exists — app number needs manual entry from image-based PDF`
 
+// ── PA-8 Specification — Adaptive Multi-Model AI Orchestration ──────────
+export const PA8_SPEC_SUMMARY = `TITLE: System and Method for Adaptive Multi-Model Artificial Intelligence Orchestration with Confidence-Based Autonomy Routing, Ephemeral Token Voice Architecture, and Dynamic Model Selection
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+
+PRIMARY INVENTOR: Milton Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity — $320 filing fee
+RELATED APPLICATIONS: Related to co-pending PA-1 (App #64/029,100) and PA-5 (VADI)
+
+---
+
+I. TECHNICAL FIELD
+
+[0001] The present invention relates to artificial intelligence orchestration systems that dynamically route user requests across multiple specialized AI models based on task requirements, identity preservation needs, and cost optimization constraints. More specifically, to a system comprising: (a) a confidence-based autonomy router that determines whether an AI agent action should auto-execute, queue for human approval, or log-only based on continuously computed confidence scores; (b) an ephemeral token voice architecture where WebRTC voice sessions use short-lived API tokens that expire after each conversation turn, preventing replay attacks on voice-to-database pipelines; and (c) a dynamic model selection engine that automatically routes content generation to the most cost-effective and feature-capable AI model based on identity preservation requirements, reference image presence, and fallback chain logic.
+
+---
+
+II. BACKGROUND
+
+[0002] Current AI orchestration platforms (LangChain, CrewAI, OpenAI Swarm) use static routing rules, binary human-in-the-loop gates (on/off), and single-model pipelines. No existing system provides: continuous confidence scoring that dynamically determines autonomy level per-action; ephemeral security tokens for voice-to-AI sessions preventing credential exposure; or automatic multi-model routing that selects among 7+ AI models (GPT-4o, Gemini 2.5, Veo 3.1, Sora 2, Imagen 3, Claude, ElevenLabs) based on task-specific capability requirements with cost optimization and graceful degradation through fallback chains.
+
+---
+
+III. THREE CORE INNOVATIONS
+
+Component 810 — Confidence-Based Autonomy Router: Computes confidence score (0-100%) for each agent action. Routes to three execution paths: auto-execute (>=85% confidence AND handler permits), approval queue (70-85%), or log-only (<70%). Handler-specific execution rules prevent irreversible actions (content_post, campaign_start) from auto-executing regardless of confidence. Full audit trail with signal source, confidence score, and execution result.
+
+Component 820 — Ephemeral Token Voice Architecture: Server generates short-lived OpenAI session tokens with bounded lifetime. Browser establishes WebRTC connection using ephemeral token — never exposes full API key. Tool/function calls route back through server for database operations. Token expires after conversation turn, preventing replay attacks.
+
+Component 830 — Dynamic Model Selection Engine: Analyzes content generation request parameters (reference images, identity preservation flag, platform target, budget). Routes to optimal model: Veo 3.1 for identity-preserving video, Sora 2 for generic video (40% cheaper), Imagen 3 for photorealistic images, GPT-4o for text generation. Automatic fallback chain (Veo → Sora → DALL-E slideshow) with cost tracking per model per action.
+
+---
+
+IV. HUMAN AUTHORIZATION GATE (CRITICAL)
+
+[0007] Despite autonomous capabilities, the Human Authorization Layer intercepts ALL irreversible actions. Content posting to social media, campaign launches, and financial transactions ALWAYS require explicit human approval regardless of confidence score. This gate CANNOT be bypassed by any agent, configuration, or confidence threshold.
+
+---
+
+CLAIMS (15 total — Claims 1, 8, 14 independent)
+
+Claim 1 (System): An adaptive AI orchestration system comprising: a confidence computation module that scores each proposed agent action; a routing module with at least three execution paths based on confidence thresholds; a model selection engine that routes content generation requests across at least three different AI models based on task-specific requirements; an ephemeral token generator for voice sessions; and a human authorization layer that intercepts irreversible actions regardless of confidence score.
+
+Claim 8 (Method): A method for dynamically orchestrating multiple AI models comprising: receiving a content generation request with associated parameters; analyzing parameters to determine identity preservation requirements; selecting an optimal AI model from a registry of available models based on capability match and cost optimization; generating an ephemeral session token for voice interaction; computing a confidence score for the proposed action; routing the action to auto-execute, approval queue, or log-only based on confidence thresholds; and maintaining a cost-tracked audit trail.
+
+Claim 14 (Platform): A non-transitory computer-readable medium implementing the method of Claim 8, enforcing human authorization for all irreversible actions and maintaining ephemeral token lifecycle management.
+
+---
+
+ABSTRACT
+
+An adaptive artificial intelligence orchestration platform dynamically routes user requests across multiple specialized AI models (video, image, text, voice, embedding) based on task requirements, identity preservation needs, and cost constraints. A confidence-based autonomy router determines execution paths (auto-execute, approval queue, log-only) with handler-specific override rules for irreversible actions. An ephemeral token voice architecture prevents API credential exposure during WebRTC voice sessions. A dynamic model selection engine automatically chooses optimal models with graceful degradation through fallback chains. A non-bypassable Human Authorization Layer ensures all irreversible actions require explicit human approval regardless of system confidence.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+IMPLEMENTATION EVIDENCE: Visionary Marketing Automation (7 AI models), Batman OS (ephemeral WebRTC tokens), all 11 Visionary AI products`
+
+// ── PA-9 Specification — Domain-Adaptive Worship Technology ─────────────
+export const PA9_SPEC_SUMMARY = `TITLE: System and Method for Domain-Adaptive Worship and Community Technology with Denomination-Aware Content Generation, AI-Powered Service Orchestration, and Faith Community Intelligence
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+
+PRIMARY INVENTOR: Milton Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity — $320 filing fee
+RELATED APPLICATIONS: Related to co-pending PA-5 (VADI) and PA-7 (Federated Learning)
+
+---
+
+I. TECHNICAL FIELD
+
+[0001] The present invention relates to AI-powered technology platforms for religious organizations, specifically a system that generates denomination-aware theological content (sermons, devotionals, worship orders, prayer resources) calibrated to specific denominational theologies, manages virtual and in-person worship services with AI-assisted scheduling, and provides faith community engagement tools including prayer partnership matching, Bible study group management, and giving analytics.
+
+---
+
+II. KEY INNOVATIONS
+
+Component 910 — Denomination-Aware Content Generation Engine: AI generates theological content customized by denomination (Baptist, Pentecostal, Catholic, Methodist, Lutheran, Presbyterian, Non-Denominational), preaching style (Theatrical, Calm & Reflective, Instructional, Passionate/Evangelistic, Storytelling), and event context (Worship Service, Bible Study, Youth Ministry, Small Group). Uses structured output with JSON schema validation for consistent content formatting.
+
+Component 920 — AI Virtual Venue Generator: Generates photorealistic, artistic, or minimalist virtual church environments from natural language descriptions. 16:9 aspect ratio outputs suitable for live-streaming backgrounds. Integrated with service timeline for scene transitions.
+
+Component 930 — Faith Community Intelligence: Prayer request categorization with sentiment analysis, prayer partnership matching algorithm, anonymous prayer privacy preservation, devotional engagement tracking with reading streaks, and giving analytics with privacy-preserving donation tracking.
+
+---
+
+CLAIMS (12 total — Claims 1, 7, 11 independent)
+
+Claim 1: A denomination-aware content generation system comprising: a theological content engine that generates sermons, devotionals, and worship elements calibrated to at least seven distinct denominational theologies; a preaching style adapter supporting at least five preaching approaches; and a knowledge base contextualizer that injects user-provided institutional content into generation prompts.
+
+Claim 7: A method for generating a complete worship service timeline comprising: receiving denomination, event type, and duration parameters; auto-generating a structured service with ordered items (songs, prayers, scriptures, sermons, announcements); providing AI-generated content for each item; and enabling voice-controlled modification of the timeline.
+
+Claim 11: A faith community intelligence platform comprising: a prayer request management system with anonymous participation support; a prayer partnership matching algorithm; a devotional reading progress tracker with streak calculations; and a giving analytics module with privacy-preserving donation tracking.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+IMPLEMENTATION EVIDENCE: MDALS Virtual Church (40+ database tables, 7 denominations, Gemini 2.5 Flash)`
+
+// ── PA-10 Specification — Voice-First Financial Planning Infrastructure ─
+export const PA10_SPEC_SUMMARY = `TITLE: System and Method for Voice-First Financial Planning Infrastructure with Encrypted Bank Data Aggregation, Domain-Specific Pension Calculation Engine, and Monte Carlo Retirement Simulation
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+PRINCIPAL OFFICE: 1102 Cool Springs Drive, Kennesaw, GA 30144
+
+PRIMARY INVENTOR: Milton Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144, United States Citizen
+
+ENTITY STATUS: Small Entity — $320 filing fee
+RELATED APPLICATIONS: Related to co-pending PA-1 (App #64/029,100), PA-5 (VADI)
+
+---
+
+I. TECHNICAL FIELD
+
+[0001] The present invention relates to voice-first financial planning platforms purpose-built for public safety professionals (firefighters, police officers, EMTs), comprising: (a) secure bank data aggregation with user-specific encrypted access tokens (AES-256-GCM) for Plaid API integration across 12,000+ financial institutions; (b) a domain-specific pension calculation engine supporting hybrid and traditional pension plans with Final Average Salary (FAS) sliding window computation, early retirement actuarial reductions, and multiple benefit payout options; (c) Monte Carlo retirement simulation with voice-triggered scenario modeling; and (d) AI-powered financial goal suggestions and risk assessment with stress testing against historical market scenarios.
+
+---
+
+II. KEY INNOVATIONS
+
+Component 1010 — Encrypted Access Token Management: Plaid access tokens encrypted with pgcrypto using user-specific symmetric encryption keys. Database-level encryption trigger on token storage. Security definer function pattern for decryption. Raw tokens never exposed to application layer. Automatic token rotation.
+
+Component 1020 — Pension Calculation Engine: Domain-specific for public safety with plan-type-aware multipliers (hybrid 1%, traditional 2.5%), Final Average Salary sliding window (highest 5 consecutive years), early retirement penalties (5% per year under age 55), multiple benefit options (single life, joint and survivor, period certain).
+
+Component 1030 — Voice-Driven Monte Carlo Simulation: Voice commands trigger retirement scenario projections with real-time parameter adjustment ("what if I retire at 55 instead of 60?"). Conservative/moderate/optimistic investment return scenarios. Year-by-year projection tables with confidence intervals.
+
+Component 1040 — Financial Risk Intelligence: Multi-dimensional risk scoring (market, inflation, longevity, career, health). Stress testing against historical scenarios (2008 crash, dot-com, COVID-19). Portfolio volatility tracking with asset allocation recommendations.
+
+---
+
+CLAIMS (12 total — Claims 1, 7, 11 independent)
+
+Claim 1: A voice-first financial planning system comprising: an encrypted bank data aggregation module using user-specific symmetric encryption for API access tokens; a pension calculation engine with plan-type-aware multipliers and sliding window FAS computation; a Monte Carlo simulation engine responsive to voice-triggered scenario parameters; and a human authorization layer for financial transactions.
+
+Claim 7: A method for voice-driven retirement planning comprising: receiving voice input specifying retirement parameters; computing pension benefits using plan-type-specific rules; aggregating bank account data via encrypted token exchange; running Monte Carlo simulations across multiple investment return scenarios; and presenting results via voice synthesis with visual dashboard.
+
+Claim 11: A non-transitory computer-readable medium implementing a domain-specific financial planning engine for public safety professionals with encrypted bank data aggregation, pension calculation with early retirement actuarial adjustments, and predictive risk analytics with historical stress testing.
+
+INVENTORS: Milton Overton & Lisa Overton
+ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)
+IMPLEMENTATION EVIDENCE: FirePath Financial Aid (Plaid integration, pension engine, Monte Carlo, ElevenLabs voice)`
+
 // Update PATENT_SPECS map
 if (typeof PATENT_SPECS !== 'undefined') {
   PATENT_SPECS['PA-6'] = PA6_SPEC_SUMMARY
   PATENT_SPECS['PA-7'] = PA7_SPEC_SUMMARY
   PATENT_SPECS['RS-1'] = RS1_SPEC_SUMMARY
   PATENT_SPECS['PGI-1'] = PGI1_SPEC_SUMMARY
+  PATENT_SPECS['PA-8'] = PA8_SPEC_SUMMARY
+  PATENT_SPECS['PA-9'] = PA9_SPEC_SUMMARY
+  PATENT_SPECS['PA-10'] = PA10_SPEC_SUMMARY
 }

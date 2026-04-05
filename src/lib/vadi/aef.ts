@@ -89,13 +89,20 @@ APP PAGES & FEATURES:
 - Audit Log (/admin/audit) — HAL approval history
 - Patent Overview (/admin/patents) — Cross-org patent table
 
+NEW PATENT CANDIDATES (from April 2026 IP Protection Report — 11 products analyzed):
+- PA-8: Adaptive Multi-Model AI Orchestration with Confidence-Based Autonomy — covers ephemeral tokens, 7-model routing, confidence-based execution. DRAFT — file May 2026.
+- PA-9: Domain-Adaptive Worship & Community Technology Platform — denomination-aware content, faith community intelligence. PLANNED — file June 2026.
+- PA-10: Voice-First Financial Planning Infrastructure for Public Safety — encrypted bank tokens, pension engine, Monte Carlo. PLANNED — file June 2026.
+
 PRIORITY ACTIONS:
 1. Sign Assignment Agreement (50/50 Milton/Lisa — Delaware)
-2. File PA-5 VADI this week ($320) — platform licensing moat
-3. File PA-2 + PA-3 by April 27, 2026 ($640 total) — CRITICAL DEADLINE
-4. Enter PGI-1 filing receipt data (check image-based filing notice PDF)
-5. RS-1 nonprovisional due August 13, 2026 (Revenue Shield AI, LLC)
-6. Get USPTO ODP API key for post-filing tracking`
+2. File PA-5 VADI this week ($320) — platform licensing moat, 11 products implementing VADI primitives
+3. File PA-6 IP Platform this week ($320) — Patent Filing Assistant is live production evidence
+4. File PA-2 + PA-3 by April 27, 2026 ($640 total) — CRITICAL DEADLINE
+5. Draft PA-8 spec (confidence routing + ephemeral tokens + multi-model orchestration) — file May 2026
+6. Enter PGI-1 filing receipt data (check image-based filing notice PDF)
+7. RS-1 nonprovisional due August 13, 2026 (Revenue Shield AI, LLC)
+8. Get USPTO ODP API key for post-filing tracking`
 }
 
 // ── Agent registry ─────────────────────────────────────────────────────────

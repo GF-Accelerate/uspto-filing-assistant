@@ -15,8 +15,9 @@ export function Dashboard({ portfolio, onOpen }: Props) {
   const rs1Deadline = daysUntil('2026-08-13')
   const receipts = getAllReceipts()
 
-  const vaisPatents = portfolio.filter(p => !p.id.startsWith('RS-'))
+  const vaisPatents = portfolio.filter(p => !p.id.startsWith('RS-') && !p.id.startsWith('PA-8') && !p.id.startsWith('PA-9') && !p.id.startsWith('PA-10'))
   const crossEntityPatents = portfolio.filter(p => p.id.startsWith('RS-'))
+  const newCandidates = portfolio.filter(p => ['PA-8', 'PA-9', 'PA-10'].includes(p.id))
 
   const metrics = [
     { label:'Total patents', value:portfolio.length },
@@ -32,9 +33,12 @@ export function Dashboard({ portfolio, onOpen }: Props) {
     { label:'File PA-3 (campaign orchestration)', deadline:'April 27, 2026', urgent:true },
     { label:'Enter PGI-1 filing receipt (check filing notice PDF)', deadline:'This week', urgent:true },
     { label:'RS-1 nonprovisional (App #63/862,821)', deadline:'August 13, 2026 — MANDATORY', urgent: rs1Deadline !== null && rs1Deadline <= 180 },
-    { label:'File PA-6 (IP development platform)', deadline:'This week', urgent:false },
+    { label:'File PA-6 (IP development platform)', deadline:'This week', urgent:true },
+    { label:'Draft PA-8 spec (multi-model orchestration + confidence routing)', deadline:'May 2026', urgent:false },
     { label:'File PA-4 (revenue intelligence)', deadline:'May 27, 2026', urgent:false },
     { label:'File PA-7 (federated learning)', deadline:'Within 30 days', urgent:false },
+    { label:'File PA-9 (worship technology)', deadline:'June 2026', urgent:false },
+    { label:'File PA-10 (financial planning)', deadline:'June 2026', urgent:false },
     { label:'PA-1 nonprovisional (App #64/029,100)', deadline:'April 3, 2027 — MANDATORY', urgent:false },
   ]
 
@@ -111,6 +115,13 @@ export function Dashboard({ portfolio, onOpen }: Props) {
         <CardHeader title="Patent Portfolio — Visionary AI Systems Inc" right={<span className="text-xs text-slate-400">Inventors: Milton & Lisa Overton</span>} />
         {vaisPatents.map(p => <PatentCard key={p.id} patent={p} onOpen={onOpen} />)}
       </Card>
+
+      {newCandidates.length > 0 && (
+        <Card className="mb-5">
+          <CardHeader title="New Patent Candidates" right={<span className="text-xs text-slate-400">From IP Protection Report — April 2026</span>} />
+          {newCandidates.map(p => <PatentCard key={p.id} patent={p} onOpen={onOpen} />)}
+        </Card>
+      )}
 
       {crossEntityPatents.length > 0 && (
         <Card className="mb-5">

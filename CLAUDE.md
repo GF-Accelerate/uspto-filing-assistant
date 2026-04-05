@@ -228,6 +228,8 @@ These map to actual USPTO provisional application requirements.
 
 ## Patent Portfolio Reference
 
+### Visionary AI Systems, Inc. (Delaware Corporation)
+
 | ID | Title | Status | App # | Deadline |
 |----|-------|--------|-------|----------|
 | PA-1 | Voice-Controlled Database Query + Agent Execution | Filed | 64/029,100 | Apr 3, 2027 |
@@ -237,6 +239,17 @@ These map to actual USPTO provisional application requirements.
 | PA-5 | Voice-First Agentic Database Infrastructure (VADI) | Ready | — | File this week |
 | PA-6 | Conversational AI-Guided IP Development Platform | Ready | — | File this week |
 | PA-7 | Federated Multi-Vertical Industry Learning System | Ready | — | Within 30 days |
+| PGI-1 | Agentic Personal Growth Infrastructure + Likeness-Preserving Viz | Filing | — | Check notice PDF |
+
+### Cross-Entity: Revenue Shield AI, LLC
+
+| ID | Title | Status | App # | Deadline |
+|----|-------|--------|-------|----------|
+| RS-1 | AI-Powered Compensation Auditing & Recovery Platform | Filed | 63/862,821 | Aug 13, 2026 |
+
+**NOTE:** RS-1 is assigned to Revenue Shield AI, LLC — a **separate entity** from Visionary AI Systems, Inc.
+RS-1 inventors: Milton Overton, Lisa Overton, Mel Clemmons. Entity: Micro Entity ($130).
+PGI-1 inventor: Milton Overton only (Lisa NOT listed). Entity: Small Entity ($320).
 
 ---
 

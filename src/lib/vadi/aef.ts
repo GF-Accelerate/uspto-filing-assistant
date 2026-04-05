@@ -24,6 +24,8 @@ export function buildDynamicKnowledge(): string {
     const daysStr = days !== null ? ` — ${days} days remaining` : ''
     const statusStr = p.status === 'filed'
       ? `FILED (App #${p.appNumber})${p.deadline ? ` — Nonprovisional due ${p.deadline}${daysStr}` : ''}`
+      : p.status === 'filing'
+      ? 'Filing in progress — receipt data pending'
       : p.status === 'ready'
       ? `Ready to file${daysStr}`
       : p.status === 'draft'
@@ -44,14 +46,24 @@ ${portfolioLines}
 ECOSYSTEM PRODUCTS (live):
 - CSOS: College Sports Operating System — live at KSU, 170K+ constituent records
 - Visionary AI Marketing Automation — live
-- Revenue Shield — live
+- Revenue Shield — live (insurance compensation auditing, separate LLC)
+- AI Interactive Vision Board — live (personal growth + likeness-preserving visualization)
 - Patent Filing Assistant — this app
 - Conversational IP Platform (PA-6) — to be built
 All products feed training data to VisAI vertical models (PA-7 system)
 
+CROSS-ENTITY PATENTS:
+- RS-1: Revenue Shield AI, LLC — App #63/862,821 (filed Aug 13, 2025) — Nonprovisional due Aug 13, 2026
+  Inventors: Milton Overton, Lisa Overton, Mel Clemmons. Entity: Micro Entity ($130).
+  NOTE: Revenue Shield AI LLC is a SEPARATE entity from Visionary AI Systems Inc.
+- PGI-1: Visionary AI Systems Inc — Agentic Personal Growth Infrastructure + Likeness-Preserving Visualization
+  Inventor: Milton Overton (solo — Lisa NOT listed). 25 claims, 4 independent.
+  Filing notice exists but app number needs manual entry from image-based PDF.
+
 INVENTORS: Milton Overton & Lisa Overton, 1102 Cool Springs Drive, Kennesaw, GA 30144
 ASSIGNEE: Visionary AI Systems, Inc. — Delaware Corporation (State ID: 10468520), EIN: 41-3757112
-ENTITY STATUS: Small Entity — $320 filing fee per provisional
+ENTITY STATUS: Small Entity — $320 filing fee per provisional (VAIS patents)
+ENTITY STATUS: Micro Entity — $130 filing fee (Revenue Shield patents)
 
 KEY FILING STEPS at patentcenter.uspto.gov:
 1. New submission → Patent application → Utility → Provisional (35 USC 111(b)) → Small Entity
@@ -60,7 +72,7 @@ KEY FILING STEPS at patentcenter.uspto.gov:
 4. Pay $320 → Submit → SAVE APPLICATION NUMBER (format: 63/XXX,XXX or 64/XXX,XXX)
 
 APP PAGES & FEATURES:
-- Portfolio (/) — Dashboard showing all 7 patents with status badges
+- Portfolio (/) — Dashboard showing all patents (PA-1–PA-7 + RS-1 + PGI-1) with status badges
 - Wizard (/wizard) — 6-step filing workflow with AI analysis
 - Filing Package (/filing-package) — One-click ZIP: Spec + Cover Sheet + manifest, batch filing
 - Drawings (/drawings) — Mermaid.js patent drawing generator with PDF export at 300 DPI
@@ -81,7 +93,9 @@ PRIORITY ACTIONS:
 1. Sign Assignment Agreement (50/50 Milton/Lisa — Delaware)
 2. File PA-5 VADI this week ($320) — platform licensing moat
 3. File PA-2 + PA-3 by April 27, 2026 ($640 total) — CRITICAL DEADLINE
-4. Get USPTO ODP API key for post-filing tracking`
+4. Enter PGI-1 filing receipt data (check image-based filing notice PDF)
+5. RS-1 nonprovisional due August 13, 2026 (Revenue Shield AI, LLC)
+6. Get USPTO ODP API key for post-filing tracking`
 }
 
 // ── Agent registry ─────────────────────────────────────────────────────────

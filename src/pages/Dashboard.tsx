@@ -12,7 +12,11 @@ export function Dashboard({ portfolio, onOpen }: Props) {
   const navigate = useNavigate()
   const pa1Deadline = daysUntil('2027-04-03')
   const pa2pa3Deadline = daysUntil('2026-04-27')
+  const rs1Deadline = daysUntil('2026-08-13')
   const receipts = getAllReceipts()
+
+  const vaisPatents = portfolio.filter(p => !p.id.startsWith('RS-'))
+  const crossEntityPatents = portfolio.filter(p => p.id.startsWith('RS-'))
 
   const metrics = [
     { label:'Total patents', value:portfolio.length },
@@ -26,6 +30,8 @@ export function Dashboard({ portfolio, onOpen }: Props) {
     { label:'File PA-5 VADI — platform licensing moat', deadline:'This week', urgent:true },
     { label:'File PA-2 (athletic dept management)', deadline:'April 27, 2026', urgent:true },
     { label:'File PA-3 (campaign orchestration)', deadline:'April 27, 2026', urgent:true },
+    { label:'Enter PGI-1 filing receipt (check filing notice PDF)', deadline:'This week', urgent:true },
+    { label:'RS-1 nonprovisional (App #63/862,821)', deadline:'August 13, 2026 — MANDATORY', urgent: rs1Deadline !== null && rs1Deadline <= 180 },
     { label:'File PA-6 (IP development platform)', deadline:'This week', urgent:false },
     { label:'File PA-4 (revenue intelligence)', deadline:'May 27, 2026', urgent:false },
     { label:'File PA-7 (federated learning)', deadline:'Within 30 days', urgent:false },
@@ -103,8 +109,15 @@ export function Dashboard({ portfolio, onOpen }: Props) {
 
       <Card className="mb-5">
         <CardHeader title="Patent Portfolio — Visionary AI Systems Inc" right={<span className="text-xs text-slate-400">Inventors: Milton & Lisa Overton</span>} />
-        {portfolio.map(p => <PatentCard key={p.id} patent={p} onOpen={onOpen} />)}
+        {vaisPatents.map(p => <PatentCard key={p.id} patent={p} onOpen={onOpen} />)}
       </Card>
+
+      {crossEntityPatents.length > 0 && (
+        <Card className="mb-5">
+          <CardHeader title="Cross-Entity Patents" right={<span className="text-xs text-slate-400">Revenue Shield AI, LLC</span>} />
+          {crossEntityPatents.map(p => <PatentCard key={p.id} patent={p} onOpen={onOpen} />)}
+        </Card>
+      )}
 
       {receipts.length > 0 && (
         <Card className="mb-5">

@@ -92,6 +92,27 @@ export const PORTFOLIO_INIT: Patent[] = [
     deadline: null,
     priority: 2,
   },
+  // ── Cross-Entity Patents ─────────────────────────────────────────
+  // RS-1: Revenue Shield AI, LLC (separate entity — NOT Visionary AI Systems)
+  {
+    id: 'RS-1',
+    title: 'AI-Powered Compensation Auditing & Recovery Platform (Revenue Shield)',
+    status: 'filed',
+    filedDate: '2025-08-13',
+    appNumber: '63/862,821',
+    deadline: '2026-08-13',   // 12-month nonprovisional deadline
+    priority: 1,
+  },
+  // PGI-1: Visionary AI Systems, Inc. — filed but receipt data needs manual entry
+  {
+    id: 'PGI-1',
+    title: 'Agentic Personal Growth Infrastructure & Likeness-Preserving Visualization',
+    status: 'filing',
+    filedDate: null,           // Filing notice is image-based — enter manually
+    appNumber: '',             // Check filing notice PDF for app number
+    deadline: null,
+    priority: 1,
+  },
 ]
 
 // 14-item HITL checklist — DO NOT MODIFY without legal review
@@ -837,8 +858,134 @@ A federated multi-vertical industry learning system enables multiple domain-spec
 INVENTORS: Milton Overton & Lisa Overton
 ASSIGNEE: Visionary AI Systems, Inc., a Delaware Corporation (State ID: 10468520)`
 
+// ── RS-1 Specification — Revenue Shield AI Compensation Auditing ──────────
+// NOTE: Assignee is Revenue Shield AI, LLC — NOT Visionary AI Systems, Inc.
+export const RS1_SPEC_SUMMARY = `TITLE: AI-Powered Compensation Auditing and Recovery Platform for Insurance Carriers, Agencies, and Brokers
+
+APPLICANT / ASSIGNEE: Revenue Shield AI, LLC
+NOTE: This patent is assigned to Revenue Shield AI, LLC — a SEPARATE entity from Visionary AI Systems, Inc.
+
+PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Lisa Overton, Kennesaw, GA 30144, United States Citizen
+CO-INVENTOR: Mel Clemmons, United States Citizen
+
+APPLICATION NUMBER: 63/862,821
+FILING DATE: August 13, 2025
+CONFIRMATION NUMBER: 1993
+ENTITY STATUS: Micro Entity ($130 filing fee)
+NONPROVISIONAL DEADLINE: August 13, 2026 — MANDATORY
+
+---
+
+TECHNICAL FIELD
+
+[0001] The present invention relates to AI-powered compensation auditing and recovery systems specifically configured for insurance carriers, agencies, and brokers. The platform detects, validates, and recovers compensation discrepancies through ensemble machine learning, pattern recognition, and automated workflow execution.
+
+---
+
+SUMMARY OF THE INVENTION
+
+The platform comprises:
+- AI Processing Core: Ensemble ML using random forest, neural networks, and SVM achieving 99.5% accuracy
+- Pattern Recognition Engine: Detects compensation errors across carrier contracts using temporal, rate, and bundle analysis
+- Rate Validation Module: Cross-references carrier rate tables against actual compensation payments
+- Bundle Classification System: Categorizes insurance product bundles and validates commission structures
+- Timing Analysis Engine: Detects temporal patterns indicating systematic underpayment
+- n8n Workflow Automation: Orchestrates recovery workflows from detection through resolution
+- Success-Based Fee Engine: Revenue model based on recovered amounts
+- Continuous Learning Pipeline: Model retraining from resolved cases
+- Processing capacity: 10,000+ transactions/minute
+- Security: SOC 2 Type II compliance framework
+
+---
+
+CLAIMS (16 total)
+
+Claim 1: AI processing core with ensemble ML for compensation discrepancy detection
+Claim 2: Pattern recognition engine identifying compensation errors across carrier contracts
+Claim 3: Rate validation module cross-referencing carrier rate tables
+Claim 4: Bundle classification categorizing insurance products
+Claim 5: Timing analysis detecting temporal underpayment patterns
+Claim 6: Automated recovery workflow via n8n orchestration
+Claim 7: Success-based fee calculation engine
+Claim 8: Continuous learning from resolved discrepancies
+Claims 9-16: Dependent claims covering specific ML architectures, validation logic, and processing guarantees
+
+---
+
+ABSTRACT
+
+Revenue Shield AI is an intelligent, automated compensation auditing and recovery platform specifically configured for insurance carriers, agencies, and brokers. The system processes compensation data through ensemble machine learning (random forest, neural networks, SVM), identifies discrepancies via pattern recognition, validates rates against carrier contracts, classifies bundle structures, analyzes temporal payment patterns, and orchestrates recovery workflows through n8n automation — all with success-based fee collection and continuous model improvement.
+
+INVENTORS: Milton Overton, Lisa Overton, Mel Clemmons
+ASSIGNEE: Revenue Shield AI, LLC
+APPLICATION: 63/862,821 (filed August 13, 2025)
+NONPROVISIONAL DEADLINE: August 13, 2026`
+
+// ── PGI-1 Specification — Agentic Personal Growth Infrastructure ──────────
+export const PGI1_SPEC_SUMMARY = `TITLE: System and Method for Agentic Personal Growth Infrastructure (PGI) and Likeness-Preserving Generative Visualization
+
+APPLICANT / ASSIGNEE: Visionary AI Systems, Inc. (Delaware C-Corporation)
+
+PRIMARY INVENTOR: Milton Overton, Kennesaw, GA 30144, United States Citizen
+NOTE: Solo inventor — Lisa Overton is NOT listed on this application
+
+APPLICATION NUMBER: Pending — check filing notice PDF (image-based, needs manual entry)
+FILING DATE: Pending — estimated late December 2025
+ENTITY STATUS: Small Entity ($320 filing fee assumed)
+
+---
+
+TECHNICAL FIELD
+
+[0001] The present invention relates to AI systems, generative media pipelines, and personal productivity platforms. Specifically: (1) converting static visualization data into autonomous executable tasks; (2) preserving facial identity in generative image synthesis via multi-turn Identity Lock Protocol; (3) integrating real-time financial data with goal-tracking; and (4) providing adaptive motivational coaching through identity-aligned AI across voice, text, and wearable interfaces.
+
+---
+
+SUMMARY — FOUR CORE SUBSYSTEMS
+
+1. AGENTIC EXECUTION ENGINE: Parses semantic intent from vision board images, generates dependency trees, decomposes goals into JSON task objects, performs autonomous calendar slot injection with human-in-the-loop confirmation.
+
+2. LIKENESS-PRESERVING VISUALIZATION PIPELINE: Multi-turn "Identity Lock Protocol" — Turn 1 (reference image ingestion + 5-7 invariant feature extraction), Turn 2 (simulated model acknowledgement), Turn 3 (scene generation with identity preservation). Computer vision validation loop with 0.7 likeness score threshold and auto-regeneration.
+
+3. FINANCIAL REALITY ENGINE: Plaid API integration for real-time banking data. Gap analysis algorithm, pace calculation, Dream Date management, automatic recalculation when savings pace insufficient. Continuous feedback loop.
+
+4. ADAPTIVE MOTIVATIONAL IDENTITY ENGINE (AMIE): Coaching personas (Christian, Business Executive, Health & Fitness, Retirement). Multi-modal delivery (text chat, voice via Gemini Live, Apple Watch, SMS, email). Autonomous mediation with proactive outreach triggers.
+
+DUAL-LLM ROUTING: Reasoning tasks → Claude Sonnet/GPT-4o. Media generation → Gemini 2.5 Pro/Flash.
+
+---
+
+CLAIMS (25 total — 4 independent)
+
+Claim 1 (Independent — Likeness Method): Multi-turn Identity Lock Protocol for likeness-preserving image synthesis with 5-7 invariant facial feature extraction, 0.7 likeness score threshold, and auto-regeneration loop.
+Claims 2-7: Dependent claims for threshold values, feature types, auto-regeneration, post-processing, model specification.
+
+Claim 8 (Independent — Agentic PGI System): Vision board → semantic intent → dependency tree → JSON task objects → calendar slot injection with HITL confirmation.
+Claims 9-13: Dependent claims for dual-LLM routing, model specification, dependency tree hierarchy, autonomous slot injection, HITL interface.
+
+Claim 14 (Independent — Financial Reality Engine): Real-time financial data → gap analysis → pace calculation → Dream Date recalculation → recommendations → visualization roadmap updates.
+Claims 15-19: Dependent claims for Plaid API, net worth retrieval, recalculation triggers, continuous feedback loop, recommendation types.
+
+Claim 20 (Independent — AMIE Coaching System): Identity theme coaching personas, multi-modal delivery, autonomous mediation, proactive outreach triggers.
+Claims 21-23: Dependent claims for persona types, voice interface (Gemini Live), wearable (Apple Watch).
+
+Claims 24-25: Computer-readable medium claims for Claims 1 and 8.
+
+---
+
+ABSTRACT
+
+A system for Agentic Personal Growth Infrastructure (PGI) bridging visualization and execution through: (1) likeness-preserving generative AI with Identity Lock Protocol and 0.7 threshold validation; (2) agentic execution engine converting vision boards to calendar tasks via dependency trees; (3) Financial Reality Engine with Plaid API integration and Dream Date management; (4) AMIE adaptive coaching across voice, text, wearable, SMS, and email. Dual-LLM routing architecture optimizes reasoning vs. media generation tasks.
+
+INVENTOR: Milton Overton (solo)
+ASSIGNEE: Visionary AI Systems, Inc. (Delaware C-Corporation)
+STATUS: Filing notice exists — app number needs manual entry from image-based PDF`
+
 // Update PATENT_SPECS map
 if (typeof PATENT_SPECS !== 'undefined') {
   PATENT_SPECS['PA-6'] = PA6_SPEC_SUMMARY
   PATENT_SPECS['PA-7'] = PA7_SPEC_SUMMARY
+  PATENT_SPECS['RS-1'] = RS1_SPEC_SUMMARY
+  PATENT_SPECS['PGI-1'] = PGI1_SPEC_SUMMARY
 }

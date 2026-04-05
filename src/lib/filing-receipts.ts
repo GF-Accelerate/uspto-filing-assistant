@@ -16,12 +16,40 @@ export interface FilingReceipt {
 
 const RECEIPTS_KEY = 'vais:filing-receipts'
 
+// Seed receipts for patents filed before the app was built
+const SEED_RECEIPTS: FilingReceipt[] = [
+  {
+    id: 'receipt-rs1-seed',
+    patentId: 'RS-1',
+    appNumber: '63/862,821',
+    filingDate: '2025-08-13',
+    confirmationNumber: '1993',
+    nonprovisionalDeadline: '2026-08-13',
+    entityStatus: 'Micro Entity',
+    feesPaid: 130,
+    notes: 'Revenue Shield AI, LLC — separate entity from VAIS. Inventors: Milton Overton, Lisa Overton, Mel Clemmons.',
+    createdAt: '2025-08-13T00:00:00.000Z',
+  },
+]
+
 function loadReceipts(): FilingReceipt[] {
   try {
     const raw = localStorage.getItem(RECEIPTS_KEY)
-    return raw ? JSON.parse(raw) : []
+    const stored: FilingReceipt[] = raw ? JSON.parse(raw) : []
+    // Auto-seed known receipts that aren't in localStorage yet
+    let changed = false
+    for (const seed of SEED_RECEIPTS) {
+      if (!stored.some(r => r.patentId === seed.patentId)) {
+        stored.push(seed)
+        changed = true
+      }
+    }
+    if (changed) {
+      try { localStorage.setItem(RECEIPTS_KEY, JSON.stringify(stored)) } catch { /* */ }
+    }
+    return stored
   } catch {
-    return []
+    return [...SEED_RECEIPTS]
   }
 }
 

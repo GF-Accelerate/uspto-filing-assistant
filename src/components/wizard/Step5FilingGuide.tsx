@@ -1,9 +1,12 @@
+import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import type { ExtractedFilingData } from '@/types/patent'
 import { Alert } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { USPTO_URLS } from '@/lib/uspto'
+import { PATENT_DRAWINGS } from '@/lib/patent-drawings'
 
-interface Props { aiData: ExtractedFilingData | null; onBack: () => void; onNext: () => void }
+interface Props { aiData: ExtractedFilingData | null; patentId: string; onBack: () => void; onNext: () => void }
 
 const STEPS = [
   { n:1, title:'Authenticate with ID.me + MFA', url:USPTO_URLS.patentCenter, manual:true, warn:'ID.me requires government photo ID + live video selfie — cannot be automated by any tool.', items:['Go to patentcenter.uspto.gov','Log into your USPTO.gov account','Complete ID.me verification (10-15 min)','Set up MFA with Okta Verify on your phone','Complete Patent Center self-enrollment as Independent Inventor'] },
@@ -14,15 +17,36 @@ const STEPS = [
   { n:6, title:'Final review + Submit — HITL gate', url:null, manual:true, warn:'Review EVERYTHING before clicking Submit. This cannot be undone. Only you can click Submit.', items:['Review all documents in preview','Confirm inventor names have no typos','Confirm Small Entity status selected','Click SUBMIT','Save filing receipt with Application Number'] },
 ]
 
-export function Step5FilingGuide({ aiData, onBack, onNext }: Props) {
+export function Step5FilingGuide({ aiData, patentId, onBack, onNext }: Props) {
   const inv = aiData?.inventors ?? []
-  const steps = STEPS.map(s => s.n === 3 ? { ...s, items:[
-    `Title: ${aiData?.title ?? '[your patent title]'}`,
-    `Inventor 1: ${inv[0]?.name ?? 'Milton Overton'}, ${inv[0]?.address ?? 'Kennesaw, GA 30144'}`,
-    `Inventor 2: ${inv[1]?.name ?? 'Lisa Overton'}, ${inv[1]?.address ?? 'Kennesaw, GA 30144'}`,
-    `Assignee: ${aiData?.assignee?.name ?? 'Visionary AI Systems Inc'}, Kennesaw GA`,
-    'Entity Status: Small Entity', 'U.S. Government Interest: None',
-  ]} : s)
+  const drawingCount = (PATENT_DRAWINGS[patentId] || []).length
+
+  // Build dynamic drawing item for step 4
+  const drawingItem: ReactNode = drawingCount > 0
+    ? <span>Upload drawings — <Link to={`/drawings?patent=${patentId}`} className="text-blue-600 hover:text-blue-800 underline font-medium">Generate {drawingCount} drawing{drawingCount !== 1 ? 's' : ''} for {patentId}</Link></span>
+    : 'Upload drawings (PDF, if available)'
+
+  const steps = STEPS.map(s => {
+    if (s.n === 3) {
+      return { ...s, items: [
+        `Title: ${aiData?.title ?? '[your patent title]'}`,
+        `Inventor 1: ${inv[0]?.name ?? 'Milton Overton'}, ${inv[0]?.address ?? 'Kennesaw, GA 30144'}`,
+        `Inventor 2: ${inv[1]?.name ?? 'Lisa Overton'}, ${inv[1]?.address ?? 'Kennesaw, GA 30144'}`,
+        `Assignee: ${aiData?.assignee?.name ?? 'Visionary AI Systems Inc'}, Kennesaw GA`,
+        'Entity Status: Small Entity', 'U.S. Government Interest: None',
+      ] as ReactNode[] }
+    }
+    if (s.n === 4) {
+      return { ...s, items: [
+        'Upload Specification (DOCX)',
+        'Upload PTO/SB/16 cover sheet (PDF)',
+        drawingItem,
+        'Click Validate DOCX → review preview',
+      ] as ReactNode[] }
+    }
+    return { ...s, items: s.items as ReactNode[] }
+  })
+
   return (
     <div>
       {steps.map(step => (

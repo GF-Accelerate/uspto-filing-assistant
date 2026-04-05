@@ -40,9 +40,24 @@ const MERMAID_INIT = `%%{init: {
   }
 }}%%`
 
+// CSS override to force Arial on all SVG text (prevents Times-BoldItalic font references)
+const FONT_OVERRIDE_CSS = `
+  text, tspan { font-family: Arial, Helvetica, sans-serif; }
+  foreignObject div, foreignObject span, foreignObject p,
+  foreignObject b, foreignObject i, foreignObject em, foreignObject strong {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+  }
+`
+
 async function renderMermaidToSVG(mermaidCode: string): Promise<string> {
   const mermaid = (await import('mermaid')).default
-  mermaid.initialize({ startOnLoad: false })
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true },
+  })
 
   // Prepend init directive so theme variables are always respected
   const fullCode = MERMAID_INIT + '\n' + mermaidCode
@@ -50,10 +65,19 @@ async function renderMermaidToSVG(mermaidCode: string): Promise<string> {
   const id = `diagram-${Date.now()}-${Math.random().toString(36).slice(2)}`
   const { svg } = await mermaid.render(id, fullCode)
 
-  // Post-process: ensure white page background, clean up any stray fills
-  return svg
+  // Post-process: ensure white page background, clean up stray fills, force fonts
+  let result = svg
     .replace(/fill="rgb\(0, 0, 0\)"/g, 'fill="#1e3a5f"')
     .replace(/fill="black"/g, 'fill="#1e3a5f"')
+
+  // Inject font override CSS into SVG <style> block to prevent non-embedded font references
+  if (result.includes('<style>')) {
+    result = result.replace('<style>', `<style>${FONT_OVERRIDE_CSS}`)
+  } else {
+    result = result.replace(/(<svg[^>]*>)/, `$1<defs><style>${FONT_OVERRIDE_CSS}</style></defs>`)
+  }
+
+  return result
 }
 
 async function downloadPDF(
@@ -95,7 +119,7 @@ async function downloadPDF(
 
   const canvas = await html2canvas(el, {
     backgroundColor: '#ffffff',
-    scale: 2,
+    scale: 1.5,
     useCORS: true,
     logging: false,
     width:  fullW,
@@ -111,7 +135,7 @@ async function downloadPDF(
   if (svgEl) svgEl.style.height = origSvgH
 
   // ── Build USPTO PDF ────────────────────────────────────────────────────
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter' })
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter', compress: true })
 
   // Figure number centred at top — 37 C.F.R. §1.84
   pdf.setFont('helvetica', 'bold')
@@ -126,7 +150,7 @@ async function downloadPDF(
   const ox = marginLeft + (usableW - drawW) / 2
   const oy = marginTop  + (usableH - drawH) / 2
 
-  pdf.addImage(canvas.toDataURL('image/png', 1.0), 'PNG', ox, oy, drawW, drawH)
+  pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', ox, oy, drawW, drawH)
 
   // Caption
   pdf.setFont('helvetica', 'normal')
@@ -150,8 +174,9 @@ async function downloadPDF(
     return
   }
 
-  const safe = `${figNum.replace(/[^A-Z0-9]/gi, '-')}-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase().slice(0, 30)}`
-  pdf.save(`${patentId}-${safe}.pdf`)
+  const safeFig = figNum.replace(/[^A-Z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+  const safeTitle = title.replace(/[^a-z0-9]/gi, '-').toLowerCase().replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 30)
+  pdf.save(`${patentId}-${safeFig}-${safeTitle}.pdf`)
 }
 
 function downloadSVG(svg: string, figNum: string, patentId: string) {
@@ -159,7 +184,7 @@ function downloadSVG(svg: string, figNum: string, patentId: string) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `${patentId}-${figNum.replace('. ', '-')}.svg`
+  a.download = `${patentId}-${figNum.replace(/[^A-Z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}.svg`
   a.click()
   URL.revokeObjectURL(url)
 }

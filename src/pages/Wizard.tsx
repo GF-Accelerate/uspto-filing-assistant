@@ -110,6 +110,7 @@ export function Wizard({ ctx, portfolio, onMarkFiled }: Props) {
       {wizard.step === 5 && (
         <Step5FilingGuide
           aiData={wizard.aiData}
+          patentId={patent.id}
           onBack={() => setStep(4)}
           onNext={() => setStep(6)}
         />

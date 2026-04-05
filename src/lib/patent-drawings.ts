@@ -16,13 +16,13 @@ export const PA1_FIGURES: DrawingDef[] = [
     id: 'pa1-fig1', figNum: 'FIG. 1', title: 'System Architecture Overview',
     desc: 'Overall block diagram: Voice Input Layer (110) → NLP Engine (120) → SQL Query Generator (130) → Database Layer (140) → Agent Framework (150) → Multi-Modal Response (160)',
     mermaid: `graph TD
-    A["<b>110</b> — Voice Input Layer<br/><i>Web Speech API · Noise Cancellation</i><br/><i>Athletic-Domain Vocabulary</i>"]
-    B["<b>120</b> — NLP Engine<br/><i>GPT-4o-mini · 94% Accuracy</i><br/><i>200+ Intent Patterns</i>"]
-    C["<b>130</b> — SQL Query Generator<br/><i>Semantic Schema Mapping</i><br/><i>Join-Path Optimization · &lt;200ms</i>"]
-    D["<b>140</b> — Database Layer<br/><i>PostgreSQL · 170,529 Records</i><br/><i>Row-Level Security · 10 Roles</i>"]
-    E["<b>150</b> — Agent Framework<br/><i>9 Specialized AI Agents</i><br/><i>HITL Approval Gate</i>"]
-    F["<b>160</b> — Multi-Modal Response<br/><i>Voice Synthesis · Dashboard</i><br/><i>WebSocket Streaming</i>"]
-    G["<b>125</b> — Disambiguation<br/><i>confidence &lt; 0.75 threshold</i>"]
+    A["110 — Voice Input Layer<br/>Web Speech API · Noise Cancellation<br/>Athletic-Domain Vocabulary"]
+    B["120 — NLP Engine<br/>GPT-4o-mini · 94% Accuracy<br/>200+ Intent Patterns"]
+    C["130 — SQL Query Generator<br/>Semantic Schema Mapping<br/>Join-Path Optimization · &lt;200ms"]
+    D["140 — Database Layer<br/>PostgreSQL · 170,529 Records<br/>Row-Level Security · 10 Roles"]
+    E["150 — Agent Framework<br/>9 Specialized AI Agents<br/>HITL Approval Gate"]
+    F["160 — Multi-Modal Response<br/>Voice Synthesis · Dashboard<br/>WebSocket Streaming"]
+    G["125 — Disambiguation<br/>confidence &lt; 0.75 threshold"]
     A --> B
     B --> C
     B -.->|"low confidence"| G
@@ -42,18 +42,18 @@ export const PA1_FIGURES: DrawingDef[] = [
     id: 'pa1-fig2', figNum: 'FIG. 2', title: 'Voice Processing & SQL Generation Flow',
     desc: 'Flowchart from voice input through NLP intent classification, confidence check, disambiguation, SQL generation, database execution, and result return',
     mermaid: `flowchart TD
-    S(["<b>START</b> — Voice Command Received"])
-    A["<b>210</b> — Audio Preprocessing<br/><i>Noise Cancellation · Domain Vocab</i>"]
-    B["<b>220</b> — Intent Classification<br/><i>GPT-4o-mini LLM · NER Extraction</i>"]
-    C{"<b>230</b> — Confidence Check"}
-    D["<b>235</b> — Disambiguation Query<br/><i>Prompt User for Clarification</i>"]
-    E["<b>240</b> — Parameter Extraction<br/><i>Entity-to-Schema Mapping</i>"]
-    F["<b>250</b> — Join-Path Optimizer<br/><i>Cost-Based Query Planner</i>"]
-    G["<b>260</b> — SQL Generation<br/><i>Validation &amp; Index Selection</i>"]
-    H["<b>270</b> — Database Execution<br/><i>RLS Applied · Audit Logged</i>"]
-    K{"<b>280</b> — Result Size Check"}
-    L["<b>285</b> — Batch Pagination<br/><i>1,000 rows per cycle</i>"]
-    E2(["<b>END</b> — Results Returned"])
+    S(["START — Voice Command Received"])
+    A["210 — Audio Preprocessing<br/>Noise Cancellation · Domain Vocab"]
+    B["220 — Intent Classification<br/>GPT-4o-mini LLM · NER Extraction"]
+    C{"230 — Confidence Check"}
+    D["235 — Disambiguation Query<br/>Prompt User for Clarification"]
+    E["240 — Parameter Extraction<br/>Entity-to-Schema Mapping"]
+    F["250 — Join-Path Optimizer<br/>Cost-Based Query Planner"]
+    G["260 — SQL Generation<br/>Validation &amp; Index Selection"]
+    H["270 — Database Execution<br/>RLS Applied · Audit Logged"]
+    K{"280 — Result Size Check"}
+    L["285 — Batch Pagination<br/>1,000 rows per cycle"]
+    E2(["END — Results Returned"])
     S --> A --> B --> C
     C -->|"≥ 0.75"| E
     C -->|"&lt; 0.75"| D
@@ -78,17 +78,17 @@ export const PA1_FIGURES: DrawingDef[] = [
     id: 'pa1-fig3', figNum: 'FIG. 3', title: 'Nine-Agent Autonomous Framework',
     desc: 'All 9 AI agents (310-390) coordinated by Multi-Agent Chain Orchestrator (305) under mandatory Human-in-the-Loop Approval Gate (300)',
     mermaid: `graph TD
-    HITL["<b>300</b> — HUMAN-IN-THE-LOOP APPROVAL GATE<br/><i>Mandatory · Cannot Be Bypassed · Explicit Staff Authorization</i>"]
-    ORCH["<b>305</b> — Multi-Agent Chain Orchestrator<br/><i>Task Routing · Dependency Resolution · State Management</i>"]
-    A1["<b>310</b><br/>Donor Cultivation"]
-    A2["<b>320</b><br/>Proposal Generation"]
-    A3["<b>330</b><br/>Campaign Manager"]
-    A4["<b>340</b><br/>Compliance Monitor"]
-    A5["<b>350</b><br/>Revenue Analytics"]
-    A6["<b>360</b><br/>Fan Engagement"]
-    A7["<b>370</b><br/>Recruiting Intelligence"]
-    A8["<b>380</b><br/>Facility Operations"]
-    A9["<b>390</b><br/>Executive Briefing"]
+    HITL["300 — HUMAN-IN-THE-LOOP APPROVAL GATE<br/>Mandatory · Cannot Be Bypassed · Explicit Staff Authorization"]
+    ORCH["305 — Multi-Agent Chain Orchestrator<br/>Task Routing · Dependency Resolution · State Management"]
+    A1["310<br/>Donor Cultivation"]
+    A2["320<br/>Proposal Generation"]
+    A3["330<br/>Campaign Manager"]
+    A4["340<br/>Compliance Monitor"]
+    A5["350<br/>Revenue Analytics"]
+    A6["360<br/>Fan Engagement"]
+    A7["370<br/>Recruiting Intelligence"]
+    A8["380<br/>Facility Operations"]
+    A9["390<br/>Executive Briefing"]
     HITL --> ORCH
     ORCH --> A1 & A2 & A3
     ORCH --> A4 & A5 & A6
@@ -109,14 +109,14 @@ export const PA1_FIGURES: DrawingDef[] = [
     id: 'pa1-fig4', figNum: 'FIG. 4', title: 'Multi-Provider Communication Failover',
     desc: 'Human Approval Gate (400) → SendGrid primary (410) → Resend secondary (420) → AgentMail tertiary (430) with Webhook Monitoring (440) and Cryptographic Audit Trail (450)',
     mermaid: `flowchart LR
-    HITL["<b>400</b><br/>Human Approval Gate<br/><i>Explicit Authorization</i>"]
-    SP["<b>410</b><br/>SendGrid<br/><i>Primary Provider</i>"]
-    R["<b>420</b><br/>Resend<br/><i>Secondary Provider</i>"]
-    AM["<b>430</b><br/>AgentMail<br/><i>Tertiary Provider</i>"]
+    HITL["400<br/>Human Approval Gate<br/>Explicit Authorization"]
+    SP["410<br/>SendGrid<br/>Primary Provider"]
+    R["420<br/>Resend<br/>Secondary Provider"]
+    AM["430<br/>AgentMail<br/>Tertiary Provider"]
     OK(["Delivered"])
     FAIL(["Alert Staff"])
-    WH["<b>440</b><br/>Webhook Monitoring<br/><i>Open · Click · Bounce</i>"]
-    AT["<b>450</b><br/>Cryptographic<br/>Audit Trail"]
+    WH["440<br/>Webhook Monitoring<br/>Open · Click · Bounce"]
+    AT["450<br/>Cryptographic<br/>Audit Trail"]
     HITL --> SP
     SP -->|"Success"| OK
     SP -->|"Failure"| R
@@ -138,13 +138,13 @@ export const PA1_FIGURES: DrawingDef[] = [
     id: 'pa1-fig5', figNum: 'FIG. 5', title: 'Database Layer & RFE Lead Scoring',
     desc: 'Core tables with record counts, RFE Scoring Engine (550), external cross-reference sources (560), and Row-Level Security enforcement (570)',
     mermaid: `graph TD
-    EXT["<b>560</b> — External Data Sources<br/><i>SEC EDGAR · FEC Records</i><br/><i>OpenCorporates · LinkedIn Evaboot</i>"]
-    RFE["<b>550</b> — RFE Scoring Engine<br/><i>calculate_lead_scores()</i><br/><i>Configurable Weights · Continuous Updates</i>"]
-    CM["<b>510</b> — constituent_master<br/><i>170,529 Records</i>"]
-    PT["<b>520</b> — pac_transactions<br/><i>334,518 Records</i>"]
-    OPP["<b>530</b> — opportunities<br/><i>8,113 Records</i>"]
-    LS["<b>540</b> — lead_scores<br/><i>167,740 Scored Records</i><br/><i>Renewal · Gift · Churn Risk</i>"]
-    RLS["<b>570</b> — Row-Level Security<br/><i>10 Enterprise Roles · JWT Auth</i>"]
+    EXT["560 — External Data Sources<br/>SEC EDGAR · FEC Records<br/>OpenCorporates · LinkedIn Evaboot"]
+    RFE["550 — RFE Scoring Engine<br/>calculate_lead_scores()<br/>Configurable Weights · Continuous Updates"]
+    CM["510 — constituent_master<br/>170,529 Records"]
+    PT["520 — pac_transactions<br/>334,518 Records"]
+    OPP["530 — opportunities<br/>8,113 Records"]
+    LS["540 — lead_scores<br/>167,740 Scored Records<br/>Renewal · Gift · Churn Risk"]
+    RLS["570 — Row-Level Security<br/>10 Enterprise Roles · JWT Auth"]
     EXT --> RFE
     CM --> RFE
     PT --> RFE
@@ -168,12 +168,12 @@ export const PA5_FIGURES: DrawingDef[] = [
     id: 'pa5-fig1', figNum: 'FIG. 1', title: 'VADI Platform Architecture Overview',
     desc: 'Four platform primitives: Voice-to-Query Engine (VQE) 100, Agentic Execution Framework (AEF) 200, Human Authorization Layer (HAL) 300, Multi-Provider Communication Bus (MPCB) 400, with Developer SDK interfaces and multi-tenant isolation boundaries',
     mermaid: `graph TD
-    SDK["<b>Developer SDK</b><br/><i>TypeScript API · REST · WebSocket</i>"]
-    VQE["<b>100</b> — Voice-to-Query Engine<br/><i>VQE</i><br/><i>Audio Capture · STT · NLP · Query Gen</i>"]
-    AEF["<b>200</b> — Agentic Execution Framework<br/><i>AEF</i><br/><i>Agent Registry · Routing · Chain Orchestration</i>"]
-    HAL["<b>300</b> — Human Authorization Layer<br/><i>HAL</i><br/><i>Non-Bypassable · Platform-Level Enforcement</i>"]
-    MPCB["<b>400</b> — Multi-Provider Communication Bus<br/><i>MPCB</i><br/><i>Failover Delivery · Compliance Tracking</i>"]
-    MT["<b>Multi-Tenant Isolation</b><br/><i>Row-Level Security · Resource Allocation</i><br/><i>Edge Function Deployment</i>"]
+    SDK["Developer SDK<br/>TypeScript API · REST · WebSocket"]
+    VQE["100 — Voice-to-Query Engine<br/>VQE<br/>Audio Capture · STT · NLP · Query Gen"]
+    AEF["200 — Agentic Execution Framework<br/>AEF<br/>Agent Registry · Routing · Chain Orchestration"]
+    HAL["300 — Human Authorization Layer<br/>HAL<br/>Non-Bypassable · Platform-Level Enforcement"]
+    MPCB["400 — Multi-Provider Communication Bus<br/>MPCB<br/>Failover Delivery · Compliance Tracking"]
+    MT["Multi-Tenant Isolation<br/>Row-Level Security · Resource Allocation<br/>Edge Function Deployment"]
     SDK --> VQE & AEF
     VQE --> AEF
     AEF --> HAL
@@ -191,12 +191,12 @@ export const PA5_FIGURES: DrawingDef[] = [
     desc: 'Standardized audio capture interface 110, multi-provider STT 111, domain-aware NLP 120, configurable semantic mapping 130, query generation 140, disambiguation protocol 150',
     mermaid: `flowchart TD
     IN(["Voice Input"])
-    A["<b>110</b> — Standardized Audio<br/>Capture Interface"]
-    B["<b>111</b> — Multi-Provider<br/>Speech-to-Text Module<br/><i>Google · Azure · Whisper</i>"]
-    C["<b>120</b> — Domain-Aware<br/>NLP Pipeline<br/><i>Intent + Entity Extraction</i>"]
-    D["<b>130</b> — Configurable Semantic<br/>Mapping Layer<br/><i>Schema-Aware Mapping</i>"]
-    E["<b>140</b> — Query Generation<br/>Engine<br/><i>SQL · GraphQL · REST</i>"]
-    F["<b>150</b> — Disambiguation<br/>Protocol<br/><i>Confidence Threshold</i>"]
+    A["110 — Standardized Audio<br/>Capture Interface"]
+    B["111 — Multi-Provider<br/>Speech-to-Text Module<br/>Google · Azure · Whisper"]
+    C["120 — Domain-Aware<br/>NLP Pipeline<br/>Intent + Entity Extraction"]
+    D["130 — Configurable Semantic<br/>Mapping Layer<br/>Schema-Aware Mapping"]
+    E["140 — Query Generation<br/>Engine<br/>SQL · GraphQL · REST"]
+    F["150 — Disambiguation<br/>Protocol<br/>Confidence Threshold"]
     OUT(["Database Query Output"])
     IN --> A --> B --> C
     C --> D --> E --> OUT
@@ -216,14 +216,14 @@ export const PA5_FIGURES: DrawingDef[] = [
     desc: 'Action Interceptor 310, Preview Generator 320, Authorization Interface 330, Authorization Store 340 with immutable cryptographically-signed audit records, Enforcement Engine 350. Platform-layer enforcement boundary cannot be bypassed by application-layer code.',
     mermaid: `flowchart TD
     IN(["Proposed Agent Action"])
-    A["<b>310</b> — Action Interceptor<br/><i>Receives all proposed actions</i><br/><i>from registered agents</i>"]
-    B["<b>320</b> — Preview Generator<br/><i>Human-readable summary</i><br/><i>of proposed action</i>"]
-    C["<b>330</b> — Authorization Interface<br/><i>Collects human decision</i><br/><i>Approve / Deny / Modify</i>"]
-    D["<b>340</b> — Authorization Store<br/><i>Immutable audit records</i><br/><i>Cryptographically signed</i>"]
-    E["<b>350</b> — Enforcement Engine<br/><i>Executes approved actions</i><br/><i>Blocks denied actions</i>"]
+    A["310 — Action Interceptor<br/>Receives all proposed actions<br/>from registered agents"]
+    B["320 — Preview Generator<br/>Human-readable summary<br/>of proposed action"]
+    C["330 — Authorization Interface<br/>Collects human decision<br/>Approve / Deny / Modify"]
+    D["340 — Authorization Store<br/>Immutable audit records<br/>Cryptographically signed"]
+    E["350 — Enforcement Engine<br/>Executes approved actions<br/>Blocks denied actions"]
     APPROVE(["Action Executed"])
     DENY(["Action Blocked"])
-    BOUNDARY["PLATFORM-LAYER ENFORCEMENT BOUNDARY<br/><i>Cannot be bypassed by application code</i>"]
+    BOUNDARY["PLATFORM-LAYER ENFORCEMENT BOUNDARY<br/>Cannot be bypassed by application code"]
     IN --> A --> B --> C
     C -->|"Approved"| E --> APPROVE
     C -->|"Denied"| DENY
@@ -244,16 +244,16 @@ export const PA5_FIGURES: DrawingDef[] = [
     id: 'pa5-fig4', figNum: 'FIG. 4', title: 'Multi-Tenant Platform Architecture',
     desc: 'Tenant isolation through row-level security, shared platform infrastructure (VQE, AEF, HAL, MPCB), configurable resource allocation, and serverless edge-function deployment with geographic distribution',
     mermaid: `graph TD
-    T1["<b>Tenant A</b><br/><i>Athletic Department</i>"]
-    T2["<b>Tenant B</b><br/><i>Marketing Agency</i>"]
-    T3["<b>Tenant C</b><br/><i>Financial Advisor</i>"]
-    RLS["<b>Row-Level Security</b><br/><i>JWT-Based Tenant Isolation</i>"]
-    VQE["<b>Shared VQE</b><br/><i>Voice-to-Query Engine</i>"]
-    AEF["<b>Shared AEF</b><br/><i>Agent Execution Framework</i>"]
-    HAL["<b>Shared HAL</b><br/><i>Human Authorization Layer</i>"]
-    MPCB["<b>Shared MPCB</b><br/><i>Communication Bus</i>"]
-    EDGE["<b>Serverless Edge Functions</b><br/><i>Geographic Distribution</i><br/><i>Auto-Scaling · Cold Start &lt;50ms</i>"]
-    RA["<b>Resource Allocation</b><br/><i>Configurable per tenant</i><br/><i>Rate Limits · Quotas</i>"]
+    T1["Tenant A<br/>Athletic Department"]
+    T2["Tenant B<br/>Marketing Agency"]
+    T3["Tenant C<br/>Financial Advisor"]
+    RLS["Row-Level Security<br/>JWT-Based Tenant Isolation"]
+    VQE["Shared VQE<br/>Voice-to-Query Engine"]
+    AEF["Shared AEF<br/>Agent Execution Framework"]
+    HAL["Shared HAL<br/>Human Authorization Layer"]
+    MPCB["Shared MPCB<br/>Communication Bus"]
+    EDGE["Serverless Edge Functions<br/>Geographic Distribution<br/>Auto-Scaling · Cold Start &lt;50ms"]
+    RA["Resource Allocation<br/>Configurable per tenant<br/>Rate Limits · Quotas"]
     T1 & T2 & T3 --> RLS
     RLS --> VQE & AEF
     AEF --> HAL --> MPCB
@@ -274,16 +274,16 @@ export const PA5_FIGURES: DrawingDef[] = [
     id: 'pa5-fig5', figNum: 'FIG. 5', title: 'End-to-End Data Flow',
     desc: 'Complete voice-to-authorized-action sequence: (1) voice input, (2) STT, (3) NLP intent, (4) semantic mapping, (5) query generation, (6) result to agent, (7) action proposal, (8) HAL interception, (9) human authorization, (10) execution via MPCB',
     mermaid: `flowchart LR
-    S1["<b>1</b><br/>Voice Input<br/>Capture"]
-    S2["<b>2</b><br/>STT<br/>Transcription"]
-    S3["<b>3</b><br/>NLP Intent<br/>Classification"]
-    S4["<b>4</b><br/>Semantic<br/>Mapping"]
-    S5["<b>5</b><br/>Query<br/>Generation"]
-    S6["<b>6</b><br/>Result to<br/>Agent"]
-    S7["<b>7</b><br/>Agent Action<br/>Proposal"]
-    S8["<b>8</b><br/>HAL<br/>Interception"]
-    S9["<b>9</b><br/>Human<br/>Authorization"]
-    S10["<b>10</b><br/>Authorized<br/>Execution"]
+    S1["1<br/>Voice Input<br/>Capture"]
+    S2["2<br/>STT<br/>Transcription"]
+    S3["3<br/>NLP Intent<br/>Classification"]
+    S4["4<br/>Semantic<br/>Mapping"]
+    S5["5<br/>Query<br/>Generation"]
+    S6["6<br/>Result to<br/>Agent"]
+    S7["7<br/>Agent Action<br/>Proposal"]
+    S8["8<br/>HAL<br/>Interception"]
+    S9["9<br/>Human<br/>Authorization"]
+    S10["10<br/>Authorized<br/>Execution"]
     S1 --> S2 --> S3 --> S4 --> S5
     S5 --> S6 --> S7 --> S8 --> S9 --> S10
     style S1 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
@@ -301,12 +301,12 @@ export const PA5_FIGURES: DrawingDef[] = [
     id: 'pa5-fig6', figNum: 'FIG. 6', title: 'Visual Capture Engine (VCE) Pipeline',
     desc: 'Camera Interface Module 510 capturing physical invention photographs, Image Processing Pipeline 520, Vision Analysis Engine 530 via multi-modal LLM, Component Classifier 540 assessing novelty, Documentation Generator 550 producing patent-ready artifacts. HAL authorization gate between draft generation and document inclusion.',
     mermaid: `flowchart TD
-    CAM["<b>510</b> — Camera Interface Module<br/><i>Physical Invention Photography</i><br/><i>Multi-Angle Capture</i>"]
-    IMG["<b>520</b> — Image Processing Pipeline<br/><i>Normalization · Enhancement</i><br/><i>Resolution Optimization</i>"]
-    VIS["<b>530</b> — Vision Analysis Engine<br/><i>Multi-Modal LLM Analysis</i><br/><i>Component Identification</i>"]
-    CLS["<b>540</b> — Component Classifier<br/><i>Novelty Assessment</i><br/><i>Prior Art Comparison</i>"]
-    DOC["<b>550</b> — Documentation Generator<br/><i>Patent-Ready Artifacts</i>"]
-    HAL["<b>HAL Authorization Gate</b><br/><i>Human Review Required</i>"]
+    CAM["510 — Camera Interface Module<br/>Physical Invention Photography<br/>Multi-Angle Capture"]
+    IMG["520 — Image Processing Pipeline<br/>Normalization · Enhancement<br/>Resolution Optimization"]
+    VIS["530 — Vision Analysis Engine<br/>Multi-Modal LLM Analysis<br/>Component Identification"]
+    CLS["540 — Component Classifier<br/>Novelty Assessment<br/>Prior Art Comparison"]
+    DOC["550 — Documentation Generator<br/>Patent-Ready Artifacts"]
+    HAL["HAL Authorization Gate<br/>Human Review Required"]
     F1(["Figure References"])
     F2(["Specification Text"])
     F3(["Claim Elements"])
@@ -329,14 +329,14 @@ export const PA5_FIGURES: DrawingDef[] = [
     id: 'pa5-fig7', figNum: 'FIG. 7', title: 'Domain Intelligence Collector (DIC) Architecture',
     desc: 'Schema Registry 610 with registered domain schemas per vertical, Learning Event Capture Pipeline 620, Quality Assessment Module 630, Training Data Aggregator 640 computing model readiness, Privacy Enforcement Layer 650. Data flows from registered applications through quality assessment to domain model training.',
     mermaid: `flowchart TD
-    APP1["<b>Registered App A</b><br/><i>Sports Vertical</i>"]
-    APP2["<b>Registered App B</b><br/><i>Marketing Vertical</i>"]
-    APP3["<b>Registered App C</b><br/><i>Financial Vertical</i>"]
-    SR["<b>610</b> — Schema Registry<br/><i>Domain Schemas per Vertical</i><br/><i>Field Definitions · Validation Rules</i>"]
-    EC["<b>620</b> — Learning Event<br/>Capture Pipeline<br/><i>Operational Data Ingestion</i>"]
-    QA["<b>630</b> — Quality Assessment<br/>Module<br/><i>Data Quality Scoring</i><br/><i>Completeness · Consistency</i>"]
-    TDA["<b>640</b> — Training Data<br/>Aggregator<br/><i>Model Readiness Computation</i><br/><i>Volume · Quality Thresholds</i>"]
-    PEL["<b>650</b> — Privacy<br/>Enforcement Layer<br/><i>PII Scrubbing · k-Anonymity</i><br/><i>Differential Privacy</i>"]
+    APP1["Registered App A<br/>Sports Vertical"]
+    APP2["Registered App B<br/>Marketing Vertical"]
+    APP3["Registered App C<br/>Financial Vertical"]
+    SR["610 — Schema Registry<br/>Domain Schemas per Vertical<br/>Field Definitions · Validation Rules"]
+    EC["620 — Learning Event<br/>Capture Pipeline<br/>Operational Data Ingestion"]
+    QA["630 — Quality Assessment<br/>Module<br/>Data Quality Scoring<br/>Completeness · Consistency"]
+    TDA["640 — Training Data<br/>Aggregator<br/>Model Readiness Computation<br/>Volume · Quality Thresholds"]
+    PEL["650 — Privacy<br/>Enforcement Layer<br/>PII Scrubbing · k-Anonymity<br/>Differential Privacy"]
     OUT(["Domain Model Training"])
     APP1 & APP2 & APP3 --> SR
     SR --> EC --> QA --> TDA
@@ -357,10 +357,10 @@ export const PA5_FIGURES: DrawingDef[] = [
     desc: 'Captured image analysis input, Mapping Engine 710 connecting analyses to target documents, Content Generator 720 producing patent-compliant text, Measurement Integration Module 730, HAL Integration Layer 740 enforcing authorization. Output: figure references, specification paragraphs, claim elements, abstract contributions.',
     mermaid: `flowchart TD
     IN(["Captured Image Analysis"])
-    MAP["<b>710</b> — Mapping Engine<br/><i>Connects Image Analysis</i><br/><i>to Target Documents</i>"]
-    GEN["<b>720</b> — Content Generator<br/><i>Patent-Compliant Text</i><br/><i>37 CFR 1.52 Formatting</i>"]
-    MEAS["<b>730</b> — Measurement<br/>Integration Module<br/><i>Physical Dimensions</i><br/><i>Scale · Tolerances</i>"]
-    HAL["<b>740</b> — HAL Integration Layer<br/><i>Authorization Before</i><br/><i>Document Inclusion</i>"]
+    MAP["710 — Mapping Engine<br/>Connects Image Analysis<br/>to Target Documents"]
+    GEN["720 — Content Generator<br/>Patent-Compliant Text<br/>37 CFR 1.52 Formatting"]
+    MEAS["730 — Measurement<br/>Integration Module<br/>Physical Dimensions<br/>Scale · Tolerances"]
+    HAL["740 — HAL Integration Layer<br/>Authorization Before<br/>Document Inclusion"]
     O1(["Figure References"])
     O2(["Specification Paragraphs"])
     O3(["Claim Elements"])

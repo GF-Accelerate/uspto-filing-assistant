@@ -115,6 +115,15 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- Seed: Admin profile for Milton Overton (super_admin)
+-- Password is set via Supabase Auth signup — never stored in schema files.
+-- After Supabase is configured, register via the app or Supabase dashboard:
+--   Email: moverton7474@gmail.com
+--   Role: super_admin (full access to all features including VCE, DIC, PDB)
+--
+-- To promote an existing user to super_admin:
+-- UPDATE profiles SET role = 'super_admin' WHERE email = 'moverton7474@gmail.com';
 ```
 
 ### 3. patents
@@ -348,7 +357,12 @@ INSERT INTO feature_flags (flag_key, scope, enabled) VALUES
   ('admin_console_enabled', 'global', false),
   ('legal_docs_enabled', 'global', true),
   ('trademark_module_enabled', 'global', true),
-  ('prior_art_search_enabled', 'global', true);
+  ('prior_art_search_enabled', 'global', true),
+  ('filing_package_enabled', 'global', true),
+  ('reusable_profiles_enabled', 'global', true),
+  ('invention_capture_enabled', 'global', true),
+  ('domain_intelligence_enabled', 'global', true),
+  ('physical_digital_bridge_enabled', 'global', true);
 
 -- Flag resolution function: most specific scope wins
 CREATE OR REPLACE FUNCTION get_feature_flag(

@@ -17,6 +17,9 @@ const FLAG_DESCRIPTIONS: Record<keyof FeatureFlagsType, string> = {
   prior_art_search_enabled: 'Show prior art search module',
   filing_package_enabled: 'Enable one-click filing package generation',
   reusable_profiles_enabled: 'Enable reusable inventor/assignee profiles',
+  invention_capture_enabled: 'VCE: Camera capture + AI vision analysis of physical inventions',
+  domain_intelligence_enabled: 'DIC: Industry-specific data capture for vertical AI model training',
+  physical_digital_bridge_enabled: 'PDB: Photo-to-patent documentation pipeline (figures, specs, claims)',
 }
 
 export function FeatureFlags() {

@@ -1,13 +1,17 @@
 import type { Patent } from '@/types/patent'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { PatentCard } from '@/components/portfolio/PatentCard'
+import { Badge } from '@/components/ui/Badge'
 import { daysUntil, USPTO_URLS } from '@/lib/uspto'
 import { getAllReceipts } from '@/lib/filing-receipts'
+import { useNavigate } from 'react-router-dom'
 
 interface Props { portfolio: Patent[]; onOpen: (id: string) => void }
 
 export function Dashboard({ portfolio, onOpen }: Props) {
+  const navigate = useNavigate()
   const pa1Deadline = daysUntil('2027-04-03')
+  const pa2pa3Deadline = daysUntil('2026-04-27')
   const receipts = getAllReceipts()
 
   const metrics = [
@@ -49,6 +53,53 @@ export function Dashboard({ portfolio, onOpen }: Props) {
           </div>
         ))}
       </div>
+
+      {/* Urgent filing banner */}
+      {pa2pa3Deadline !== null && pa2pa3Deadline <= 30 && (
+        <div className="mb-5 rounded-xl border-2 border-red-300 bg-gradient-to-r from-red-50 to-amber-50 p-5">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg font-semibold text-red-800">Filing Deadline Alert</span>
+                <Badge variant="danger">{pa2pa3Deadline}d remaining</Badge>
+              </div>
+              <p className="text-sm text-red-700">
+                PA-2 and PA-3 must be filed by <strong>April 27, 2026</strong> — {pa2pa3Deadline} days left.
+                Total filing fee: <strong>$640</strong> ($320 x 2).
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/filing-package')}
+              className="flex-shrink-0 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg shadow transition-colors"
+            >
+              Generate PA-2 + PA-3 Package
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <button onClick={() => navigate('/wizard')} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200 hover:border-red-400 transition-colors text-left">
+              <span className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-sm font-bold text-red-700">5</span>
+              <div>
+                <div className="text-xs font-semibold text-red-800">File PA-5 VADI</div>
+                <div className="text-xs text-red-600">$320 — platform moat</div>
+              </div>
+            </button>
+            <button onClick={() => navigate('/wizard')} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200 hover:border-red-400 transition-colors text-left">
+              <span className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-bold text-amber-700">2</span>
+              <div>
+                <div className="text-xs font-semibold text-slate-800">File PA-2</div>
+                <div className="text-xs text-amber-600">Due April 27 — $320</div>
+              </div>
+            </button>
+            <button onClick={() => navigate('/wizard')} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200 hover:border-red-400 transition-colors text-left">
+              <span className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-sm font-bold text-amber-700">3</span>
+              <div>
+                <div className="text-xs font-semibold text-slate-800">File PA-3</div>
+                <div className="text-xs text-amber-600">Due April 27 — $320</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
 
       <Card className="mb-5">
         <CardHeader title="Patent Portfolio — Visionary AI Systems Inc" right={<span className="text-xs text-slate-400">Inventors: Milton & Lisa Overton</span>} />

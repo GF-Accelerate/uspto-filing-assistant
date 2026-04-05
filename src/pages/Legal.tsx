@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
@@ -176,12 +177,21 @@ function downloadTxt(content: string, filename: string) {
 
 // ── Component ─────────────────────────────────────────────────────────────
 export function Legal() {
+  const [searchParams] = useSearchParams()
   const [activeDoc, setActiveDoc] = useState<DocId | null>(null)
   const [formData, setFormData]   = useState<Record<string, string>>({})
   const [status, setStatus]       = useState<DocStatus>('idle')
   const [result, setResult]       = useState('')
   const [error, setError]         = useState('')
   const [copied, setCopied]       = useState(false)
+
+  // Read ?type= from voice command and auto-select document type
+  useEffect(() => {
+    const type = searchParams.get('type')
+    if (type && DOCS.some(d => d.id === type)) {
+      setActiveDoc(type as DocId)
+    }
+  }, [searchParams])
 
   const selectDoc = (id: DocId) => {
     setActiveDoc(id)

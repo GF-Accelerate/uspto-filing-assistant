@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
@@ -99,8 +100,18 @@ async function callClaude(system: string, user: string): Promise<string> {
 }
 
 export function Trademark() {
+  const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState<'portfolio' | 'search' | 'guide' | 'specimen'>('portfolio')
   const [searchMark, setSearchMark] = useState('')
+
+  // Read ?q= from voice command and auto-open search tab
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q) {
+      setSearchMark(q)
+      setActiveTab('search')
+    }
+  }, [searchParams])
   const [searchResult, setSearchResult] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
   const [specimenMark, setSpecimenMark] = useState('')

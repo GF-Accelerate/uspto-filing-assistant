@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
@@ -202,14 +203,25 @@ function downloadReport(result: PriorArtResult, config: SearchConfig) {
 
 // ── Component ─────────────────────────────────────────────────────────────
 export function PriorArt() {
+  const [searchParams] = useSearchParams()
   const [selected, setSelected] = useState<string>('PA-1')
   const [customQuery, setCustomQuery] = useState('')
   const [step, setStep] = useState<'idle' | 'searching' | 'analyzing' | 'done' | 'error'>('idle')
   const [rawResults, setRawResults] = useState('')
   const [result, setResult] = useState<PriorArtResult | null>(null)
   const [error, setError] = useState('')
+  const [autoSearchDone, setAutoSearchDone] = useState(false)
 
   const config = PATENT_SEARCHES.find(p => p.patentId === selected)!
+
+  // Read ?q= from voice command and auto-populate
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q && !autoSearchDone) {
+      setCustomQuery(q)
+      setAutoSearchDone(true)
+    }
+  }, [searchParams, autoSearchDone])
 
   const runSearch = useCallback(async () => {
     setStep('searching')

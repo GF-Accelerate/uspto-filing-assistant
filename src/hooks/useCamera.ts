@@ -11,7 +11,7 @@ export interface UseCameraResult {
   isAvailable: boolean
   isStreaming: boolean
   error: string | null
-  videoRef: RefObject<HTMLVideoElement | null>
+  videoRef: RefObject<HTMLVideoElement>
   startCamera: (config?: CameraConfig) => Promise<void>
   stopCamera: () => void
   capture: () => { dataUrl: string; metadata: ImageMetadata } | null
@@ -21,7 +21,7 @@ export function useCamera(): UseCameraResult {
   const [isAvailable, setIsAvailable] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const videoRef = useRef<HTMLVideoElement>(null!)
   const streamRef = useRef<MediaStream | null>(null)
 
   // Check camera availability on mount

@@ -16,6 +16,10 @@ export interface FeatureFlags {
   prior_art_search_enabled: boolean
   filing_package_enabled: boolean
   reusable_profiles_enabled: boolean
+  // PA-5 Extension: VCE + DIC + PDB primitives (disabled by default)
+  invention_capture_enabled: boolean    // VCE: camera + AI vision analysis
+  domain_intelligence_enabled: boolean  // DIC: industry data capture
+  physical_digital_bridge_enabled: boolean  // PDB: photo-to-patent-doc pipeline
 }
 
 export type FlagKey = keyof FeatureFlags
@@ -33,6 +37,10 @@ const DEFAULT_FLAGS: FeatureFlags = {
   prior_art_search_enabled: true,
   filing_package_enabled: true,
   reusable_profiles_enabled: true,
+  // New VADI primitives — enabled for admin/owner access
+  invention_capture_enabled: true,
+  domain_intelligence_enabled: true,
+  physical_digital_bridge_enabled: true,
 }
 
 export function loadFeatureFlags(): FeatureFlags {
@@ -74,4 +82,36 @@ export function setFlag(key: FlagKey, value: boolean): void {
 
 export function resetFlags(): void {
   saveFeatureFlags({ ...DEFAULT_FLAGS })
+}
+
+// ── Admin feature access ──────────────────────────────────────────────────
+// Enables all features for admin users. Call on login or role detection.
+// In Phase 1 (no auth), all features default to enabled.
+// In Phase 2 (Supabase), call this after confirming admin role.
+
+const ALL_ENABLED: FeatureFlags = {
+  voice_assistant_enabled: true,
+  ai_analysis_enabled: true,
+  docx_generation_enabled: true,
+  drawing_generator_enabled: true,
+  odp_api_integration: true,
+  multi_patent_filing: true,
+  admin_console_enabled: true,
+  legal_docs_enabled: true,
+  trademark_module_enabled: true,
+  prior_art_search_enabled: true,
+  filing_package_enabled: true,
+  reusable_profiles_enabled: true,
+  invention_capture_enabled: true,
+  domain_intelligence_enabled: true,
+  physical_digital_bridge_enabled: true,
+}
+
+export function enableAllForAdmin(): void {
+  saveFeatureFlags({ ...ALL_ENABLED })
+}
+
+export function isAdminEmail(email: string): boolean {
+  const ADMIN_EMAILS = ['moverton7474@gmail.com']
+  return ADMIN_EMAILS.includes(email.toLowerCase())
 }

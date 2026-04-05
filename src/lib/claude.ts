@@ -50,16 +50,18 @@ Extract from this provisional patent specification and return JSON with EXACTLY 
   "title": "full patent title",
   "technicalField": "one sentence description of technical field",
   "inventors": [{"name":"Full Legal Name","address":"City, State ZIP","citizenship":"United States"}],
-  "assignee": {"name":"company name","address":"city, state zip","type":"Corporation","state":"Georgia"},
+  "assignee": {"name":"company name","address":"city, state zip","type":"Corporation","state":"Delaware"},
   "entityStatus": "Small Entity",
   "filingDate": "March 28, 2026",
-  "independentClaims": 3,
+  "independentClaims": 4,
   "totalClaims": 14,
   "hasDrawings": true,
   "abstract": "50-100 word summary of the invention",
   "keyInnovations": ["key innovation 1","key innovation 2","key innovation 3"],
   "warnings": ["any missing items, errors, or invalid inventor/assignee names"]
 }
+
+IMPORTANT: Count independent claims by looking for claims marked "(Independent" or claims that do NOT reference another claim. Count total claims by counting all numbered claims. If ABSTRACT section exists, extract the actual text. Do NOT estimate — extract actual values from the specification. If drawings or FIG references exist in the text, set hasDrawings to true. The assignee state for Visionary AI Systems is Delaware (not Georgia — incorporated in Delaware, office in Georgia).
 
 Specification:
 ${specText.substring(0, 5000)}`)

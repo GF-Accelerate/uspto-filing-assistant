@@ -96,10 +96,10 @@ function buildExtractedData(patentId: string): ExtractedFilingData {
     assignee,
     entityStatus: 'Small Entity',
     filingDate: new Date().toISOString().split('T')[0],
-    independentClaims: 3,
+    independentClaims: specText.includes('Independent') ? (specText.match(/\(Independent/g) ?? []).length || 3 : 3,
     totalClaims: 14,
     hasDrawings: true,
-    abstract: '',
+    abstract: (specText.match(/ABSTRACT\s*\n\s*\n([\s\S]*?)(?:\n\s*\n[A-Z]|\n\s*$)/)?.[1] ?? '').trim().substring(0, 500),
     keyInnovations: [],
     warnings: [],
   }

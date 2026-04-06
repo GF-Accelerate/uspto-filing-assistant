@@ -21,6 +21,7 @@ export interface FeatureFlags {
   invention_capture_enabled: boolean    // VCE: camera + AI vision analysis
   domain_intelligence_enabled: boolean  // DIC: industry data capture
   physical_digital_bridge_enabled: boolean  // PDB: photo-to-patent-doc pipeline
+  ai_filing_export_enabled: boolean         // Export JSON for AI-assisted Patent Center filing
 }
 
 export type FlagKey = keyof FeatureFlags
@@ -43,6 +44,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   invention_capture_enabled: true,
   domain_intelligence_enabled: true,
   physical_digital_bridge_enabled: true,
+  ai_filing_export_enabled: true,
 }
 
 export function loadFeatureFlags(): FeatureFlags {
@@ -108,6 +110,7 @@ const ALL_ENABLED: FeatureFlags = {
   invention_capture_enabled: true,
   domain_intelligence_enabled: true,
   physical_digital_bridge_enabled: true,
+  ai_filing_export_enabled: true,
 }
 
 export function enableAllForAdmin(): void {

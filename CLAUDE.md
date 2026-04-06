@@ -291,6 +291,31 @@ Before merging any PR:
 
 ---
 
+## AI-Assisted Patent Center Filing (Playwright MCP)
+
+### Setup
+- Playwright MCP is configured with `--extension` mode (connects to existing Chrome tabs)
+- Install the [Playwright MCP Bridge Chrome Extension](https://chromewebstore.google.com/detail/playwright-mcp-bridge)
+- Register: `claude mcp add --scope project playwright -- npx @playwright/mcp@latest --extension`
+- See `docs/PLAYWRIGHT-MCP-SETUP.md` for detailed setup instructions
+
+### Usage Workflow
+1. Complete the filing wizard (all 14 checklist items confirmed)
+2. Export filing data: `npm run filing:export -- PA-5`
+3. Download documents (DOCX spec, cover sheet, PDF drawings)
+4. Log into Patent Center manually (ID.me + MFA)
+5. Ask Claude Code: "Fill Patent Center forms for PA-5 using scripts/patent-center-filing.md"
+6. Human reviews all fields and clicks Submit manually
+
+### Safety Rules for Playwright MCP
+- **NEVER** click Submit in Patent Center — HITL gate is non-negotiable
+- **NEVER** store or access USPTO credentials or session data
+- **NEVER** bypass the 14-item checklist
+- Always take a screenshot before stopping for human review
+- If any form field does not match expected data, STOP and report
+
+---
+
 ## Key Contacts
 
 - **Milton Overton** — Owner, primary inventor

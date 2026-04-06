@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { PATENT_SPECS, PORTFOLIO_INIT } from '@/lib/uspto'
-import { generateSpecDOCX, generateCoverSheetDOCX, downloadSpecDOCX, downloadCoverSheetDOCX, getDefaultInventors, getDefaultAssignee } from '@/lib/docx-generator'
-import type { ExtractedFilingData } from '@/types/patent'
+import { generateSpecDOCX, generateCoverSheetDOCX, downloadSpecDOCX, downloadCoverSheetDOCX } from '@/lib/docx-generator'
+import { buildExtractedData, buildFilingExportData } from '@/lib/filing-export'
+import { isEnabled } from '@/lib/feature-flags'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 
@@ -82,29 +83,6 @@ function getDocumentsForPatent(patentId: string): FilingDocument[] {
   ]
 }
 
-function buildExtractedData(patentId: string): ExtractedFilingData {
-  const patent = PORTFOLIO_INIT.find(p => p.id === patentId)
-  const specText = PATENT_SPECS[patentId] ?? ''
-  const titleMatch = specText.match(/TITLE:\s*(.+)/)
-  const inventors = getDefaultInventors()
-  const assignee = getDefaultAssignee()
-
-  return {
-    title: titleMatch?.[1] ?? patent?.title ?? 'Untitled Patent',
-    technicalField: 'Voice-controlled database interaction systems',
-    inventors,
-    assignee,
-    entityStatus: 'Small Entity',
-    filingDate: new Date().toISOString().split('T')[0],
-    independentClaims: specText.includes('Independent') ? (specText.match(/\(Independent/g) ?? []).length || 3 : 3,
-    totalClaims: 14,
-    hasDrawings: true,
-    abstract: (specText.match(/ABSTRACT\s*\n\s*\n([\s\S]*?)(?:\n\s*\n[A-Z]|\n\s*$)/)?.[1] ?? '').trim().substring(0, 500),
-    keyInnovations: [],
-    warnings: [],
-  }
-}
-
 export function FilingPackage() {
   const [selectedPatent, setSelectedPatent] = useState<string>('PA-5')
   const [generating, setGenerating] = useState<string | null>(null)
@@ -159,6 +137,19 @@ export function FilingPackage() {
       setGenerating(null)
     }
   }
+  const handleExportForAI = () => {
+    setGenerating('ai-export')
+    try {
+      const exportData = buildFilingExportData(selectedPatent)
+      const json = JSON.stringify(exportData, null, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const safeName = selectedPatent.replace(/[^a-zA-Z0-9-]/g, '')
+      saveAs(blob, `${safeName}-filing-data.json`)
+    } finally {
+      setGenerating(null)
+    }
+  }
+
   const documents = getDocumentsForPatent(selectedPatent)
   const readyDocs = documents.filter(d => d.status === 'ready')
 
@@ -329,6 +320,14 @@ export function FilingPackage() {
               >
                 {generating === 'zip' ? 'Generating...' : '⬇ Download ZIP Package'}
               </Button>
+              {isEnabled('ai_filing_export_enabled') && (
+                <Button
+                  onClick={handleExportForAI}
+                  disabled={generating === 'ai-export'}
+                >
+                  {generating === 'ai-export' ? 'Exporting...' : '⬇ Export for AI Filing (JSON)'}
+                </Button>
+              )}
             </div>
           </CardBody>
         </Card>

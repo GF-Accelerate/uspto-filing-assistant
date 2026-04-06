@@ -42,3 +42,10 @@ coverage/
 
 # Vercel
 .vercel
+
+# AI Filing data exports (contain patent data, not for version control)
+filing-data/
+
+# Playwright test artifacts
+playwright-report/
+test-results/

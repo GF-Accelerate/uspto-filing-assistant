@@ -21,6 +21,7 @@ const FLAG_DESCRIPTIONS: Record<keyof FeatureFlagsType, string> = {
   invention_capture_enabled: 'VCE: Camera capture + AI vision analysis of physical inventions',
   domain_intelligence_enabled: 'DIC: Industry-specific data capture for vertical AI model training',
   physical_digital_bridge_enabled: 'PDB: Photo-to-patent documentation pipeline (figures, specs, claims)',
+  ai_filing_export_enabled: 'Export structured JSON for AI-assisted Patent Center form filling via Playwright MCP',
 }
 
 export function FeatureFlags() {

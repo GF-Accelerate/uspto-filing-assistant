@@ -20,6 +20,7 @@
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:report": "npx playwright show-report",
     "validate": "npm run type-check && npm run lint && npm run test",
+    "filing:export": "tsx scripts/export-filing-data.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -60,6 +61,7 @@
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.14",
+    "tsx": "^4.19.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.9",
     "vitest": "^2.1.3"

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { PATENT_SPECS, PORTFOLIO_INIT } from '@/lib/uspto'
+import { PATENT_DRAWINGS } from '@/lib/patent-drawings'
 import { generateSpecDOCX, generateCoverSheetDOCX, downloadSpecDOCX, downloadCoverSheetDOCX } from '@/lib/docx-generator'
 import { buildExtractedData, buildFilingExportData } from '@/lib/filing-export'
 import { isEnabled } from '@/lib/feature-flags'
@@ -23,7 +24,10 @@ interface FilingDocument {
 
 function getDocumentsForPatent(patentId: string): FilingDocument[] {
   const hasSpec = !!PATENT_SPECS[patentId]
-  return [
+  const drawings = PATENT_DRAWINGS[patentId] || []
+  const hasDrawings = drawings.length > 0
+
+  const docs: FilingDocument[] = [
     {
       id: `${patentId}-spec`,
       label: 'Specification',
@@ -40,47 +44,31 @@ function getDocumentsForPatent(patentId: string): FilingDocument[] {
       status: hasSpec ? 'ready' : 'not_available',
       description: 'PTO/SB/16 cover sheet with inventor info, assignee, and entity status',
     },
-    {
-      id: `${patentId}-fig1`,
-      label: 'FIG. 1 — System Architecture',
-      usptoType: 'Drawings',
-      format: 'PDF',
-      status: patentId === 'PA-1' ? 'ready' : 'not_available',
-      description: 'System architecture block diagram',
-    },
-    {
-      id: `${patentId}-fig2`,
-      label: 'FIG. 2 — Processing Pipeline',
-      usptoType: 'Drawings',
-      format: 'PDF',
-      status: patentId === 'PA-1' ? 'ready' : 'not_available',
-      description: 'Voice processing and SQL generation flowchart',
-    },
-    {
-      id: `${patentId}-fig3`,
-      label: 'FIG. 3 — Agent Framework',
-      usptoType: 'Drawings',
-      format: 'PDF',
-      status: patentId === 'PA-1' ? 'ready' : 'not_available',
-      description: 'Nine-agent autonomous framework with HITL gate',
-    },
-    {
-      id: `${patentId}-fig4`,
-      label: 'FIG. 4 — Communication Failover',
-      usptoType: 'Drawings',
-      format: 'PDF',
-      status: patentId === 'PA-1' ? 'ready' : 'not_available',
-      description: 'Multi-provider communication failover system',
-    },
-    {
-      id: `${patentId}-fig5`,
-      label: 'FIG. 5 — Lead Scoring Engine',
-      usptoType: 'Drawings',
-      format: 'PDF',
-      status: patentId === 'PA-1' ? 'ready' : 'not_available',
-      description: 'Database layer and RFE lead scoring engine',
-    },
   ]
+
+  for (const fig of drawings) {
+    docs.push({
+      id: `${patentId}-${fig.id}`,
+      label: `${fig.figNum} — ${fig.title}`,
+      usptoType: 'Drawings',
+      format: 'PDF',
+      status: 'ready',
+      description: fig.desc,
+    })
+  }
+
+  if (!hasDrawings) {
+    docs.push({
+      id: `${patentId}-no-drawings`,
+      label: 'Drawings',
+      usptoType: 'Drawings',
+      format: 'PDF',
+      status: 'not_available',
+      description: 'No drawings defined yet — add them in the Drawings tab',
+    })
+  }
+
+  return docs
 }
 
 export function FilingPackage() {

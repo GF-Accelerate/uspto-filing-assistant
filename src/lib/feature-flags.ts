@@ -22,6 +22,7 @@ export interface FeatureFlags {
   domain_intelligence_enabled: boolean  // DIC: industry data capture
   physical_digital_bridge_enabled: boolean  // PDB: photo-to-patent-doc pipeline
   ai_filing_export_enabled: boolean         // Export JSON for AI-assisted Patent Center filing
+  drawing_compliance_enabled: boolean       // 37 CFR 1.84 drawing compliance analyzer
 }
 
 export type FlagKey = keyof FeatureFlags
@@ -45,6 +46,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   domain_intelligence_enabled: true,
   physical_digital_bridge_enabled: true,
   ai_filing_export_enabled: true,
+  drawing_compliance_enabled: true,
 }
 
 export function loadFeatureFlags(): FeatureFlags {
@@ -111,6 +113,7 @@ const ALL_ENABLED: FeatureFlags = {
   domain_intelligence_enabled: true,
   physical_digital_bridge_enabled: true,
   ai_filing_export_enabled: true,
+  drawing_compliance_enabled: true,
 }
 
 export function enableAllForAdmin(): void {

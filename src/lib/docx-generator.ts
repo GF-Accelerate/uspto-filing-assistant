@@ -21,8 +21,9 @@ import {
   convertInchesToTwip,
   PageOrientation,
 } from 'docx'
-import { saveAs } from 'file-saver'
-import type { ExtractedFilingData, CoverSheetData, Inventor } from '@/types/patent'
+// file-saver is loaded dynamically inside the download wrappers so this
+// module remains importable from Node-side scripts (no top-level browser dep).
+import type { ExtractedFilingData, CoverSheetData } from '@/types/patent'
 
 // ── Constants ────────────────────────────────────────────────────
 
@@ -326,7 +327,8 @@ export async function generateCoverSheetDOCX(
 
 // ── Download helper ──────────────────────────────────────────────
 
-export function downloadDOCX(blob: Blob, filename: string): void {
+export async function downloadDOCX(blob: Blob, filename: string): Promise<void> {
+  const { saveAs } = await import('file-saver')
   saveAs(blob, filename)
 }
 
@@ -339,6 +341,7 @@ export async function downloadSpecDOCX(
 ): Promise<void> {
   const blob = await generateSpecDOCX(specText, title, patentId)
   const safeName = patentId.replace(/[^a-zA-Z0-9-]/g, '')
+  const { saveAs } = await import('file-saver')
   saveAs(blob, `${safeName}-Specification.docx`)
 }
 
@@ -351,6 +354,7 @@ export async function downloadCoverSheetDOCX(
 ): Promise<void> {
   const blob = await generateCoverSheetDOCX(data, coverData, patentId)
   const safeName = patentId.replace(/[^a-zA-Z0-9-]/g, '')
+  const { saveAs } = await import('file-saver')
   saveAs(blob, `${safeName}-Cover-Sheet-PTO-SB-16.docx`)
 }
 
@@ -437,6 +441,7 @@ export async function downloadStrategyDOCX(
 ): Promise<void> {
   const blob = await generateStrategyDOCX(content, title, docType)
   const safeName = docType.replace(/[^a-zA-Z0-9-]/g, '')
+  const { saveAs } = await import('file-saver')
   saveAs(blob, `VAIS-${safeName}-${new Date().toISOString().split('T')[0]}.docx`)
 }
 
@@ -499,19 +504,8 @@ function parseSpecSections(specText: string): SpecSection[] {
 }
 
 // ── Convenience: generate default inventor data ──────────────────
+// Re-exported from patent-defaults.ts so existing callers don't break.
+// New callers should import directly from @/lib/patent-defaults to
+// avoid pulling in browser-only dependencies like file-saver.
 
-export function getDefaultInventors(): Inventor[] {
-  return [
-    { name: 'Milton Overton', address: '1102 Cool Springs Drive, Kennesaw, GA 30144', citizenship: 'United States' },
-    { name: 'Lisa Overton', address: '1102 Cool Springs Drive, Kennesaw, GA 30144', citizenship: 'United States' },
-  ]
-}
-
-export function getDefaultAssignee() {
-  return {
-    name: 'Visionary AI Systems, Inc.',
-    address: '1102 Cool Springs Drive, Kennesaw, GA 30144',
-    type: 'Corporation',
-    state: 'Delaware',
-  }
-}
+export { getDefaultInventors, getDefaultAssignee } from '@/lib/patent-defaults'

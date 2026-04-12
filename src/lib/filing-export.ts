@@ -3,7 +3,7 @@
 
 import type { ExtractedFilingData } from '@/types/patent'
 import { PATENT_SPECS, PORTFOLIO_INIT } from '@/lib/uspto'
-import { getDefaultInventors, getDefaultAssignee } from '@/lib/docx-generator'
+import { getDefaultInventors, getDefaultAssignee } from '@/lib/patent-defaults'
 import { PATENT_DRAWINGS } from '@/lib/patent-drawings'
 import { PATENT_CENTER_URL, PATENT_CENTER_MAPPING } from '@/lib/patent-center-mapping'
 

@@ -7,6 +7,7 @@ import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { InlineComplianceCheck } from '@/components/InlineComplianceCheck'
 import { isEnabled } from '@/lib/feature-flags'
+import { analyzeDrawing, type ComplianceReport } from '@/lib/drawing-compliance'
 import {
   PATENT_DRAWINGS, getPatentIds,
   loadCustomDrawings, saveCustomDrawings,
@@ -160,11 +161,12 @@ async function downloadPDF(
   pdf.setTextColor(40, 40, 40)
   pdf.text(`${figNum} — ${title}`, pageW / 2, marginTop + usableH + 0.22, { align: 'center' })
 
-  // Footer
+  // Footer — patent ID + generation date (no hardcoded filing date)
+  const genDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   pdf.setFontSize(7)
   pdf.setTextColor(130, 130, 130)
   pdf.text(
-    'Visionary AI Systems, Inc. (Delaware) | Milton & Lisa Overton, Inventors | Filed: March 28, 2026',
+    `Visionary AI Systems, Inc. (Delaware) | Milton & Lisa Overton, Inventors | ${patentId} | Generated: ${genDate}`,
     pageW / 2, pageH - 0.35, { align: 'center' }
   )
 
@@ -213,6 +215,15 @@ export function Drawings() {
   const [drawings, setDrawings] = useState<Drawing[]>(() => buildDrawings(selectedPatent))
   const [generating, setGenerating] = useState(false)
   const previewRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  // Bulk compliance check state
+  const [bulkChecking, setBulkChecking] = useState(false)
+  const [bulkReport, setBulkReport] = useState<null | {
+    reports: ComplianceReport[]
+    errors: number
+    warnings: number
+    info: number
+  }>(null)
 
   // Custom drawing input state
   const [customDesc, setCustomDesc] = useState('')
@@ -266,6 +277,33 @@ export function Drawings() {
       if (d.status !== 'done') await generateOne(d)
     }
     setGenerating(false)
+  }
+
+  // ── Bulk compliance check ─────────────────────────────────────────────
+  const checkAllCompliance = async () => {
+    const done = drawings.filter(d => d.status === 'done' && d.svg)
+    if (done.length === 0) return
+    setBulkChecking(true)
+    setBulkReport(null)
+    try {
+      const reports: ComplianceReport[] = []
+      for (const d of done) {
+        const safeFig = d.figNum.replace(/[^A-Z0-9]/gi, '-')
+        const file = new File(
+          [new Blob([d.svg], { type: 'image/svg+xml' })],
+          `${selectedPatent}-${safeFig}.svg`,
+          { type: 'image/svg+xml' },
+        )
+        const report = await analyzeDrawing(file, { useVisionAI: false })
+        reports.push(report)
+      }
+      const errors   = reports.reduce((n, r) => n + r.issues.filter(i => i.severity === 'error').length,   0)
+      const warnings = reports.reduce((n, r) => n + r.issues.filter(i => i.severity === 'warning').length, 0)
+      const info     = reports.reduce((n, r) => n + r.issues.filter(i => i.severity === 'info').length,    0)
+      setBulkReport({ reports, errors, warnings, info })
+    } finally {
+      setBulkChecking(false)
+    }
   }
 
   // ── Custom Drawing: AI generation ──────────────────────────────────────
@@ -405,8 +443,42 @@ Respond with ONLY the Mermaid code — no markdown fences, no explanation.`,
               >
                 {generating ? 'Rendering...' : doneCount === drawings.length && drawings.length > 0 ? 'All ready' : `Render all ${drawings.length} figures`}
               </Button>
+              {isEnabled('drawing_compliance_enabled') && doneCount > 0 && (
+                <Button
+                  size="sm"
+                  onClick={checkAllCompliance}
+                  disabled={bulkChecking}
+                  title="Run 37 CFR 1.84 compliance check across all rendered figures"
+                >
+                  {bulkChecking ? 'Checking...' : `Check all (${doneCount})`}
+                </Button>
+              )}
             </div>
           </div>
+
+          {bulkReport && (
+            <Alert
+              variant={
+                bulkReport.errors   > 0 ? 'danger'  :
+                bulkReport.warnings > 0 ? 'warning' :
+                'success'
+              }
+              className="mt-3"
+            >
+              <strong>Compliance check:</strong>{' '}
+              {bulkReport.errors > 0
+                ? `${bulkReport.errors} error${bulkReport.errors === 1 ? '' : 's'}`
+                : bulkReport.warnings > 0
+                ? `${bulkReport.warnings} warning${bulkReport.warnings === 1 ? '' : 's'}`
+                : `All ${bulkReport.reports.length} figures passed 37 CFR 1.84 deterministic checks`}
+              {bulkReport.errors === 0 && bulkReport.warnings === 0 && (
+                <span className="text-xs text-slate-500 block mt-1">
+                  {bulkReport.info} passing check{bulkReport.info === 1 ? '' : 's'} recorded across all figures.
+                  Safe to upload as informal provisional drawings.
+                </span>
+              )}
+            </Alert>
+          )}
           <div className="flex gap-4 mt-3 text-xs text-slate-500 flex-wrap">
             <span>Mermaid.js rendering engine</span>
             <span>300 DPI PNG/PDF export</span>

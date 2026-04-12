@@ -161,6 +161,297 @@ export const PA1_FIGURES: DrawingDef[] = [
   },
 ]
 
+// ── PA-2: Athletic Department Management Platform ─────────────────────────
+
+export const PA2_FIGURES: DrawingDef[] = [
+  {
+    id: 'pa2-fig1', figNum: 'FIG. 1', title: 'Athletic Department Platform System Architecture',
+    desc: 'Six-layer cloud SaaS architecture: Frontend Layer 110, API Gateway 120, Database Layer 130, AI Processing 140, Communication Layer 150, Analytics 160',
+    mermaid: `graph TD
+    A["110 — Frontend Layer<br/>Web Dashboard · Mobile Apps<br/>Voice Command UI"]
+    B["120 — API Gateway<br/>Auth · Rate Limiting<br/>Multi-Tenant Routing"]
+    C["130 — Database Layer<br/>Multi-Tenant PostgreSQL<br/>Row-Level Security · 10 Roles"]
+    D["140 — AI Processing<br/>NLP · ML Forecasting<br/>RFE Scoring · Gift Readiness"]
+    E["150 — Communication Layer<br/>Email · SMS · Video<br/>Provider Failover"]
+    F["160 — Analytics Layer<br/>Revenue Attribution<br/>Engagement Metrics"]
+    A --> B --> C
+    B --> D
+    D --> C
+    D --> E
+    C --> F
+    D --> F
+    style A fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style B fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style C fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style D fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style E fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style F fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d`,
+  },
+  {
+    id: 'pa2-fig2', figNum: 'FIG. 2', title: 'Constituent CRM with RFE Scoring Engine',
+    desc: 'Constituent CRM Module 200 with RFE Scoring Engine 201 supporting 170,000+ records. Data flows from external sources through scoring to predicted donor tiers.',
+    mermaid: `flowchart TD
+    EXT1["Giving History<br/>Donations · Ticket Renewals"]
+    EXT2["Engagement Events<br/>Emails · Clicks · Visits"]
+    EXT3["External Wealth Data<br/>SEC · FEC · OpenCorporates"]
+    CRM["200 — Constituent CRM Module<br/>170,000+ Records<br/>Relationship Mapping"]
+    RFE["201 — RFE Scoring Engine<br/>Recency · Frequency · Engagement<br/>Configurable Weights"]
+    SCR["Scored Constituents<br/>Major Gift Prospects<br/>Churn Risks · Renewal Candidates"]
+    UI["Dashboard + Voice Queries<br/>Sub-Second Response"]
+    EXT1 & EXT2 & EXT3 --> CRM
+    CRM --> RFE --> SCR --> UI
+    style EXT1 fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
+    style EXT2 fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
+    style EXT3 fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
+    style CRM fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style RFE fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style SCR fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style UI fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f`,
+  },
+  {
+    id: 'pa2-fig3', figNum: 'FIG. 3', title: 'NCAA Compliance Automation Engine',
+    desc: 'NCAA Compliance Engine 300 monitoring NIL disclosures, scholarship limits, contact calendars, revenue sharing caps, with automated alerts 301 and audit trail 302',
+    mermaid: `flowchart TD
+    NIL["NIL Activity Monitor<br/>Disclosure Tracking"]
+    SCHOL["Scholarship Equivalency<br/>Calculator"]
+    CONTACT["Recruiting Contact<br/>Calendar Restrictions"]
+    REV["Revenue Sharing Cap<br/>House v. NCAA Thresholds"]
+    TRANS["Transfer Portal<br/>Eligibility Monitor"]
+    CORE["300 — NCAA Compliance<br/>Automation Engine<br/>Bylaw-Aware Rule Set"]
+    ALERT["301 — Automated Alerts<br/>Threshold Approaching<br/>Staff Notification"]
+    AUDIT["302 — Audit Trail<br/>Immutable Record<br/>Bylaw Citation"]
+    DASH["Compliance Dashboard<br/>Real-Time Status"]
+    NIL & SCHOL & CONTACT & REV & TRANS --> CORE
+    CORE --> ALERT --> DASH
+    CORE --> AUDIT
+    style NIL fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style SCHOL fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style CONTACT fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style REV fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style TRANS fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style CORE fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
+    style ALERT fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    style AUDIT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b
+    style DASH fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d`,
+  },
+  {
+    id: 'pa2-fig4', figNum: 'FIG. 4', title: 'Revenue Intelligence with House v. NCAA Modeling',
+    desc: 'Revenue Intelligence Module 400 integrating real-time revenue streams with ML forecasting and House v. NCAA revenue sharing scenarios',
+    mermaid: `flowchart LR
+    TIX["Ticket Sales<br/>Season · Single-Game"]
+    DON["Donations<br/>Annual · Major Gifts"]
+    MEDIA["Media Rights<br/>TV · Streaming"]
+    LIC["Licensing<br/>Merchandise · IP"]
+    SPON["Sponsorships<br/>Corporate Partners"]
+    AGG["400 — Revenue Intelligence<br/>Module · Real-Time Aggregation"]
+    ML["ML Forecasting Engine<br/>Historical Trends · Economic Indicators"]
+    HOUSE["House v. NCAA<br/>Revenue Share Modeling<br/>Configurable Athlete Allocation"]
+    VAR["Budget Variance Analysis<br/>Drill-Down Reporting"]
+    BRIEF["Executive Briefing<br/>Dashboard + Voice Summary"]
+    TIX & DON & MEDIA & LIC & SPON --> AGG
+    AGG --> ML --> HOUSE
+    AGG --> VAR
+    ML --> BRIEF
+    HOUSE --> BRIEF
+    VAR --> BRIEF
+    style TIX fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style DON fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style MEDIA fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style LIC fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style SPON fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style AGG fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style ML fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style HOUSE fill:#fef3c7,stroke:#d97706,stroke-width:3px,color:#92400e
+    style VAR fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style BRIEF fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d`,
+  },
+  {
+    id: 'pa2-fig5', figNum: 'FIG. 5', title: 'Recruiting Intelligence Module',
+    desc: 'Recruiting Module 500 with prospect database, NCAA contact limit logging, offer management, scholarship modeling, and transfer portal monitoring',
+    mermaid: `graph TD
+    PROSPECT["500 — Recruiting Module<br/>Prospect Database"]
+    ACAD["Academic Profile<br/>GPA · Test Scores · Transcripts"]
+    ATH["Athletic Profile<br/>Stats · Film · Combine"]
+    CONT["NCAA Contact Logger<br/>Compliance-Aware Limits"]
+    OFFER["Offer Management<br/>Scholarship Modeling"]
+    TRAN["Transfer Portal<br/>Monitor · Alerts"]
+    COMM["Communication Hub<br/>Voice-Commanded Outreach"]
+    HITL["Human Approval Gate<br/>(from PA-3 integration)"]
+    OUT["Compliant Outreach<br/>Audit Logged"]
+    PROSPECT --> ACAD
+    PROSPECT --> ATH
+    PROSPECT --> CONT
+    PROSPECT --> OFFER
+    PROSPECT --> TRAN
+    CONT --> COMM
+    COMM --> HITL --> OUT
+    style PROSPECT fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style ACAD fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style ATH fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style CONT fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style OFFER fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style TRAN fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style COMM fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style HITL fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
+    style OUT fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d`,
+  },
+]
+
+// ── PA-3: Multi-Modal Campaign Orchestration via Voice ────────────────────
+
+export const PA3_FIGURES: DrawingDef[] = [
+  {
+    id: 'pa3-fig1', figNum: 'FIG. 1', title: 'Voice-Commanded Campaign Orchestration Overview',
+    desc: 'End-to-end pipeline: Voice Command Interface 110 → NLP 115 → Campaign Configuration AI 120 → HITL Gate 130 → Multi-Provider Router 140 → AI Video Pipeline 150 → Analytics 160',
+    mermaid: `flowchart TD
+    VOICE(["Voice Command<br/>Natural Language"])
+    VCI["110 — Voice Command Interface"]
+    NLP["115 — NLP Engine<br/>Intent + Entity Extraction"]
+    CAI["120 — Campaign<br/>Configuration AI"]
+    HITL["130 — Human-in-the-Loop<br/>Approval Gate<br/>CANNOT BE BYPASSED"]
+    ROUTER["140 — Multi-Provider<br/>Communication Router"]
+    VIDEO["150 — AI Video<br/>Personalization Pipeline"]
+    ANALYTICS["160 — Campaign<br/>Analytics Engine"]
+    OUT(["Approved Outbound<br/>Campaign"])
+    VOICE --> VCI --> NLP --> CAI --> HITL
+    HITL -->|"Approved"| ROUTER
+    HITL -->|"Approved"| VIDEO
+    ROUTER --> OUT
+    VIDEO --> ROUTER
+    OUT --> ANALYTICS
+    style VOICE fill:#1e40af,stroke:#1e40af,color:#ffffff
+    style OUT fill:#15803d,stroke:#15803d,color:#ffffff
+    style VCI fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style NLP fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style CAI fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style HITL fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
+    style ROUTER fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style VIDEO fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style ANALYTICS fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d`,
+  },
+  {
+    id: 'pa3-fig2', figNum: 'FIG. 2', title: 'Campaign Configuration AI Detail',
+    desc: 'Campaign AI 120 generates complete specs: Audience Segmentation 121, Message Content 122, Channel Selection 123, Send Schedule 124, Tracking Configuration 125',
+    mermaid: `flowchart TD
+    IN(["Natural Language<br/>Campaign Instruction"])
+    CAI["120 — Campaign Configuration AI"]
+    AUD["121 — Audience<br/>Segmentation Query<br/>Giving History · Engagement"]
+    MSG["122 — Message Content<br/>Calibrated to Recipient<br/>Gift Capacity + History"]
+    CHAN["123 — Channel Selection<br/>Email · SMS · Video · Social"]
+    SCHED["124 — Send Schedule<br/>Time-of-Day Optimization"]
+    TRACK["125 — Tracking<br/>Configuration<br/>UTM · Webhooks"]
+    SPEC(["Complete Campaign<br/>Specification"])
+    IN --> CAI
+    CAI --> AUD
+    CAI --> MSG
+    CAI --> CHAN
+    CAI --> SCHED
+    CAI --> TRACK
+    AUD & MSG & CHAN & SCHED & TRACK --> SPEC
+    style IN fill:#1e40af,stroke:#1e40af,color:#ffffff
+    style SPEC fill:#15803d,stroke:#15803d,color:#ffffff
+    style CAI fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style AUD fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style MSG fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style CHAN fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style SCHED fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style TRACK fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f`,
+  },
+  {
+    id: 'pa3-fig3', figNum: 'FIG. 3', title: 'Human-in-the-Loop Approval Gate',
+    desc: 'Mandatory HITL Gate 130 intercepts all outbound actions. Presents recipient count, message preview, cost, projected metrics. Human Approval 131 is explicit and non-bypassable.',
+    mermaid: `flowchart TD
+    SPEC(["Campaign Specification"])
+    GATE["130 — Human-in-the-Loop<br/>Approval Gate<br/>NO BYPASS MECHANISM"]
+    PREV["Preview Bundle<br/>Recipient Count · Msg Sample<br/>Cost · Revenue Forecast"]
+    HUMAN["131 — Explicit<br/>Human Authorization<br/>Approve · Modify · Reject"]
+    APPROVE(["Outbound<br/>Execution Authorized"])
+    REJECT(["Campaign<br/>Blocked"])
+    MODIFY(["Return for Revision"])
+    AUDIT["Cryptographic<br/>Decision Log"]
+    SPEC --> GATE --> PREV --> HUMAN
+    HUMAN -->|"Approve"| APPROVE
+    HUMAN -->|"Reject"| REJECT
+    HUMAN -->|"Modify"| MODIFY
+    MODIFY --> SPEC
+    APPROVE --> AUDIT
+    REJECT --> AUDIT
+    style SPEC fill:#1e40af,stroke:#1e40af,color:#ffffff
+    style APPROVE fill:#15803d,stroke:#15803d,color:#ffffff
+    style REJECT fill:#dc2626,stroke:#dc2626,color:#ffffff
+    style MODIFY fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style GATE fill:#fee2e2,stroke:#dc2626,stroke-width:3px,color:#991b1b
+    style PREV fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    style HUMAN fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    style AUDIT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
+  },
+  {
+    id: 'pa3-fig4', figNum: 'FIG. 4', title: 'Multi-Provider Communication Router with Failover',
+    desc: 'Router 140 with primary SendGrid 141, secondary Resend 142, tertiary AgentMail 143, Cryptographic Audit Trail 144, CAN-SPAM/GDPR Compliance 145',
+    mermaid: `flowchart LR
+    IN(["Approved<br/>Campaign"])
+    R["140 — Multi-Provider<br/>Communication Router"]
+    C1["145 — Compliance Layer<br/>CAN-SPAM · GDPR"]
+    SP["141 — SendGrid<br/>Primary Provider"]
+    RS["142 — Resend<br/>Secondary Provider"]
+    AM["143 — AgentMail<br/>Tertiary Provider"]
+    OK(["Delivered"])
+    AT["144 — Cryptographic<br/>Audit Trail<br/>Per-Provider Log"]
+    IN --> C1 --> R --> SP
+    SP -->|"Success"| OK
+    SP -->|"Failure"| RS
+    RS -->|"Success"| OK
+    RS -->|"Failure"| AM
+    AM -->|"Success"| OK
+    SP --> AT
+    RS --> AT
+    AM --> AT
+    style IN fill:#1e40af,stroke:#1e40af,color:#ffffff
+    style OK fill:#15803d,stroke:#15803d,color:#ffffff
+    style R fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style C1 fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    style SP fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style RS fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style AM fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    style AT fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#1e293b`,
+  },
+  {
+    id: 'pa3-fig5', figNum: 'FIG. 5', title: 'AI Video Personalization + Analytics Pipeline',
+    desc: 'Video Pipeline 150-154 generates individualized video per recipient; Analytics 160-166 tracks delivery, engagement, and revenue attribution',
+    mermaid: `flowchart TD
+    REC["Recipient Record<br/>Name · History · Capacity"]
+    VID["150 — AI Video<br/>Personalization Pipeline"]
+    CONT["151 — Personalized<br/>Video Content"]
+    VEO["152 — VEO AI<br/>Video Generation<br/>30-60s Segments"]
+    DEL["153 — Video Delivery<br/>Embedded Links"]
+    TRK["154 — View Tracking"]
+    ANA["160 — Campaign<br/>Analytics Engine"]
+    M1["161 Delivery"]
+    M2["162 Opens"]
+    M3["163 Clicks"]
+    M4["164 Video Completion"]
+    M5["165 Response Rate"]
+    M6["166 Revenue<br/>Attribution<br/>30 · 60 · 90 day"]
+    REC --> VID --> CONT --> VEO --> DEL --> TRK
+    TRK --> ANA
+    DEL --> ANA
+    ANA --> M1 & M2 & M3 & M4 & M5 & M6
+    style REC fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style VID fill:#1e3a5f,stroke:#1e3a5f,stroke-width:2px,color:#ffffff
+    style CONT fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style VEO fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style DEL fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style TRK fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a5f
+    style ANA fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style M1 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style M2 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style M3 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style M4 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style M5 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+    style M6 fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d`,
+  },
+]
+
 // ── PA-5: Voice-First Agentic Database Infrastructure (VADI) ──────────────
 
 export const PA5_FIGURES: DrawingDef[] = [
@@ -387,8 +678,8 @@ export const PA5_FIGURES: DrawingDef[] = [
 
 export const PATENT_DRAWINGS: Record<string, DrawingDef[]> = {
   'PA-1': PA1_FIGURES,
-  'PA-2': [],
-  'PA-3': [],
+  'PA-2': PA2_FIGURES,
+  'PA-3': PA3_FIGURES,
   'PA-4': [],
   'PA-5': PA5_FIGURES,
   'PA-6': [],

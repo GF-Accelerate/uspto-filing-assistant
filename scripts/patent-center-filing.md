@@ -17,6 +17,29 @@ Before running this playbook:
 4. **ALWAYS** take a screenshot before stopping for human review
 5. If any field does not match expected data, **STOP** and report the discrepancy
 
+## FOUR HUMAN-IN-THE-LOOP CHECKPOINTS (NON-BYPASSABLE)
+
+This playbook enforces four explicit HITL checkpoints. The agent MUST
+request each one, pause, and wait for explicit human approval before
+proceeding to the next phase. Checkpoints map 1:1 to the enforcement code
+in `src/lib/hermes/checkpoints.ts` and are audited in
+`src/lib/hermes/audit-log.ts`.
+
+| # | Checkpoint name | When | What the human verifies |
+|---|----------------|------|------------------------|
+| 1 | `PostLoginVerification` | Before any navigation (Step 1) | Patent Center is open; user is authenticated (ID.me + MFA complete) |
+| 2 | `DocumentUploadConfirmation` | After each document upload (Step 4) | Upload succeeded; document type is correct in the dropdown |
+| 3 | `FeePaymentAuthorization` | After "Calculate Fees" click (Step 5) | Fee amount matches expectations ($320 Small Entity) |
+| 4 | `FinalSubmissionApproval` | Before Submit (Step 6) | Everything is correct; agent hands control back to human |
+
+At every checkpoint the agent MUST:
+- Take a `browser_snapshot` (screenshot).
+- Print a plain-text summary of the state and the proposed next action.
+- Append an `audit-log.ts` entry of type `checkpoint_requested`.
+- Wait for the user to reply "approved" or "denied".
+- If denied, append `checkpoint_denied`, terminate the session, and STOP.
+- If approved, append `checkpoint_approved` and proceed to the next phase.
+
 ---
 
 ## Step 0: Load Filing Data
@@ -35,6 +58,36 @@ Use browser_snapshot to confirm the user is logged in.
 If the user is NOT logged in or Patent Center is not open:
   → STOP and say: "Please log into Patent Center at patentcenter.uspto.gov
     and let me know when you're ready."
+```
+
+### CHECKPOINT 1: PostLoginVerification
+
+```
+Append audit entry: checkpoint_requested / PostLoginVerification
+  summary: "Confirm user is authenticated at patentcenter.uspto.gov
+            before any agent action."
+
+Take a browser_snapshot.
+Print:
+
+  "CHECKPOINT 1/4 — Post-login verification
+   ─────────────────────────────────────
+   Tab URL: <current Patent Center URL>
+   Page title: <current page title>
+   I need you to confirm:
+     (a) You are on patentcenter.uspto.gov
+     (b) You have completed ID.me + MFA authentication
+     (c) You are ready for me to begin filling forms for {PATENT_ID}
+
+   Reply 'approved' to proceed, or 'denied' to stop."
+
+Wait for user reply.
+If denied:
+  Append: checkpoint_denied / PostLoginVerification + session_terminated
+  STOP.
+If approved:
+  Append: checkpoint_approved / PostLoginVerification
+  Proceed to Step 2.
 ```
 
 ## Step 2: Navigate to New Submission
@@ -101,6 +154,42 @@ For each document in data.documents:
      - "Drawings" for each drawing PDF
   4. Use browser_snapshot to verify upload completed successfully
   5. If DOCX: Click "Validate" and review the preview
+  6. Append audit entry: document_uploaded / documentType={type}
+```
+
+### CHECKPOINT 2: DocumentUploadConfirmation
+
+```
+After ALL documents have been uploaded:
+
+Append audit entry: checkpoint_requested / DocumentUploadConfirmation
+  summary: "Confirm {N} uploaded documents match intended types
+            before proceeding to fee calculation."
+
+Take a browser_snapshot of the documents table.
+Print:
+
+  "CHECKPOINT 2/4 — Document upload confirmation
+   ──────────────────────────────────────────
+   Documents uploaded for {PATENT_ID}:
+     1. {filename} → {type}
+     2. {filename} → {type}
+     ...
+
+   I need you to confirm:
+     (a) All intended documents uploaded successfully (no errors)
+     (b) Each document is mapped to the correct USPTO document type
+     (c) DOCX validations passed (if applicable)
+
+   Reply 'approved' to proceed to fee calculation, or 'denied' to stop."
+
+Wait for user reply.
+If denied:
+  Append: checkpoint_denied / DocumentUploadConfirmation + session_terminated
+  STOP.
+If approved:
+  Append: checkpoint_approved / DocumentUploadConfirmation
+  Proceed to Step 5.
 ```
 
 ## Step 5: Calculate Fees
@@ -112,14 +201,56 @@ Verify the fee amount matches: $320.00 (Small Entity)
 If fee does not match, STOP and report to user.
 ```
 
-## Step 6: STOP — Human Review Gate
+### CHECKPOINT 3: FeePaymentAuthorization
 
 ```
+Append audit entry: checkpoint_requested / FeePaymentAuthorization
+  summary: "Confirm calculated fee of $320.00 (Small Entity) matches
+            expectations before proceeding to payment."
+
+Take a browser_snapshot of the fee summary.
+Print:
+
+  "CHECKPOINT 3/4 — Fee payment authorization
+   ───────────────────────────────────────
+   Patent Center has calculated the filing fee:
+     Filing fee:       $<amount>
+     Entity status:    <status>
+     Total:            $<total>
+
+   Expected: $320.00 (Small Entity)
+   Match:    <YES | NO>
+
+   I need you to confirm:
+     (a) The calculated fee matches what you expect
+     (b) Your payment method is set up and ready
+     (c) You want me to proceed to the review screen
+
+   Reply 'approved' to proceed, or 'denied' to stop.
+   I will NOT click Pay or any irreversible payment action."
+
+Wait for user reply.
+If denied:
+  Append: checkpoint_denied / FeePaymentAuthorization + session_terminated
+  STOP.
+If approved:
+  Append: checkpoint_approved / FeePaymentAuthorization
+  Proceed to Step 6.
+```
+
+## Step 6: CHECKPOINT 4 — FinalSubmissionApproval (STOP)
+
+```
+Append audit entry: checkpoint_requested / FinalSubmissionApproval
+  summary: "Final review gate. Agent stops here. Human clicks Submit."
+
 Take a final browser_snapshot (screenshot).
 
 Report to the user:
 
-"I have completed filling the Patent Center forms for {PATENT_ID}:
+"CHECKPOINT 4/4 — Final submission approval
+
+I have completed filling the Patent Center forms for {PATENT_ID}:
 
   Title: {title}
   Inventors: {inventor names}
@@ -140,6 +271,16 @@ Report to the user:
 
   After submitting, save the Application Number (format: 63/XXX,XXX or 64/XXX,XXX)
   and the Filing Receipt for your records."
+
+Wait for the user to click Submit manually.
+After the user confirms submission:
+  Append: checkpoint_approved / FinalSubmissionApproval
+  Append: session_completed
+  STOP.
+
+If the user denies at this stage:
+  Append: checkpoint_denied / FinalSubmissionApproval + session_terminated
+  STOP.
 ```
 
 ---

@@ -23,6 +23,7 @@ const FLAG_DESCRIPTIONS: Record<keyof FeatureFlagsType, string> = {
   physical_digital_bridge_enabled: 'PDB: Photo-to-patent documentation pipeline (figures, specs, claims)',
   ai_filing_export_enabled: 'Export structured JSON for AI-assisted Patent Center form filling via Playwright MCP',
   drawing_compliance_enabled: 'Drawing Compliance Analyzer — check drawings against 37 CFR 1.84',
+  hermes_agent_enabled: 'Hermes USPTO Patent Center filing agent (POC) — routes Hermes audit admin page; off by default',
 }
 
 export function FeatureFlags() {

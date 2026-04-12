@@ -23,6 +23,7 @@ import { PatentOverview } from '@/pages/admin/PatentOverview'
 import { AuditLog }       from '@/pages/admin/AuditLog'
 import { FeatureFlags }   from '@/pages/admin/FeatureFlags'
 import { DrawingCompliance } from '@/pages/admin/DrawingCompliance'
+import { HermesAudit }    from '@/pages/admin/HermesAudit'
 import { AuthModal }      from '@/components/auth/AuthModal'
 import { UserMenu }       from '@/components/auth/UserMenu'
 import { VoiceAssistant } from '@/components/voice/VoiceAssistant'
@@ -75,6 +76,9 @@ export default function App() {
     { to: '/admin/flags',              label: 'Feature Flags' },
     ...(isEnabled('drawing_compliance_enabled')
       ? [{ to: '/admin/drawing-compliance', label: 'Drawing Compliance' }]
+      : []),
+    ...(isEnabled('hermes_agent_enabled')
+      ? [{ to: '/admin/hermes-audit', label: 'Hermes Audit' }]
       : []),
   ]
 
@@ -203,6 +207,7 @@ export default function App() {
           <Route path="/admin/audit"    element={<AuditLog />} />
           <Route path="/admin/flags"    element={<FeatureFlags />} />
           <Route path="/admin/drawing-compliance" element={<DrawingCompliance />} />
+          <Route path="/admin/hermes-audit" element={<HermesAudit />} />
         </Routes>
       </main>
 

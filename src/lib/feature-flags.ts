@@ -23,6 +23,7 @@ export interface FeatureFlags {
   physical_digital_bridge_enabled: boolean  // PDB: photo-to-patent-doc pipeline
   ai_filing_export_enabled: boolean         // Export JSON for AI-assisted Patent Center filing
   drawing_compliance_enabled: boolean       // 37 CFR 1.84 drawing compliance analyzer
+  hermes_agent_enabled: boolean             // Hermes USPTO Patent Center filing agent (POC, off by default)
 }
 
 export type FlagKey = keyof FeatureFlags
@@ -47,6 +48,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   physical_digital_bridge_enabled: true,
   ai_filing_export_enabled: true,
   drawing_compliance_enabled: true,
+  hermes_agent_enabled: false,
 }
 
 export function loadFeatureFlags(): FeatureFlags {
@@ -114,6 +116,7 @@ const ALL_ENABLED: FeatureFlags = {
   physical_digital_bridge_enabled: true,
   ai_filing_export_enabled: true,
   drawing_compliance_enabled: true,
+  hermes_agent_enabled: false,
 }
 
 export function enableAllForAdmin(): void {

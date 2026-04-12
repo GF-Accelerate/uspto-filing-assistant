@@ -5,6 +5,8 @@ import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Alert } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
+import { InlineComplianceCheck } from '@/components/InlineComplianceCheck'
+import { isEnabled } from '@/lib/feature-flags'
 import {
   PATENT_DRAWINGS, getPatentIds,
   loadCustomDrawings, saveCustomDrawings,
@@ -493,9 +495,16 @@ Respond with ONLY the Mermaid code — no markdown fences, no explanation.`,
                   className="w-full overflow-auto p-2"
                   style={{ maxHeight: 420 }}
                 />
-                <div className="border-t border-slate-100 px-3 py-2 bg-slate-50 flex items-center justify-between">
+                <div className="border-t border-slate-100 px-3 py-2 bg-slate-50 flex items-center justify-between relative">
                   <span className="text-xs text-slate-400 font-mono">{drawing.figNum} — {drawing.title}</span>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
+                    {isEnabled('drawing_compliance_enabled') && (
+                      <InlineComplianceCheck
+                        svg={drawing.svg}
+                        patentId={selectedPatent}
+                        figNum={drawing.figNum}
+                      />
+                    )}
                     <Button size="sm" onClick={() => downloadSVG(drawing.svg, drawing.figNum, selectedPatent)}>SVG</Button>
                     <Button size="sm" variant="primary" onClick={() => downloadPDF(previewRefs.current[drawing.id], drawing.figNum, drawing.title, selectedPatent)}>PDF (300 DPI)</Button>
                   </div>
